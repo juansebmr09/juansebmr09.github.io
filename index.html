@@ -1,1 +1,486 @@
-<h1>Hola</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup Final - Enlace a Consulta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .modal-centered { display: flex; align-items: center; justify-content: center; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .input-error { border-color: #ef4444 !important; ring: 2px; --tw-ring-color: #fca5a5; }
+    </style>
+</head>
+<body class="bg-white text-gray-800 h-screen flex flex-col relative">
+
+    <header class="relative w-full bg-[#007cc3]">
+        <img src="Headder.png" alt="Header Corporativo" class="w-full h-auto object-cover block min-h-[50px]">
+        
+        <a href="consulta.html" 
+           class="absolute top-0 left-0 h-full w-[90px] cursor-pointer hover:bg-white/10 transition duration-200"
+           title="Ir a Consulta">
+        </a>
+    </header>
+
+    <main class="flex-grow bg-white">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Reclamaciones comisiones <p class="text-sm text-gray-500 mt-1">Gestione las novedades reportadas en la liquidación de sus comisiones. Utilice los filtros para buscar registros anteriores o haga clic en 'Nueva Reclamación' para radicar una solicitud.</p></h2>
+                <button id="btnOpenNewClaim" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    Nueva Reclamación
+                </button>
+            </div>
+
+            <div class="flex flex-col xl:flex-row gap-6 mb-12 items-start">
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
+                    
+                    <div class="relative" id="multiSelectContainer">
+                        <button type="button" id="multiSelectBtn" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 focus:outline-none shadow-sm text-sm flex justify-between items-center text-left">
+                            <span class="truncate">Tipo de novedad</span>
+                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="multiSelectDropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-60 overflow-y-auto">
+                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Comisión errada" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">Comisión errada</span></label>
+                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Pago no reflejado" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">Pago no reflejado</span></label>
+                        </div>
+                    </div>
+
+                    <div class="relative"><select id="filter_anio" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Año</option><option value="2025">2025</option><option value="2024">2024</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
+                    <div class="relative"><select id="filter_periodo" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Periodo</option><option value="Ene">Ene</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Abr">Abr</option><option value="May">May</option><option value="Jun">Jun</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
+                    <div class="relative"><select id="filter_tipodoc" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Tipo de documento</option><option value="Cédula">Cédula</option><option value="NIT">NIT</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
+                    <div class="relative"><input id="filter_numdoc" type="text" placeholder="Número de documento" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm placeholder-gray-500"></div>
+                </div>
+                
+                <div class="flex flex-col gap-3 min-w-[160px]">
+                    <button id="btnConsultar" class="bg-[#1e40af] text-white text-sm font-bold py-2.5 px-6 rounded flex items-center justify-center gap-2 shadow-sm hover:bg-blue-900 transition">CONSULTAR</button>
+                    <button id="btnLimpiar" class="bg-[#007cc3] text-white text-sm font-bold py-2.5 px-6 rounded flex items-center justify-center gap-2 shadow-sm hover:bg-sky-700 transition">LIMPIAR</button>
+                </div>
+            </div>
+
+            <div id="errorMsg" class="hidden mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm font-medium rounded animate-[fade-in_0.3s]">Por favor diligencie los campos para consultar.</div>
+
+            <div class="border border-gray-300 rounded overflow-hidden z-0 relative min-h-[150px]">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-[#eeeeee]">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Plan</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">ID Cont.</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Parentezco</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Pago</th>
+                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px]">Motivo reclamacion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                            <tr data-row-id="fila_ejemplo" 
+                                data-novedad="Comisión errada" data-anio="2025" data-periodo="Ene" data-tipodoc="Cédula" data-numdoc="123456789"
+                                class="hidden hover:bg-gray-50 transition-colors h-12">
+                                <td class="border-r border-gray-200 px-2">Familiar</td><td class="border-r border-gray-200 px-2">Oro</td><td class="border-r border-gray-200 px-2">CT-001</td><td class="border-r border-gray-200 px-2">998877</td><td class="border-r border-gray-200 px-2">Juan Pérez</td><td class="border-r border-gray-200 px-2">Titular</td><td class="border-r border-gray-200 px-2">Efectivo</td>
+                                <td class="px-2 py-2">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button class="js-open-modal text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver detalles"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg></button>
+                                        <button class="js-open-modal js-edit-indicator hidden text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in" title="Editar comentario"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noResultsMsg" class="hidden py-10 text-center text-gray-500 italic">No se encontraron resultados con esos filtros.</div>
+            </div>
+        </div>
+    </main>
+
+    <div id="commentModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden overflow-y-auto h-full w-full z-40 modal-centered">
+        <div class="relative mx-auto p-6 border w-[95%] max-w-md shadow-2xl rounded-xl bg-white animate-[fade-in_0.2s_ease-out]">
+            <div class="flex items-center justify-between mb-5">
+                 <h3 id="modalTitle" class="text-xl font-bold text-gray-900 flex items-center gap-2">Gestión de Observaciones</h3>
+                 <button class="js-close-comment text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div class="mt-2">
+                <input type="hidden" id="currentRowIdInput">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Observación:</label>
+                <textarea id="commentTextarea" rows="5" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none disabled:bg-gray-100 disabled:text-gray-500" placeholder="Escribe aquí..."></textarea>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button class="js-close-comment px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition font-medium">Cerrar</button>
+                <button id="btnSaveComment" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-bold flex items-center gap-2">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newClaimModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
+        <div class="relative mx-auto w-[95%] max-w-4xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.2s_ease-out] flex flex-col max-h-full">
+            <div class="flex items-center justify-between px-8 py-5 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <div class="bg-green-100 text-green-600 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    </div>
+                    Registrar Nueva Reclamación
+                </h3>
+                <button class="js-close-new-claim text-gray-400 hover:text-red-500 transition-colors">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <div class="px-8 py-6 overflow-y-auto modal-scroll">
+                <form id="newClaimForm">
+                    
+                    <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">No. Solicitud</span><span id="lbl_solicitud" class="font-bold text-blue-700 text-base">Cargando...</span></div>
+                            <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Código Asesor</span><span class="font-semibold text-gray-800">4521</span></div>
+                            <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Cédula Asesor</span><span class="font-semibold text-gray-800">1.020.304.050</span></div>
+                            <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Nombre Asesor</span><span class="font-semibold text-gray-800">Nathalia Rendon</span></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4 border-b pb-2">Datos Generales</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            
+                            <div class="relative" id="new_novedad_container">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de novedad <span class="text-red-500">*</span></label>
+                                <button type="button" id="new_novedad_btn" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 text-left flex justify-between items-center text-sm">
+                                    <span class="truncate">Seleccione...</span>
+                                    <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div id="new_novedad_dropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-40 overflow-y-auto">
+                                    <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Comisión errada" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 form-novedad-check"><span class="ml-2 text-sm text-gray-700">Comisión errada</span></label>
+                                    <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Pago no reflejado" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 form-novedad-check"><span class="ml-2 text-sm text-gray-700">Pago no reflejado</span></label>
+                                    <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Diferencia tarifa" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 form-novedad-check"><span class="ml-2 text-sm text-gray-700">Diferencia tarifa</span></label>
+                                </div>
+                            </div>
+
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Año <span class="text-red-500">*</span></label><select id="new_anio" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>2025</option><option>2024</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Periodo <span class="text-red-500">*</span></label><select id="new_periodo" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Ene</option><option>Feb</option><option>Mar</option><option>Abr</option><option>May</option><option>Jun</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Tipo de documento <span class="text-red-500">*</span></label><select id="new_tipo_doc" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Cédula</option><option>NIT</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Número de documento <span class="text-red-500">*</span></label><input id="new_documento" type="number" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Ej: 123456789"></div>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <h4 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4 border-b pb-2">Detalles del Contrato</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Plan <span class="text-red-500">*</span></label><select id="new_plan" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Familiar</option><option>Asociado</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Programa <span class="text-red-500">*</span></label><select id="new_programa" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Oro</option><option>Plata</option><option>Bronce</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Contrato <span class="text-red-500">*</span></label><select id="new_contrato" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>CT-001</option><option>CT-002</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">ID Contratante <span class="text-red-500">*</span></label><input id="new_id_contratante" type="number" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Ej: 998877"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nombre Usuario <span class="text-red-500">*</span></label><input id="new_usuario" type="text" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Parentezco <span class="text-red-500">*</span></label><select id="new_parentezco" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Titular</option><option>Cónyuge</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Forma de pago <span class="text-red-500">*</span></label><select id="new_pago" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Tarjeta de crédito</option><option>Efectivo</option></select></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4 border-b pb-2">Soportes y Anexos</h4>
+                        <div class="col-span-full">
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:bg-gray-50 transition cursor-pointer relative">
+                                <input id="file-upload" name="file-upload" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                    <div class="flex text-sm text-gray-600 justify-center"><label class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"><span id="file-label-text">Sube un archivo</span></label><p class="pl-1">o arrastra y suelta</p></div>
+                                    <p class="text-xs text-gray-500">PDF, PNG, JPG hasta 10MB</p>
+                                    <p id="file-selected-name" class="text-sm font-bold text-green-600 mt-2 hidden"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Observaciones (Opcional)</label>
+                        <textarea id="new_observaciones" rows="3" class="w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="Ingrese información adicional si es necesario..."></textarea>
+                    </div>
+
+                </form>
+            </div>
+            <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rounded-b-xl">
+                <button class="js-close-new-claim px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition shadow-sm">Cancelar</button>
+                <button id="btnRealSaveClaim" class="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-md flex items-center gap-2">Guardar Reclamación</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGICA MULTI SELECT FILTRO ---
+        const multiSelectBtn = document.getElementById('multiSelectBtn');
+        const multiSelectDropdown = document.getElementById('multiSelectDropdown');
+        const multiSelectContainer = document.getElementById('multiSelectContainer');
+        multiSelectBtn.addEventListener('click', () => multiSelectDropdown.classList.toggle('hidden'));
+        document.addEventListener('click', (e) => {
+            if (!multiSelectContainer.contains(e.target)) multiSelectDropdown.classList.add('hidden');
+        });
+
+        // --- LOGICA MULTI SELECT FORMULARIO (NUEVO) ---
+        const newNovedadBtn = document.getElementById('new_novedad_btn');
+        const newNovedadDropdown = document.getElementById('new_novedad_dropdown');
+        const newNovedadContainer = document.getElementById('new_novedad_container');
+        
+        newNovedadBtn.addEventListener('click', () => newNovedadDropdown.classList.toggle('hidden'));
+        document.addEventListener('click', (e) => {
+            if (!newNovedadContainer.contains(e.target)) newNovedadDropdown.classList.add('hidden');
+        });
+
+        // --- LÓGICA DE ARCHIVOS ---
+        const fileInput = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-selected-name');
+        const fileLabelText = document.getElementById('file-label-text');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const name = e.target.files[0].name;
+                fileNameDisplay.textContent = "Archivo seleccionado: " + name;
+                fileNameDisplay.classList.remove('hidden');
+                fileLabelText.textContent = "Cambiar archivo";
+            } else {
+                fileNameDisplay.classList.add('hidden');
+                fileLabelText.textContent = "Sube un archivo";
+            }
+        });
+
+        // --- COMENTARIOS ---
+        let savedComments = {};
+        const commentModal = document.getElementById('commentModal');
+        const commentTextarea = document.getElementById('commentTextarea');
+        const currentRowInput = document.getElementById('currentRowIdInput');
+        const tableBody = document.getElementById('tableBody');
+        const modalTitle = document.getElementById('modalTitle');
+        const btnSaveComment = document.getElementById('btnSaveComment');
+        const openCommentModal = () => commentModal.classList.remove('hidden');
+        const closeCommentModal = () => commentModal.classList.add('hidden');
+        document.querySelectorAll('.js-close-comment').forEach(btn => btn.addEventListener('click', closeCommentModal));
+
+        tableBody.addEventListener('click', (e) => {
+            const btn = e.target.closest('.js-open-modal');
+            if (!btn) return;
+            const row = btn.closest('tr');
+            const rowId = row.getAttribute('data-row-id');
+            const isPencil = btn.classList.contains('js-edit-indicator');
+            const hasComment = savedComments[rowId] ? true : false;
+            currentRowInput.value = rowId;
+            let readOnlyMode = false;
+            if (hasComment && !isPencil) readOnlyMode = true;
+            if (readOnlyMode) {
+                modalTitle.innerText = "Ver Observación";
+                commentTextarea.value = savedComments[rowId];
+                commentTextarea.disabled = true;
+                btnSaveComment.classList.add('hidden');
+            } else {
+                modalTitle.innerText = hasComment ? "Editar Observación" : "Nueva Observación";
+                commentTextarea.value = savedComments[rowId] || '';
+                commentTextarea.disabled = false;
+                btnSaveComment.classList.remove('hidden');
+                setTimeout(() => commentTextarea.focus(), 100);
+            }
+            openCommentModal();
+        });
+
+        btnSaveComment.addEventListener('click', () => {
+            const rowId = currentRowInput.value;
+            const txt = commentTextarea.value.trim();
+            if(txt) {
+                savedComments[rowId] = txt;
+                const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
+                row.querySelector('.js-edit-indicator').classList.remove('hidden');
+                closeCommentModal();
+            } else {
+                alert("El campo está vacío.");
+            }
+        });
+
+        // --- NUEVA RECLAMACIÓN ---
+        const newClaimModal = document.getElementById('newClaimModal');
+        const btnOpenNewClaim = document.getElementById('btnOpenNewClaim');
+        const btnRealSaveClaim = document.getElementById('btnRealSaveClaim');
+
+        let consecutiveCounter = 1;
+
+        btnOpenNewClaim.addEventListener('click', () => {
+            newClaimModal.classList.remove('hidden');
+            const fixedCode = "4521";
+            const currentYear = new Date().getFullYear();
+            const consecutiveStr = String(consecutiveCounter).padStart(3, '0');
+            const generatedId = `${fixedCode}${currentYear}${consecutiveStr}`;
+            document.getElementById('lbl_solicitud').innerText = generatedId;
+            
+            // Resetear inputs form
+            fileInput.value = "";
+            fileNameDisplay.classList.add('hidden');
+            fileLabelText.textContent = "Sube un archivo";
+            document.querySelectorAll('.form-novedad-check').forEach(cb => cb.checked = false);
+            document.getElementById('newClaimForm').reset();
+        });
+        
+        document.querySelectorAll('.js-close-new-claim').forEach(btn => btn.addEventListener('click', () => newClaimModal.classList.add('hidden')));
+
+        // *** GUARDAR NUEVA RECLAMACIÓN ***
+        btnRealSaveClaim.addEventListener('click', () => {
+            
+            // 1. VALIDAR NOVEDAD MULTIPLE
+            const checkedNovedadesForm = document.querySelectorAll('.form-novedad-check:checked');
+            if (checkedNovedadesForm.length === 0) {
+                alert('El campo "Tipo de novedad" es obligatorio. Seleccione al menos una.');
+                newNovedadBtn.classList.add('input-error');
+                return;
+            } else {
+                newNovedadBtn.classList.remove('input-error');
+            }
+
+            // 2. VALIDAR RESTO CAMPOS
+            const fields = [
+                { id: 'new_anio', label: 'Año' }, { id: 'new_periodo', label: 'Periodo' }, { id: 'new_tipo_doc', label: 'Tipo de documento' },
+                { id: 'new_documento', label: 'Número de documento' }, { id: 'new_plan', label: 'Plan' },
+                { id: 'new_programa', label: 'Programa' }, { id: 'new_contrato', label: 'Contrato' },
+                { id: 'new_id_contratante', label: 'ID Contratante' }, { id: 'new_usuario', label: 'Nombre Usuario' },
+                { id: 'new_parentezco', label: 'Parentezco' }, { id: 'new_pago', label: 'Forma de pago' }
+            ];
+
+            for (const field of fields) {
+                const input = document.getElementById(field.id);
+                if (!input.value || input.value.trim() === '') {
+                    alert(`El campo "${field.label}" es obligatorio.`);
+                    input.classList.add('input-error');
+                    input.focus();
+                    input.addEventListener('input', function() { this.classList.remove('input-error'); }, {once:true});
+                    return;
+                }
+            }
+
+            // Datos
+            const plan = document.getElementById('new_plan').value;
+            const programa = document.getElementById('new_programa').value;
+            const contrato = document.getElementById('new_contrato').value;
+            const idCont = document.getElementById('new_id_contratante').value;
+            const usuario = document.getElementById('new_usuario').value;
+            const parentezco = document.getElementById('new_parentezco').value;
+            const pago = document.getElementById('new_pago').value;
+            
+            // Obtener valor combinado de novedad
+            const novedad = Array.from(checkedNovedadesForm).map(cb => cb.value).join(', ');
+            
+            const anio = document.getElementById('new_anio').value;
+            const periodo = document.getElementById('new_periodo').value;
+            const tipoDoc = document.getElementById('new_tipo_doc').value;
+            const numDoc = document.getElementById('new_documento').value;
+            
+            const hasFile = fileInput.files.length > 0;
+            const fileName = hasFile ? fileInput.files[0].name : "Ninguno";
+
+            const currentRequestId = document.getElementById('lbl_solicitud').innerText;
+            const newRowId = 'fila_' + Date.now();
+            
+            const newRowHTML = `
+                <tr data-row-id="${newRowId}" 
+                    data-novedad="${novedad}" data-anio="${anio}" data-periodo="${periodo}" data-tipodoc="${tipoDoc}" data-numdoc="${numDoc}"
+                    class="hidden hover:bg-gray-50 transition-colors h-12 bg-green-50">
+                    <td class="border-r border-gray-200 px-2">${plan}</td>
+                    <td class="border-r border-gray-200 px-2">${programa}</td>
+                    <td class="border-r border-gray-200 px-2">${contrato}</td>
+                    <td class="border-r border-gray-200 px-2">${idCont}</td>
+                    <td class="border-r border-gray-200 px-2">${usuario}</td>
+                    <td class="border-r border-gray-200 px-2">${parentezco}</td>
+                    <td class="border-r border-gray-200 px-2">${pago}</td>
+                    <td class="px-2 py-2">
+                        <div class="flex items-center justify-center gap-2">
+                            <button class="js-open-modal text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver detalles"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg></button>
+                            <button class="js-open-modal js-edit-indicator hidden text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in" title="Editar comentario"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+            tableBody.insertAdjacentHTML('afterbegin', newRowHTML);
+            newClaimModal.classList.add('hidden');
+            
+            consecutiveCounter++;
+
+            alert(`✅ Solicitud Guardada Exitosamente.\n\nNúmero de Solicitud: ${currentRequestId}\nArchivo adjunto: ${fileName}\n\nSe ha enviado una notificación automática a su Jefe Inmediato.`);
+        });
+
+        // *** LÓGICA DE FILTRADO ***
+        const btnConsultar = document.getElementById('btnConsultar');
+        const btnLimpiar = document.getElementById('btnLimpiar');
+        const errorMsg = document.getElementById('errorMsg');
+        const noResultsMsg = document.getElementById('noResultsMsg');
+
+        btnConsultar.addEventListener('click', () => {
+            const checkedNovedades = Array.from(document.querySelectorAll('.filter-novedad:checked'));
+            const fAnio = document.getElementById('filter_anio').value;
+            const fPeriodo = document.getElementById('filter_periodo').value;
+            const fTipoDoc = document.getElementById('filter_tipodoc').value;
+            const fNumDoc = document.getElementById('filter_numdoc').value.trim();
+
+            const isAllEmpty = (checkedNovedades.length === 0) && !fAnio && !fPeriodo && !fTipoDoc && !fNumDoc;
+
+            if (isAllEmpty) {
+                errorMsg.classList.remove('hidden');
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(r => r.classList.add('hidden'));
+                noResultsMsg.classList.add('hidden');
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            
+            const nValues = checkedNovedades.map(cb => cb.value);
+            const rows = tableBody.querySelectorAll('tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rNovedad = row.getAttribute('data-novedad');
+                const rAnio = row.getAttribute('data-anio');
+                const rPeriodo = row.getAttribute('data-periodo');
+                const rTipoDoc = row.getAttribute('data-tipodoc');
+                const rNumDoc = row.getAttribute('data-numdoc');
+
+                let match = true;
+                if (nValues.length > 0) {
+                    // Si el registro tiene multiples novedades (separadas por coma), revisar si alguna coincide
+                    const regNovedades = rNovedad.split(', ');
+                    const intersection = nValues.filter(value => regNovedades.includes(value));
+                    if (intersection.length === 0) match = false;
+                }
+                
+                if (fAnio && rAnio !== fAnio) match = false;
+                if (fPeriodo && rPeriodo !== fPeriodo) match = false;
+                if (fTipoDoc && rTipoDoc !== fTipoDoc) match = false;
+                if (fNumDoc && !rNumDoc.includes(fNumDoc)) match = false;
+
+                if (match) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            if (visibleCount === 0) noResultsMsg.classList.remove('hidden');
+            else noResultsMsg.classList.add('hidden');
+        });
+
+        btnLimpiar.addEventListener('click', () => {
+            document.querySelectorAll('.filter-novedad').forEach(cb => cb.checked = false);
+            document.getElementById('filter_anio').value = "";
+            document.getElementById('filter_periodo').value = "";
+            document.getElementById('filter_tipodoc').value = "";
+            document.getElementById('filter_numdoc').value = "";
+            errorMsg.classList.add('hidden');
+            noResultsMsg.classList.add('hidden');
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(r => r.classList.add('hidden'));
+        });
+    </script>
+</body>
+</html>
