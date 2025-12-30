@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Jefe - Reclamaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .pagination-btn.active { background-color: #1e40af; color: white; border-color: #1e40af; }
+        .disabled-link { pointer-events: none; opacity: 0.5; background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col font-inter">
+
+    <header class="relative w-full bg-[#007cc3] shadow-md z-20">
+        <img src="OVA Header Jefe.png" alt="Header Corporativo" class="w-full h-auto object-cover block min-h-[50px] max-h-[80px]">
+    </header>
+
+    <main class="flex-grow p-6 flex flex-col max-w-[1600px] mx-auto w-full">
+        
+        <div id="viewDashboard" class="flex flex-col w-full fade-in">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Bandeja de Aprobación</h1>
+                <p class="text-sm text-gray-500">Gestione y audite las solicitudes asignadas.</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>
+                        <select id="filter_status" class="w-full border-gray-300 rounded-md text-sm bg-gray-50 focus:ring-blue-500">
+                            <option value="">Todos</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Devuelto">Devuelto</option>
+                            <option value="Aprobado Total">Aprobado Total</option>
+                            <option value="Rechazado">Rechazado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">No. Solicitud</label>
+                        <input type="text" id="filter_reqId" class="w-full border-gray-300 rounded-md text-sm focus:ring-blue-500" placeholder="Ej: 4521...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cód. Asesor</label>
+                        <input type="text" id="filter_advisorCode" class="w-full border-gray-300 rounded-md text-sm focus:ring-blue-500" placeholder="Ej: 4521">
+                    </div>
+                    <div class="lg:col-span-2 grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha Desde</label>
+                            <input type="date" id="filter_dateFrom" class="w-full border-gray-300 rounded-md text-sm focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha Hasta</label>
+                            <input type="date" id="filter_dateTo" class="w-full border-gray-300 rounded-md text-sm focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end gap-3 border-t pt-4 border-gray-100">
+                    <button onclick="clearFilters()" class="text-gray-500 hover:text-gray-700 text-sm font-medium px-4 py-2">Limpiar Filtros</button>
+                    <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Exportar Excel
+                    </button>
+                    <button onclick="applyFilters()" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold py-2 px-6 rounded shadow-sm transition">CONSULTAR</button>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-10">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Fecha Creación</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">No. Solicitud</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Cód. Asesor</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nombre Asesor</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estado</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Asignado A</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Última Gestión</th>
+                                <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody>
+                    </table>
+                </div>
+                <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 flex items-center justify-between rounded-b-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Mostrar</span>
+                        <select id="itemsPerPage" onchange="changePageSize()" class="border-gray-300 rounded text-sm py-1 bg-white focus:ring-blue-500">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        </select>
+                        <span class="text-sm text-gray-600">por página</span>
+                    </div>
+                    <div class="flex items-center gap-2" id="paginationControls"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="viewDetail" class="hidden flex-col w-full fade-in pb-20">
+            <div class="mb-4">
+                <button onclick="showDashboard()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 text-sm bg-white px-3 py-1 rounded border border-blue-100 shadow-sm transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    Volver a la bandeja
+                </button>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6 shadow-sm relative">
+                <button onclick="showAttachments()" class="absolute top-4 right-4 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-bold py-1.5 px-3 rounded shadow-sm text-xs flex items-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                    Ver Adjuntos (1)
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 text-sm mt-1">
+                    <div class="flex flex-col border-r border-blue-200 pr-4">
+                        <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">No. Solicitud</span>
+                        <span id="detail_reqId" class="font-bold text-blue-700 text-lg">---</span>
+                    </div>
+                    <div class="flex flex-col border-r border-blue-200 pr-4">
+                        <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Código Asesor</span>
+                        <span id="detail_advCode" class="font-semibold text-gray-800">---</span>
+                    </div>
+                    <div class="flex flex-col border-r border-blue-200 pr-4">
+                        <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Cédula Asesor</span>
+                        <span id="detail_advId" class="font-semibold text-gray-800">---</span>
+                    </div>
+                    <div class="flex flex-col border-r border-blue-200 pr-4">
+                        <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Nombre Asesor</span>
+                        <span id="detail_advName" class="font-semibold text-gray-800">---</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Fecha Solicitud</span>
+                        <span id="detail_date" class="font-semibold text-gray-800">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-700">Registros de la reclamación</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-[#eeeeee]">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Tipo Novedad</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Plan</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Motivo (Asesor)</th>
+                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[150px] bg-blue-50 border-l border-blue-100">Respuesta Jefe</th>
+                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px] bg-blue-50">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailsBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="flex justify-end" id="btnFinishContainer">
+                <button id="btnFinishManagement" onclick="finishManagement()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow-lg transition flex items-center gap-2 transform hover:-translate-y-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    Finalizar Gestión de Solicitud
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="responseModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto w-[95%] max-w-lg bg-white shadow-2xl rounded-xl animate-[fade-in_0.2s_ease-out] overflow-hidden">
+            <div id="modalHeader" class="bg-blue-600 px-6 py-4 flex justify-between items-center transition-colors">
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Responder Reclamación</h3>
+                <button onclick="closeResponseModal()" class="text-white hover:text-gray-200"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            
+            <div class="p-6">
+                <input type="hidden" id="modal_rowId">
+                <input type="hidden" id="modal_reqId">
+
+                <div class="mb-5">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Novedad (Corrección)</label>
+                    <div class="flex gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" id="modal_novedad_display" class="w-full border-gray-300 bg-gray-100 text-gray-500 rounded-md py-2 px-3 text-sm cursor-not-allowed" disabled>
+                            
+                            <select id="modal_novedad_select" class="hidden w-full border-blue-500 bg-white text-gray-800 rounded-md py-2 px-3 text-sm focus:ring-blue-500">
+                                <option value="CSC - Comision por cuota">CSC - Comision por cuota</option>
+                                <option value="CQC - Comision por cuota negocios estrategicos">CQC - Comision por cuota negocios estrategicos</option>
+                                <option value="ACP - Acelerador ORO PLUS">ACP - Acelerador ORO PLUS</option>
+                                <option value="Comisión errada">Comisión errada</option>
+                            </select>
+                        </div>
+                        <button id="btnEditNovedad" onclick="toggleNovedadEdit()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 border border-amber-300 p-2 rounded transition" title="Editar tipo de novedad">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Respuesta <span id="req_respuesta_asterisk" class="text-red-500">*</span></label>
+                    <select id="modal_respuesta" onchange="toggleJustification()" class="w-full border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="">Seleccione...</option>
+                        <option value="Aprobada">Aprobada</option>
+                        <option value="Rechazada">Rechazada</option>
+                        <option value="Devolución">Devolución</option>
+                    </select>
+                    <input type="text" id="modal_respuesta_readonly" class="hidden w-full border-transparent bg-gray-100 text-gray-800 font-bold rounded-md p-2" disabled>
+                </div>
+
+                <div class="mb-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Justificación <span id="req_justification" class="text-red-500 hidden">*</span></label>
+                    <textarea id="modal_justificacion" rows="4" class="w-full border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none disabled:bg-gray-100 disabled:text-gray-600 disabled:border-transparent" placeholder="Ingrese la justificación de la decisión..."></textarea>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+                <button onclick="closeResponseModal()" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition" id="btnCloseModal">Cancelar</button>
+                <button onclick="saveRowResponse()" id="btnSaveModal" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">Guardar Respuesta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto w-[90%] max-w-3xl bg-white shadow-xl rounded-lg animate-[fade-in_0.2s_ease-out]">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">Bitácora de Solicitud</h3>
+                <button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div class="p-6"><table class="min-w-full divide-y divide-gray-300 border border-gray-200 rounded"><thead class="bg-gray-100"><tr><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">No. Solicitud</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Fecha</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Responsable</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Estado</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Acción</th></tr></thead><tbody id="bitacoraBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody></table></div>
+            <div class="bg-gray-50 px-6 py-3 rounded-b-lg flex justify-end"><button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-bold">Cerrar</button></div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
+        <div class="max-w-[1600px] mx-auto px-4 text-center">
+            <a href="OVA.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors inline-flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver a los otros roles del mockup
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // DATOS MOCK
+        const mockRequests = [
+            { id: '45212025001', date: '2025-01-15', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', status: 'Pendiente', assignedTo: 'Jefe Regional', lastUpdate: '2025-01-16' },
+            { id: '45212025002', date: '2025-01-18', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', status: 'Rechazado', assignedTo: 'Asesor', lastUpdate: '2025-01-20' },
+            { id: '88992025003', date: '2025-01-20', advCode: '8899', advId: '98.765.432', advName: 'Carlos Perez', status: 'Devuelto', assignedTo: 'Asesor', lastUpdate: '2025-01-22' },
+            { id: '10102025004', date: '2025-02-01', advCode: '1010', advId: '1.111.222.333', advName: 'Maria Gomez', status: 'Pendiente', assignedTo: 'Jefe Regional', lastUpdate: '2025-02-01' },
+            { id: '10102025005', date: '2025-02-05', advCode: '1010', advId: '1.111.222.333', advName: 'Maria Gomez', status: 'Aprobado', assignedTo: 'Gestión Humana', lastUpdate: '2025-02-06' },
+            { id: '45212025006', date: '2025-02-06', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', status: 'Pendiente', assignedTo: 'Jefe Regional', lastUpdate: '2025-02-06' }
+        ];
+
+        let mockDetails = [
+            { requestId: '45212025001', rowId: 'r1', novedad: 'Comisión errada', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '45212025001', rowId: 'r2', novedad: 'ACP - Acelerador', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '45212025002', rowId: 'r4', novedad: 'Comisión errada', plan: 'Familiar', programa: 'Oro', contrato: '200', usuario: 'Pedro', motivoAsesor: 'Texto X', respuestaJefe: 'Rechazada', justificacionJefe: 'No procede por políticas.' }
+        ];
+
+        let currentRequests = [...mockRequests];
+        let currentPage = 1;
+        let itemsPerPage = 5;
+        let currentDetailRequestId = null;
+
+        document.addEventListener('DOMContentLoaded', () => { applyFilters(); });
+
+        // --- FUNCIONES DASHBOARD ---
+        function applyFilters() {
+            const fStatus = document.getElementById('filter_status').value;
+            const fReqId = document.getElementById('filter_reqId').value.trim();
+            const fAdvCode = document.getElementById('filter_advisorCode').value.trim();
+            const fDateFrom = document.getElementById('filter_dateFrom').value;
+            const fDateTo = document.getElementById('filter_dateTo').value;
+
+            currentRequests = mockRequests.filter(req => {
+                if (fStatus && req.status !== fStatus) return false;
+                if (fReqId && !req.id.includes(fReqId)) return false;
+                if (fAdvCode && !req.advCode.includes(fAdvCode)) return false;
+                if (fDateFrom && new Date(req.date) < new Date(fDateFrom)) return false;
+                if (fDateTo && new Date(req.date) > new Date(fDateTo)) return false;
+                return true;
+            });
+            currentPage = 1;
+            renderDashboard();
+        }
+
+        function clearFilters() {
+            document.getElementById('filter_status').value = "";
+            document.getElementById('filter_reqId').value = "";
+            document.getElementById('filter_advisorCode').value = "";
+            document.getElementById('filter_dateFrom').value = "";
+            document.getElementById('filter_dateTo').value = "";
+            applyFilters();
+        }
+
+        function changePageSize() { itemsPerPage = parseInt(document.getElementById('itemsPerPage').value); currentPage = 1; renderDashboard(); }
+
+        function renderDashboard() {
+            const body = document.getElementById('dashboardBody');
+            body.innerHTML = "";
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = currentRequests.slice(start, end);
+
+            if (paginatedData.length === 0) {
+                body.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-gray-500 italic">No se encontraron solicitudes.</td></tr>`;
+                renderPagination(0);
+                return;
+            }
+
+            paginatedData.forEach(req => {
+                const isLocked = req.status === 'Rechazado' || req.status === 'Aprobado Total' || req.status === 'Devuelto';
+                const manageIcon = isLocked 
+                    ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>` 
+                    : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>`;
+                
+                let badgeColor = "bg-gray-100 text-gray-800";
+                if(req.status === 'Pendiente') badgeColor = "bg-yellow-100 text-yellow-800";
+                if(req.status === 'Devuelto') badgeColor = "bg-orange-100 text-orange-800";
+                if(req.status === 'Aprobado Total') badgeColor = "bg-green-100 text-green-800";
+                if(req.status === 'Rechazado') badgeColor = "bg-red-100 text-red-800";
+
+                const row = `
+                    <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                        <td class="px-6 py-4 whitespace-nowrap">${req.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-blue-600">${req.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${req.advCode}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${req.advName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${badgeColor}">${req.status}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${req.assignedTo}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">${req.lastUpdate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="loadDetails('${req.id}')" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-full transition" title="${isLocked ? 'Ver Detalles' : 'Gestionar'}">${manageIcon}</button>
+                                <button onclick="openBitacoraModal('${req.id}')" class="text-purple-600 hover:text-purple-800 hover:bg-purple-50 p-1.5 rounded-full transition" title="Ver Bitácora"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                body.insertAdjacentHTML('beforeend', row);
+            });
+            renderPagination(currentRequests.length);
+        }
+
+        function renderPagination(totalItems) {
+            const container = document.getElementById('paginationControls');
+            container.innerHTML = "";
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (totalPages <= 1) return;
+            container.innerHTML += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 border rounded text-xs hover:bg-gray-100 ${currentPage === 1 ? 'disabled-link' : ''}">&lt;</button>`;
+            for (let i = 1; i <= totalPages; i++) container.innerHTML += `<button onclick="goToPage(${i})" class="pagination-btn px-3 py-1 border rounded text-xs mx-1 ${i === currentPage ? 'active' : 'bg-white'}">${i}</button>`;
+            container.innerHTML += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 border rounded text-xs hover:bg-gray-100 ${currentPage === totalPages ? 'disabled-link' : ''}">&gt;</button>`;
+        }
+        function goToPage(page) { currentPage = page; renderDashboard(); }
+
+        // --- FUNCIÓN EXCEL RESTAURADA Y COMPLETA ---
+        function exportToExcel() {
+            if(currentRequests.length === 0) { 
+                alert("No hay datos filtrados para exportar."); 
+                return; 
+            }
+            
+            // Convertir datos actuales a formato hoja de cálculo
+            const ws = XLSX.utils.json_to_sheet(currentRequests);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Solicitudes");
+            
+            // Descargar
+            XLSX.writeFile(wb, "Reporte_Reclamaciones_Jefe.xlsx");
+        }
+
+        function openBitacoraModal(reqId) {
+            const req = mockRequests.find(r => r.id === reqId);
+            document.getElementById('bitacoraBody').innerHTML = `
+                <tr><td class="px-3 py-2 border-b text-gray-700">${req.id}</td><td class="px-3 py-2 border-b text-gray-700">${req.date}</td><td class="px-3 py-2 border-b text-gray-700">Jefe Regional</td><td class="px-3 py-2 border-b text-gray-700">En Gestión</td><td class="px-3 py-2 border-b text-gray-700">${new Date().toISOString().split('T')[0]}</td></tr>
+                <tr><td class="px-3 py-2 border-b text-gray-700">${req.id}</td><td class="px-3 py-2 border-b text-gray-700">${req.date}</td><td class="px-3 py-2 border-b text-gray-700">Sistema</td><td class="px-3 py-2 border-b text-gray-700">Radicación</td><td class="px-3 py-2 border-b text-gray-700">${req.date}</td></tr>
+            `;
+            document.getElementById('bitacoraModal').classList.remove('hidden');
+        }
+
+        // --- DETALLE ---
+        function showDashboard() { document.getElementById('viewDetail').classList.add('hidden'); document.getElementById('viewDashboard').classList.remove('hidden'); }
+
+        function loadDetails(reqId) {
+            currentDetailRequestId = reqId;
+            const req = mockRequests.find(r => r.id === reqId);
+            document.getElementById('detail_reqId').innerText = req.id;
+            document.getElementById('detail_advCode').innerText = req.advCode;
+            document.getElementById('detail_advId').innerText = req.advId;
+            document.getElementById('detail_advName').innerText = req.advName;
+            document.getElementById('detail_date').innerText = req.date;
+            
+            // VALIDACIÓN: OCULTAR BOTÓN SI NO ES PENDIENTE
+            const btnFinish = document.getElementById('btnFinishManagement');
+            if (req.status === 'Pendiente') {
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnFinish.classList.add('hidden');
+            }
+
+            renderDetailTable();
+            document.getElementById('viewDashboard').classList.add('hidden');
+            document.getElementById('viewDetail').classList.remove('hidden');
+            document.getElementById('viewDetail').classList.add('flex');
+        }
+
+        function showAttachments() { alert("📎 Mostrando modal con archivos adjuntos PDF/JPG cargados por el asesor..."); }
+
+        function renderDetailTable() {
+            const body = document.getElementById('detailsBody');
+            body.innerHTML = "";
+            const rows = mockDetails.filter(d => d.requestId === currentDetailRequestId);
+            rows.forEach(row => {
+                let statusColor = "text-gray-400";
+                let statusText = "Sin Gestionar";
+                let actionBtn = "";
+
+                if (row.respuestaJefe) {
+                    if (row.respuestaJefe === 'Aprobada') { statusColor = "text-green-600 font-bold"; statusText = "Aprobada"; }
+                    if (row.respuestaJefe === 'Rechazada') { statusColor = "text-red-600 font-bold"; statusText = "Rechazada"; }
+                    if (row.respuestaJefe === 'Devolución') { statusColor = "text-orange-600 font-bold"; statusText = "Devolución"; }
+                    
+                    // MODO LECTURA (Ojito)
+                    actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'view')" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded text-xs font-bold transition flex items-center justify-center gap-1 mx-auto" title="Ver Detalle"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg> Ver Detalle</button>`;
+                } else {
+                    // MODO EDICIÓN (Responder)
+                    actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'edit')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded text-xs font-bold border border-blue-300 transition flex items-center justify-center gap-1 mx-auto w-full">Responder</button>`;
+                }
+
+                body.insertAdjacentHTML('beforeend', `<tr class="hover:bg-gray-50 text-sm"><td class="px-4 py-3 border-r border-gray-200 text-blue-800 font-medium">${row.novedad}</td><td class="px-4 py-3 border-r border-gray-200">${row.plan}</td><td class="px-4 py-3 border-r border-gray-200">${row.programa}</td><td class="px-4 py-3 border-r border-gray-200">${row.contrato}</td><td class="px-4 py-3 border-r border-gray-200">${row.usuario}</td><td class="px-4 py-3 border-r border-gray-200 italic">"${row.motivoAsesor}"</td><td class="px-4 py-3 border-r border-gray-200 text-center ${statusColor}">${statusText}</td><td class="px-4 py-3 text-center">${actionBtn}</td></tr>`);
+            });
+        }
+
+        // --- MODAL Y LÓGICA DE RESPUESTA ---
+        function openResponseModal(rowId, mode) {
+            const row = mockDetails.find(r => r.rowId === rowId);
+            document.getElementById('modal_rowId').value = rowId;
+            
+            const display = document.getElementById('modal_novedad_display');
+            const select = document.getElementById('modal_novedad_select');
+            const justif = document.getElementById('modal_justificacion');
+            const respSelect = document.getElementById('modal_respuesta');
+            const respRead = document.getElementById('modal_respuesta_readonly');
+            
+            // Resetear visibilidad Novedad
+            display.value = row.novedad;
+            Array.from(select.options).forEach(opt => { if(row.novedad.includes(opt.value.substring(0,3))) select.value = opt.value; });
+            display.classList.remove('hidden'); select.classList.add('hidden');
+            
+            justif.value = row.justificacionJefe || "";
+            
+            if (mode === 'view') {
+                // MODO SOLO LECTURA
+                document.getElementById('modalTitle').innerText = "Detalle de Respuesta";
+                document.getElementById('modalHeader').classList.replace('bg-blue-600', 'bg-gray-700');
+                document.getElementById('btnEditNovedad').classList.add('hidden');
+                document.getElementById('btnSaveModal').classList.add('hidden');
+                document.getElementById('btnCloseModal').innerText = "Cerrar";
+                
+                respSelect.classList.add('hidden'); respRead.classList.remove('hidden');
+                respRead.value = row.respuestaJefe;
+                justif.disabled = true;
+                document.getElementById('req_respuesta_asterisk').classList.add('hidden');
+                document.getElementById('req_justification').classList.add('hidden');
+            } else {
+                // MODO EDICIÓN
+                document.getElementById('modalTitle').innerText = "Responder Reclamación";
+                document.getElementById('modalHeader').classList.replace('bg-gray-700', 'bg-blue-600');
+                document.getElementById('btnEditNovedad').classList.remove('hidden');
+                document.getElementById('btnSaveModal').classList.remove('hidden');
+                document.getElementById('btnCloseModal').innerText = "Cancelar";
+                
+                respSelect.classList.remove('hidden'); respRead.classList.add('hidden');
+                respSelect.value = row.respuestaJefe || "";
+                justif.disabled = false;
+                document.getElementById('req_respuesta_asterisk').classList.remove('hidden');
+                toggleJustification();
+            }
+            document.getElementById('responseModal').classList.remove('hidden');
+        }
+
+        function closeResponseModal() { document.getElementById('responseModal').classList.add('hidden'); }
+        function toggleNovedadEdit() { const d = document.getElementById('modal_novedad_display'), s = document.getElementById('modal_novedad_select'); if(d.classList.contains('hidden')){d.classList.remove('hidden');s.classList.add('hidden');}else{d.classList.add('hidden');s.classList.remove('hidden');} }
+        function toggleJustification() { const v = document.getElementById('modal_respuesta').value, l = document.getElementById('req_justification'); if(v==='Rechazada'||v==='Devolución') l.classList.remove('hidden'); else l.classList.add('hidden'); }
+
+        function saveRowResponse() {
+            const rowId = document.getElementById('modal_rowId').value;
+            const res = document.getElementById('modal_respuesta').value;
+            const jus = document.getElementById('modal_justificacion').value.trim();
+            const novSel = document.getElementById('modal_novedad_select');
+            
+            if (!res) { alert("Respuesta obligatoria"); return; }
+            if ((res === 'Rechazada' || res === 'Devolución') && !jus) { alert("Justificación obligatoria"); return; }
+            
+            const row = mockDetails.find(r => r.rowId === rowId);
+            row.respuestaJefe = res; row.justificacionJefe = jus;
+            if (document.getElementById('modal_novedad_display').classList.contains('hidden')) row.novedad = novSel.value;
+            
+            closeResponseModal();
+            renderDetailTable();
+        }
+
+        function finishManagement() {
+            const rows = mockDetails.filter(d => d.requestId === currentDetailRequestId);
+            if (rows.some(r => !r.respuestaJefe)) { alert("Responda todos los registros."); return; }
+            
+            let finalStatus = "Aprobado Total";
+            if (rows.some(r => r.respuestaJefe === 'Devolución')) finalStatus = "Devuelto";
+            else if (rows.every(r => r.respuestaJefe === 'Rechazada')) finalStatus = "Rechazado";
+
+            const req = mockRequests.find(r => r.id === currentDetailRequestId);
+            req.status = finalStatus;
+            req.lastUpdate = new Date().toISOString().split('T')[0];
+            req.assignedTo = finalStatus === 'Devuelto' ? 'Asesor' : 'Finalizado';
+
+            alert(`Solicitud finalizada: ${finalStatus}`);
+            showDashboard();
+            applyFilters();
+        }
+    </script>
+</body>
+</html>

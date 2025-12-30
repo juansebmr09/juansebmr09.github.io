@@ -3,480 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Reclamaciones</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <title>Oficina Virtual | Inicio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
-        .modal-centered { display: flex; align-items: center; justify-content: center; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-scroll::-webkit-scrollbar { width: 8px; }
-        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-        .modal-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        .input-error { border-color: #ef4444 !important; ring: 2px; --tw-ring-color: #fca5a5; }
-        .slide-in { animation: slideIn 0.3s ease-out forwards; opacity: 0; transform: translateY(10px); }
-        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
-        .slide-out { animation: slideOut 0.4s forwards; }
-        @keyframes slideOut { to { opacity: 0; transform: translateX(50px); height: 0; padding: 0; margin: 0; border: 0; } }
-    </style>
-</head>
-<body class="bg-white text-gray-800 h-screen flex flex-col relative">
-
-    <header class="relative w-full bg-[#007cc3]">
-        <img src="Headder.png" alt="Header Corporativo" class="w-full h-auto object-cover block min-h-[50px]">
-        <a href="consulta.html" class="absolute top-0 left-0 h-full w-[90px] cursor-pointer hover:bg-white/10 transition duration-200" title="Ir a Consulta"></a>
-    </header>
-
-    <main class="flex-grow bg-white pb-24"> 
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Reclamaciones comisiones</h2>
-                    <p class="text-sm text-gray-500 mt-1 max-w-2xl">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
-                </div>
-                <button id="btnOpenNewClaim" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    Nuevo Registro
-                </button>
-            </div>
-
-            <div class="flex flex-col xl:flex-row gap-6 mb-8 items-start">
-                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
-                    
-                    <div class="relative" id="multiSelectContainer">
-                        <button type="button" id="multiSelectBtn" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 focus:outline-none shadow-sm text-sm flex justify-between items-center text-left">
-                            <span class="truncate">Tipo de novedad</span>
-                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div id="multiSelectDropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-80 overflow-y-auto">
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="CSC - Comision por cuota" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">CSC - Comision por cuota</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="CQC - Comision por cuota negocios estrategicos" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">CQC - Comision por cuota negocios estrategicos</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="ACP - Acelerador ORO PLUS" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">ACP - Acelerador ORO PLUS</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Comisión errada" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">Comisión errada</span></label>
-                            </div>
-                    </div>
-
-                    <div class="relative"><select id="filter_anio" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Año</option><option value="2025">2025</option><option value="2024">2024</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
-                    
-                    <div class="relative"><select id="filter_periodo" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Periodo</option><option value="Ene">Ene</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Abr">Abr</option><option value="May">May</option><option value="Jun">Jun</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
-                    
-                    <div class="relative">
-                        <select id="filter_tipodoc" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm">
-                            <option value="">Tipo de documento</option>
-                            <option value="CC - Cédula de ciudadanía">CC - Cédula de ciudadanía</option>
-                            <option value="TI - Tarjeta de identidad">TI - Tarjeta de identidad</option>
-                            <option value="CE - Cédula de extranjería">CE - Cédula de extranjería</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                    </div>
-                    
-                    <div class="relative"><input id="filter_numdoc" type="text" placeholder="Número de documento" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm placeholder-gray-500"></div>
-                </div>
-                
-                <div class="flex flex-col gap-3 min-w-[160px]">
-                    <button id="btnConsultar" class="bg-[#1e40af] text-white text-sm font-bold py-2.5 px-6 rounded flex items-center justify-center gap-2 shadow-sm hover:bg-blue-900 transition">CONSULTAR</button>
-                    <button id="btnLimpiar" class="bg-[#007cc3] text-white text-sm font-bold py-2.5 px-6 rounded flex items-center justify-center gap-2 shadow-sm hover:bg-sky-700 transition">LIMPIAR</button>
-                </div>
-            </div>
-
-            <div id="errorMsg" class="hidden text-red-500 text-sm font-bold mb-4 text-center">Seleccione al menos un criterio de búsqueda</div>
-
-            <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4 shadow-sm">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                    <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">No. Solicitud</span><span id="header_solicitud" class="font-bold text-blue-700 text-base">Cargando...</span></div>
-                    <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Código Asesor</span><span class="font-semibold text-gray-800">4521</span></div>
-                    <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Cédula Asesor</span><span class="font-semibold text-gray-800">1.020.304.050</span></div>
-                    <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Nombre Asesor</span><span class="font-semibold text-gray-800">Nathalia Rendon</span></div>
-                </div>
-            </div>
-
-            <div class="border border-gray-300 rounded-t-lg overflow-hidden z-0 relative min-h-[150px]">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead class="bg-[#eeeeee]">
-                            <tr>
-                                <th class="px-4 py-3 text-center border-r border-gray-300 w-10">
-                                    <input type="checkbox" id="selectAllRows" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-400 focus:ring-blue-500 cursor-pointer">
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Plan</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">ID Cont.</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Parentesco</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Pago</th>
-                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px]">Motivo reclamacion</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
-                        </tbody>
-                    </table>
-                </div>
-                <div id="noResultsMsg" class="hidden py-10 text-center text-gray-500 italic">No se encontraron resultados con esos filtros.</div>
-            </div>
-
-            <div class="bg-gray-100 border border-t-0 border-gray-300 rounded-b-lg p-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm sticky bottom-0 z-20">
-                <div class="flex items-center gap-3 w-full md:w-auto bg-white p-2 rounded border border-dashed border-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                    <div class="relative overflow-hidden inline-block">
-                        <button class="border border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-1 px-3 rounded text-sm transition">Adjuntar Soporte Masivo</button>
-                        <input type="file" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
-                    </div>
-                    <span class="text-xs text-gray-500 hidden sm:inline">Para los registros seleccionados</span>
-                </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <button id="btnFilterSelected" class="flex-1 md:flex-none bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded shadow-sm transition flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>Filtrar Seleccionados</button>
-                    <button id="btnSendAll" class="flex-1 md:flex-none bg-[#1e40af] hover:bg-blue-900 text-white font-bold py-2.5 px-6 rounded shadow-sm transition flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Enviar Gestión</button>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <div id="commentModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden overflow-y-auto h-full w-full z-40 modal-centered">
-        <div class="relative mx-auto p-6 border w-[95%] max-w-md shadow-2xl rounded-xl bg-white animate-[fade-in_0.2s_ease-out]">
-            <div class="flex items-center justify-between mb-5">
-                 <h3 id="modalTitle" class="text-xl font-bold text-gray-900 flex items-center gap-2">Gestión de Motivos</h3>
-                 <button class="js-close-comment text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            <div class="mt-2"><input type="hidden" id="currentRowIdInput"><label class="block text-sm font-medium text-gray-700 mb-2">Motivo reclamación:</label><textarea id="commentTextarea" rows="5" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none disabled:bg-gray-100 disabled:text-gray-500" placeholder="Escribe aquí..."></textarea></div>
-            <div class="mt-6 flex justify-end gap-3"><button class="js-close-comment px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition font-medium">Cerrar</button><button id="btnSaveComment" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-bold flex items-center gap-2">Guardar</button></div>
-        </div>
-    </div>
-
-    <div id="newClaimModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
-        <div class="relative mx-auto w-[95%] max-w-4xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.2s_ease-out] flex flex-col max-h-full">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-gray-100">
-                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2"><div class="bg-green-100 text-green-600 p-2 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>Nuevo Registro</h3>
-                <button class="js-close-new-claim text-gray-400 hover:text-red-500 transition-colors"><svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            <div class="px-8 py-6 overflow-y-auto modal-scroll">
-                <form id="newClaimForm">
-                    <div class="mb-6">
-                        <h4 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4 border-b pb-2">Datos Generales</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de novedad <span class="text-red-500">*</span></label>
-                                <select id="new_novedad" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                    <option value="">Seleccione...</option>
-                                    <option value="CSC - Comision por cuota">CSC - Comision por cuota</option>
-                                    <option value="Comisión errada">Comisión errada</option>
-                                    </select>
-                            </div>
-
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Año <span class="text-red-500">*</span></label><select id="new_anio" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>2025</option><option>2024</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Periodo <span class="text-red-500">*</span></label><select id="new_periodo" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Ene</option><option>Feb</option><option>Mar</option><option>Abr</option><option>May</option><option>Jun</option></select></div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de documento <span class="text-red-500">*</span></label>
-                                <select id="new_tipo_doc" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                    <option value="">Seleccione...</option>
-                                    <option value="CC - Cédula de ciudadanía">CC - Cédula de ciudadanía</option>
-                                    </select>
-                            </div>
-                            
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Número de documento <span class="text-red-500">*</span></label><input id="new_documento" type="number" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Ej: 123456789"></div>
-                        </div>
-                    </div>
-                    <div class="mb-6">
-                        <h4 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4 border-b pb-2">Detalles del Contrato</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Plan <span class="text-red-500">*</span></label><select id="new_plan" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Familiar</option><option>Asociado</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Programa <span class="text-red-500">*</span></label><select id="new_programa" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Oro</option><option>Plata</option><option>Bronce</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Contrato <span class="text-red-500">*</span></label><input id="new_contrato" type="number" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-white" placeholder="Número contrato"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">ID Contratante <span class="text-red-500">*</span></label><input id="new_id_contratante" type="number" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Ej: 998877"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nombre Usuario <span class="text-red-500">*</span></label><input id="new_usuario" type="text" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Parentesco <span class="text-red-500">*</span></label><select id="new_parentezco" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Titular</option><option>Cónyuge</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Forma de pago <span class="text-red-500">*</span></label><select id="new_pago" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"><option value="">Seleccione...</option><option>Prepago</option><option>Pospago</option></select></div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Motivo reclamación <span class="text-red-500">*</span></label>
-                        <textarea id="new_observaciones" rows="3" class="w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="Describa el motivo de la reclamación..."></textarea>
-                    </div>
-
-                </form>
-            </div>
-            <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rounded-b-xl">
-                <button class="js-close-new-claim px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition shadow-sm">Cancelar</button>
-                <button id="btnRealSaveClaim" class="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-md flex items-center gap-2">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- BASE DE DATOS SIMULADA ---
-        let mockDatabase = [
-            // HE AGREGADO AQUÍ LA FILA QUE ESTABA ANTES EN EL HTML
-            {
-                id: 'fila_ejemplo',
-                novedad: 'Comisión errada',
-                anio: '2025', periodo: 'Ene', tipoDoc: 'CC - Cédula de ciudadanía', numDoc: '123456789',
-                plan: 'Familiar', programa: 'Oro', contrato: 'CT-001', idCont: '998877',
-                usuario: 'Juan Pérez', parentesco: 'Titular', pago: 'Pospago',
-                motivo: ''
-            },
-            {
-                id: 'fila_prueba_1',
-                novedad: 'CSC - Comision por cuota',
-                anio: '2025', periodo: 'Ene', tipoDoc: 'CC - Cédula de ciudadanía', numDoc: '1234',
-                plan: 'Familiar', programa: 'Oro', contrato: '1001', idCont: '556677',
-                usuario: 'Maria Lopez', parentesco: 'Titular', pago: 'Prepago',
-                motivo: 'No se reflejó el pago de la cuota inicial.'
-            },
-            {
-                id: 'fila_prueba_2',
-                novedad: 'ACP - Acelerador ORO PLUS',
-                anio: '2025', periodo: 'Feb', tipoDoc: 'CC - Cédula de ciudadanía', numDoc: '1234',
-                plan: 'Exequial', programa: 'Plata', contrato: '2002', idCont: '556677',
-                usuario: 'Pedro Perez', parentesco: 'Cónyuge', pago: 'Pospago',
-                motivo: 'El acelerador no se aplicó correctamente en el periodo.'
-            }
-        ];
-
-        let savedComments = {
-            'fila_prueba_1': 'No se reflejó el pago de la cuota inicial.',
-            'fila_prueba_2': 'El acelerador no se aplicó correctamente en el periodo.'
-        };
-
-        // --- CONSECUTIVO Y HEADER ---
-        const initHeaderData = () => {
-            let consecutiveCounter = 1;
-            const fixedCode = "4521";
-            const currentYear = new Date().getFullYear();
-            const consecutiveStr = String(consecutiveCounter).padStart(3, '0');
-            const generatedId = `${fixedCode}${currentYear}${consecutiveStr}`;
-            document.getElementById('header_solicitud').innerText = generatedId;
-            return generatedId;
-        };
-        let currentRequestId = initHeaderData();
-
-        // --- MULTI SELECT FILTRO ---
-        const multiSelectBtn = document.getElementById('multiSelectBtn');
-        const multiSelectDropdown = document.getElementById('multiSelectDropdown');
-        const multiSelectContainer = document.getElementById('multiSelectContainer');
-        multiSelectBtn.addEventListener('click', () => multiSelectDropdown.classList.toggle('hidden'));
-        document.addEventListener('click', (e) => {
-            if (!multiSelectContainer.contains(e.target)) multiSelectDropdown.classList.add('hidden');
-        });
-
-        // --- GESTIÓN COMENTARIOS ---
-        const commentModal = document.getElementById('commentModal');
-        const commentTextarea = document.getElementById('commentTextarea');
-        const currentRowInput = document.getElementById('currentRowIdInput');
-        const tableBody = document.getElementById('tableBody');
-        const modalTitle = document.getElementById('modalTitle');
-        const btnSaveComment = document.getElementById('btnSaveComment');
-        const openCommentModal = () => commentModal.classList.remove('hidden');
-        const closeCommentModal = () => commentModal.classList.add('hidden');
-        document.querySelectorAll('.js-close-comment').forEach(btn => btn.addEventListener('click', closeCommentModal));
-
-        tableBody.addEventListener('click', (e) => {
-            const btn = e.target.closest('.js-open-modal');
-            if (!btn) return;
-            const row = btn.closest('tr');
-            const rowId = row.getAttribute('data-row-id');
-            
-            const record = mockDatabase.find(r => r.id === rowId);
-            const currentText = savedComments[rowId] || (record ? record.motivo : '');
-            
-            currentRowInput.value = rowId;
-            commentTextarea.value = currentText;
-            modalTitle.innerText = "Editar Motivo";
-            commentTextarea.disabled = false;
-            btnSaveComment.classList.remove('hidden');
-            openCommentModal();
-        });
-
-        btnSaveComment.addEventListener('click', () => {
-            const rowId = currentRowInput.value;
-            const txt = commentTextarea.value.trim();
-            if(txt) {
-                const record = mockDatabase.find(r => r.id === rowId);
-                if(record) record.motivo = txt;
-                savedComments[rowId] = txt; 
-                closeCommentModal();
-            } else {
-                alert("El campo no puede estar vacío.");
-            }
-        });
-
-        // --- NUEVO REGISTRO MODAL ---
-        const newClaimModal = document.getElementById('newClaimModal');
-        const btnOpenNewClaim = document.getElementById('btnOpenNewClaim');
-        const btnRealSaveClaim = document.getElementById('btnRealSaveClaim');
-
-        btnOpenNewClaim.addEventListener('click', () => {
-            newClaimModal.classList.remove('hidden');
-            document.getElementById('newClaimForm').reset();
-        });
-        document.querySelectorAll('.js-close-new-claim').forEach(btn => btn.addEventListener('click', () => newClaimModal.classList.add('hidden')));
-
-        // *** GUARDAR (AÑADE A BD Y REFRESCA TABLA) ***
-        btnRealSaveClaim.addEventListener('click', () => {
-            if(!document.getElementById('new_novedad').value || !document.getElementById('new_observaciones').value.trim()){
-                alert("Por favor complete los campos obligatorios (*).");
-                return;
-            }
-
-            const newRecord = {
-                id: 'fila_' + Date.now(),
-                novedad: document.getElementById('new_novedad').value,
-                anio: document.getElementById('new_anio').value,
-                periodo: document.getElementById('new_periodo').value,
-                tipoDoc: document.getElementById('new_tipo_doc').value,
-                numDoc: document.getElementById('new_documento').value,
-                plan: document.getElementById('new_plan').value,
-                programa: document.getElementById('new_programa').value,
-                contrato: document.getElementById('new_contrato').value,
-                idCont: document.getElementById('new_id_contratante').value,
-                usuario: document.getElementById('new_usuario').value,
-                parentesco: document.getElementById('new_parentezco').value,
-                pago: document.getElementById('new_pago').value,
-                motivo: document.getElementById('new_observaciones').value
-            };
-
-            mockDatabase.push(newRecord);
-            savedComments[newRecord.id] = newRecord.motivo;
-            // No renderizamos automáticamente, el usuario debe consultar
-            // renderRow(newRecord); 
-
-            newClaimModal.classList.add('hidden');
-            alert(`✅ Se ha guardado el registro correctamente. Presione Consultar para verlo.`);
-        });
-
-        // Función auxiliar para dibujar una fila
-        function renderRow(item) {
-            const html = `
-                <tr data-row-id="${item.id}" 
-                    data-novedad="${item.novedad}" data-anio="${item.anio}" data-periodo="${item.periodo}" data-tipodoc="${item.tipoDoc}" data-numdoc="${item.numDoc}"
-                    class="hover:bg-gray-50 transition-colors h-12 slide-in">
-                    <td class="px-4 py-2 text-center border-r border-gray-200">
-                        <input type="checkbox" class="row-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-400 focus:ring-blue-500 cursor-pointer">
-                    </td>
-                    <td class="border-r border-gray-200 px-2">${item.plan}</td>
-                    <td class="border-r border-gray-200 px-2">${item.programa}</td>
-                    <td class="border-r border-gray-200 px-2">${item.contrato}</td>
-                    <td class="border-r border-gray-200 px-2">${item.idCont}</td>
-                    <td class="border-r border-gray-200 px-2">${item.usuario}</td>
-                    <td class="border-r border-gray-200 px-2">${item.parentesco}</td>
-                    <td class="border-r border-gray-200 px-2">${item.pago}</td>
-                    <td class="px-2 py-2">
-                        <div class="flex items-center justify-center gap-2">
-                            <button class="js-open-modal text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver detalles"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg></button>
-                            <button class="js-open-modal js-edit-indicator text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in" title="Editar comentario"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg></button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', html); // Cambiado a beforeend para que las nuevas salgan abajo
+        /* --- Estilos Generales --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
-        // *** ACCIONES TABLA ***
-        const selectAllCheckbox = document.getElementById('selectAllRows');
-        selectAllCheckbox.addEventListener('change', (e) => {
-            const checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(cb => cb.checked = e.target.checked);
-        });
+        body {
+            /* Gradiente corporativo moderno */
+            background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        // FILTRAR SELECCIONADOS
-        document.getElementById('btnFilterSelected').addEventListener('click', () => {
-            const rows = tableBody.querySelectorAll('tr');
-            let hasSelection = false;
-            rows.forEach(row => {
-                const cb = row.querySelector('.row-checkbox');
-                if (cb && !cb.checked) {
-                    row.remove();
-                } else if(cb && cb.checked) {
-                    hasSelection = true;
-                }
-            });
-            if(!hasSelection && rows.length > 0) alert("No hay filas seleccionadas para mantener.");
-        });
+        /* --- Tarjeta Principal --- */
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px;
+            padding: 45px 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
 
-        // ENVIAR GESTIÓN
-        document.getElementById('btnSendAll').addEventListener('click', () => {
-            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
-            if(checkboxes.length === 0) {
-                alert("Seleccione al menos un registro para enviar.");
-                return;
-            }
-            checkboxes.forEach(cb => {
-                const row = cb.closest('tr');
-                row.classList.add('slide-out');
-                setTimeout(() => row.remove(), 400);
-            });
-            setTimeout(() => {
-                alert("Gestión enviada correctamente. (Los datos persisten en la BD simulada)");
-            }, 500);
-        });
+        /* --- Imagen / Logo --- */
+        .logo-container {
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .logo-img {
+            max-width: 260px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            mix-blend-mode: multiply; /* Integra el logo si tiene fondo blanco */
+        }
 
-        // *** CONSULTAR (TRAE TODO DE LA BD) ***
-        const btnConsultar = document.getElementById('btnConsultar');
-        const btnLimpiar = document.getElementById('btnLimpiar');
-        const errorMsg = document.getElementById('errorMsg');
-        const noResultsMsg = document.getElementById('noResultsMsg');
+        /* --- Títulos --- */
+        .header-text h1 {
+            color: #1e293b;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
 
-        btnConsultar.addEventListener('click', () => {
-            const checkedNovedades = Array.from(document.querySelectorAll('.filter-novedad:checked'));
-            const fAnio = document.getElementById('filter_anio').value;
-            const fPeriodo = document.getElementById('filter_periodo').value;
-            const fTipoDoc = document.getElementById('filter_tipodoc').value;
-            const fNumDoc = document.getElementById('filter_numdoc').value.trim();
+        .header-text p {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
 
-            const isAllEmpty = (checkedNovedades.length === 0) && !fAnio && !fPeriodo && !fTipoDoc && !fNumDoc;
+        /* --- Botón Principal (Hero Button) --- */
+        .main-action-btn {
+            background: linear-gradient(90deg, #0061ff 0%, #2979ff 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 20px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 20px rgba(0, 97, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-            if (isAllEmpty) {
-                errorMsg.classList.remove('hidden');
-                tableBody.innerHTML = ""; // Limpia si hay error
-                noResultsMsg.classList.add('hidden');
-                return;
-            }
+        /* Icono dentro del botón */
+        .main-action-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
 
-            errorMsg.classList.add('hidden');
-            tableBody.innerHTML = ""; // LIMPIAR TABLA ANTES DE LLENAR
-            
-            const nValues = checkedNovedades.map(cb => cb.value);
-            let visibleCount = 0;
+        /* Efectos Hover */
+        .main-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 97, 255, 0.4);
+            background: linear-gradient(90deg, #0050d6 0%, #1a6dff 100%);
+        }
 
-            // Recorremos la base de datos simulada en vez de las filas HTML
-            mockDatabase.forEach(item => {
-                let match = true;
-                if (nValues.length > 0) {
-                    if (!nValues.includes(item.novedad)) match = false;
-                }
-                
-                if (fAnio && item.anio !== fAnio) match = false;
-                if (fPeriodo && item.periodo !== fPeriodo) match = false;
-                if (fTipoDoc && item.tipoDoc !== fTipoDoc) match = false;
-                if (fNumDoc && !item.numDoc.includes(fNumDoc)) match = false;
+        .main-action-btn:active {
+            transform: translateY(-1px);
+        }
 
-                if (match) {
-                    renderRow(item);
-                    visibleCount++;
-                }
-            });
+        /* --- Footer --- */
+        .copyright {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
 
-            if (visibleCount === 0) noResultsMsg.classList.remove('hidden');
-            else noResultsMsg.classList.add('hidden');
-        });
+        /* Animación suave */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
 
-        btnLimpiar.addEventListener('click', () => {
-            document.querySelectorAll('.filter-novedad').forEach(cb => cb.checked = false);
-            document.getElementById('filter_anio').value = "";
-            document.getElementById('filter_periodo').value = "";
-            document.getElementById('filter_tipodoc').value = "";
-            document.getElementById('filter_numdoc').value = "";
-            errorMsg.classList.add('hidden');
-            noResultsMsg.classList.add('hidden');
-            tableBody.innerHTML = "";
-        });
-    </script>
-</body>
-</html>
+    <div class="welcome-card">
+        
+        <div class="logo-container">
+            <img src="Coomeva Banner.png" alt="Logo Corporativo" class="logo-img">
+        </div>
+
+        <div class="header-text">
+            <h1>Mockups</h1>
+        </div>
+
+        <a href="OVA.html" class="main-action-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+            Oficina Virtual Asesor
+        </a>
+
+        <div class
