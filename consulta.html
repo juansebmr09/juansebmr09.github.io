@@ -9,13 +9,14 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .modal-centered { display: flex; align-items: center; justify-content: center; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        /* Animación suave para filas */
         .slide-in { animation: slideIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
         .input-error { border-color: #ef4444 !important; ring: 2px; --tw-ring-color: #fca5a5; }
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-white text-gray-800 h-screen flex flex-col relative">
@@ -34,35 +35,40 @@
             </div>
 
             <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-10 shadow-sm">
-                <div class="flex flex-col md:flex-row items-end gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                     
-                    <div class="w-full md:w-1/3">
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Número de Solicitud</label>
-                        <input id="search_solicitud" type="text" placeholder="Ej: 45212025001" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                        <input id="search_solicitud" type="text" placeholder="Ej: 4521..." class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     </div>
 
-                    <div class="w-full md:w-1/3">
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creación</label>
-                        <input id="search_fecha" type="date" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-blue-500 focus:border-blue-500 text-gray-500">
+                        <div class="flex items-center border border-gray-300 rounded-md bg-white overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                            <input type="date" id="search_fecha_desde" class="w-full border-none text-xs focus:ring-0 text-gray-600 p-2.5 outline-none" title="Desde">
+                            <span class="text-gray-400 font-bold px-1">→</span>
+                            <input type="date" id="search_fecha_hasta" class="w-full border-none text-xs focus:ring-0 text-gray-600 p-2.5 outline-none" title="Hasta">
+                        </div>
                     </div>
 
-                    <div class="w-full md:w-1/3 flex gap-3">
-                        <button id="btnConsultar" class="flex-1 bg-[#1e40af] hover:bg-blue-900 text-white font-bold py-2.5 px-4 rounded shadow-md transition flex items-center justify-center gap-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <div class="flex gap-2">
+                        <button id="btnConsultar" class="flex-1 bg-[#1e40af] hover:bg-blue-900 text-white font-bold py-2.5 px-4 rounded shadow-md transition flex items-center justify-center gap-2 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             CONSULTAR
                         </button>
-                        <button id="btnLimpiar" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2.5 px-4 rounded shadow-sm transition">
+                        <button id="btnLimpiar" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2.5 px-4 rounded shadow-sm transition text-sm">
                             Limpiar
                         </button>
                     </div>
                 </div>
-                <p id="validationMsg" class="hidden text-red-600 text-sm mt-3 font-medium flex items-center gap-1 animate-pulse">
+                
+                <p id="validationMsg" class="hidden text-red-600 text-xs mt-3 font-medium flex items-center gap-1 animate-pulse">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                    Debe diligenciar al menos uno de los dos campos para consultar.
+                    Debe ingresar al menos un criterio de búsqueda.
                 </p>
             </div>
 
-            <div id="resultsContainer" class="hidden">
+            <div id="resultsContainer" class="hidden fade-in">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 pl-1 border-l-4 border-blue-600">Resultados de la búsqueda</h3>
                 <div class="border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                     <div class="overflow-x-auto">
@@ -83,18 +89,18 @@
                 </div>
             </div>
 
-            <div id="emptyState" class="flex flex-col items-center justify-center py-16 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+            <div id="emptyState" class="flex flex-col items-center justify-center py-16 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg fade-in">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <p class="text-lg">Ingrese los filtros para ver la información.</p>
+                <p class="text-lg">Ingrese los filtros para consultar la información.</p>
             </div>
 
         </div>
     </main>
 
     <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
-        <div class="relative mx-auto w-[95%] max-w-3xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col max-h-[90vh]">
+        <div class="relative mx-auto w-[95%] max-w-4xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col max-h-[90vh]">
             
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
                 <div>
@@ -116,26 +122,14 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-blue-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase">Fecha Gestión</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase">Responsable</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase">Fecha</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase">Actor</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase">Rol</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-1/2">Observación</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-1/2">Acción / Movimiento</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">2025-12-16 09:30</td>
-                                <td class="px-4 py-3 font-medium text-gray-900">Carlos Pérez</td>
-                                <td class="px-4 py-3 text-gray-600"><span class="bg-purple-100 text-purple-800 py-1 px-2 rounded-full text-xs font-bold">Jefe Inmediato</span></td>
-                                <td class="px-4 py-3 text-gray-600">Solicitud recibida. Se procede a validar los soportes adjuntos.</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">2025-12-15 14:20</td>
-                                <td class="px-4 py-3 font-medium text-gray-900">Nathalia Rendon</td>
-                                <td class="px-4 py-3 text-gray-600"><span class="bg-green-100 text-green-800 py-1 px-2 rounded-full text-xs font-bold">Asesor</span></td>
-                                <td class="px-4 py-3 text-gray-600">Radicación inicial de la solicitud por error en comisiones de Enero.</td>
-                            </tr>
-                        </tbody>
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm" id="modalBitacoraBody">
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -150,7 +144,8 @@
         const btnConsultar = document.getElementById('btnConsultar');
         const btnLimpiar = document.getElementById('btnLimpiar');
         const inputSolicitud = document.getElementById('search_solicitud');
-        const inputFecha = document.getElementById('search_fecha');
+        const inputFechaDesde = document.getElementById('search_fecha_desde');
+        const inputFechaHasta = document.getElementById('search_fecha_hasta');
         
         const validationMsg = document.getElementById('validationMsg');
         const resultsContainer = document.getElementById('resultsContainer');
@@ -159,79 +154,126 @@
 
         const bitacoraModal = document.getElementById('bitacoraModal');
         const modalSolicitudId = document.getElementById('modalSolicitudId');
+        const modalBitacoraBody = document.getElementById('modalBitacoraBody');
 
-        // --- DATOS SIMULADOS (MOCKS) ---
-        // Ordenados del más reciente al más antiguo
+        // --- DATOS SIMULADOS CORREGIDOS ---
         const mockData = [
-            { id: '45212025003', fecha: '2025-12-16', asignado: 'Jefe Inmediato', estado: 'En trámite', color: 'yellow' },
-            { id: '45212025002', fecha: '2025-11-20', asignado: 'Gerencia Comercial', estado: 'Aprobado', color: 'green' },
-            { id: '45212025001', fecha: '2025-10-05', asignado: 'Nómina', estado: 'Rechazado', color: 'red' }
+            { 
+                // CASO: Recién radicado. Pendiente por Jefe.
+                id: '45212025001', date: '2025-01-15', advName: 'Nathalia Rendon', 
+                status: 'En trámite', // CAMBIO: Antes 'Pendiente'
+                assignedTo: 'Jefe Regional', 
+                history: [
+                    { date: '2025-01-15', actor: 'Nathalia Rendon', role: 'Asesor', action: 'Radicación de solicitud' },
+                    // CAMBIO: Se agrega el paso del sistema
+                    { date: '2025-01-15', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional' }
+                ]
+            },
+            { 
+                // CASO: Devuelto al asesor.
+                id: '45212025002', date: '2025-01-20', advName: 'Nathalia Rendon', 
+                status: 'Devolución', 
+                assignedTo: 'Mí', // CAMBIO: Antes 'Asesor'. Ahora es 'Mí' porque yo soy el asesor.
+                history: [
+                    { date: '2025-01-20', actor: 'Nathalia Rendon', role: 'Asesor', action: 'Radicación de solicitud' },
+                    { date: '2025-01-20', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional' },
+                    { date: '2025-01-22', actor: 'Carlos Pérez', role: 'Jefe Regional', action: 'Devolución: Soporte ilegible' },
+                    // CAMBIO: El sistema devuelve la asignación
+                    { date: '2025-01-22', actor: 'Sistema', role: 'Sistema', action: 'Reasignación a Asesor para corrección' }
+                ]
+            },
+            { 
+                // CASO: Aprobado por Jefe, ahora en Gestión Humana
+                id: '10102025005', date: '2025-02-05', advName: 'Maria Gomez', 
+                status: 'Pendiente Gestión Humana', 
+                assignedTo: 'Gestión Humana', 
+                history: [
+                    { date: '2025-02-05', actor: 'Maria Gomez', role: 'Asesor', action: 'Radicación de solicitud' },
+                    { date: '2025-02-05', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional' },
+                    { date: '2025-02-06', actor: 'Carlos Pérez', role: 'Jefe Regional', action: 'Aprobación inicial' },
+                    { date: '2025-02-06', actor: 'Sistema', role: 'Sistema', action: 'Escalamiento a Gestión Humana' }
+                ]
+            },
+            { 
+                // CASO: Recién radicado (Nuevo)
+                id: '45212025006', date: '2025-02-06', advName: 'Nathalia Rendon', 
+                status: 'En trámite', // CAMBIO: Antes 'Pendiente'
+                assignedTo: 'Jefe Regional',
+                history: [
+                    { date: '2025-02-06', actor: 'Nathalia Rendon', role: 'Asesor', action: 'Radicación de solicitud' },
+                    { date: '2025-02-06', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional' }
+                ]
+            }
         ];
 
         // --- FUNCIÓN CONSULTAR ---
         btnConsultar.addEventListener('click', () => {
             const valSolicitud = inputSolicitud.value.trim();
-            const valFecha = inputFecha.value;
+            const valDesde = inputFechaDesde.value;
+            const valHasta = inputFechaHasta.value;
 
-            // 1. VALIDACIÓN: Al menos uno debe tener datos
-            if (!valSolicitud && !valFecha) {
+            if (!valSolicitud && !valDesde && !valHasta) {
                 validationMsg.classList.remove('hidden');
-                inputSolicitud.classList.add('input-error');
-                inputFecha.classList.add('input-error');
-                
-                // Ocultar resultados si estaban visibles
                 resultsContainer.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
             }
 
-            // 2. Si pasa validación
             validationMsg.classList.add('hidden');
-            inputSolicitud.classList.remove('input-error');
-            inputFecha.classList.remove('input-error');
-
-            renderTable();
+            renderTable(valSolicitud, valDesde, valHasta);
         });
 
-        // --- FUNCIÓN RENDERIZAR TABLA ---
-        function renderTable() {
-            // Limpiar tabla actual
+        // --- RENDERIZAR TABLA PRINCIPAL ---
+        function renderTable(idFilter, dateFrom, dateTo) {
             resultsBody.innerHTML = '';
+            
+            const filteredData = mockData.filter(item => {
+                let pass = true;
+                if (idFilter && !item.id.includes(idFilter)) pass = false;
+                if (dateFrom && new Date(item.date) < new Date(dateFrom)) pass = false;
+                if (dateTo && new Date(item.date) > new Date(dateTo)) pass = false;
+                return pass;
+            });
 
-            // Generar filas
-            mockData.forEach((item, index) => {
-                // Definir estilo del badge de estado
-                let badgeClass = '';
-                if(item.color === 'yellow') badgeClass = 'bg-yellow-100 text-yellow-800';
-                if(item.color === 'green') badgeClass = 'bg-green-100 text-green-800';
-                if(item.color === 'red') badgeClass = 'bg-red-100 text-red-800';
+            if (filteredData.length === 0) {
+                resultsBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 italic">No se encontraron resultados con esos filtros.</td></tr>`;
+                emptyState.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+                return;
+            }
 
-                // Añadir delay a la animación para efecto cascada
+            filteredData.forEach((item, index) => {
+                let badgeClass = 'bg-gray-100 text-gray-800';
+                
+                // Mapeo de colores según estado
+                if(item.status === 'En trámite') badgeClass = 'bg-yellow-100 text-yellow-800'; // Amarillo para tramite
+                if(item.status === 'Pendiente Gestión Humana') badgeClass = 'bg-blue-100 text-blue-800';
+                if(item.status === 'Aprobado') badgeClass = 'bg-green-100 text-green-800';
+                if(item.status === 'Rechazado') badgeClass = 'bg-red-100 text-red-800';
+                if(item.status === 'Devolución') badgeClass = 'bg-orange-100 text-orange-800'; // Naranja para devolución
+
                 const delay = index * 100; 
-
                 const rowHTML = `
                     <tr class="hover:bg-gray-50 transition-colors h-14 border-b border-gray-100 slide-in" style="animation-delay: ${delay}ms">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.id}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${item.fecha}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">${item.asignado}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">${item.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${item.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">${item.assignedTo}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${badgeClass}">
-                                ${item.estado}
+                                ${item.status}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            <button onclick="openBitacora('${item.id}')" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors group relative" title="Ver Bitácora">
+                            <button onclick="openBitacora('${item.id}')" class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 p-2 rounded-full transition-colors group relative" title="Ver Bitácora">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
-                                </button>
+                            </button>
                         </td>
                     </tr>
                 `;
                 resultsBody.innerHTML += rowHTML;
             });
-
-            // Mostrar contenedor, ocultar empty state
             emptyState.classList.add('hidden');
             resultsContainer.classList.remove('hidden');
         }
@@ -239,12 +281,9 @@
         // --- FUNCIÓN LIMPIAR ---
         btnLimpiar.addEventListener('click', () => {
             inputSolicitud.value = '';
-            inputFecha.value = '';
+            inputFechaDesde.value = '';
+            inputFechaHasta.value = '';
             validationMsg.classList.add('hidden');
-            inputSolicitud.classList.remove('input-error');
-            inputFecha.classList.remove('input-error');
-            
-            // Volver al estado inicial
             resultsContainer.classList.add('hidden');
             emptyState.classList.remove('hidden');
         });
@@ -252,6 +291,35 @@
         // --- MODAL BITÁCORA ---
         window.openBitacora = function(id) {
             modalSolicitudId.textContent = id;
+            modalBitacoraBody.innerHTML = ''; 
+
+            const item = mockData.find(d => d.id === id);
+            
+            if (item && item.history) {
+                item.history.forEach(h => {
+                    // Colores según el ROL
+                    let roleBadge = 'bg-gray-100 text-gray-800';
+                    if(h.role === 'Asesor') roleBadge = 'bg-green-100 text-green-800';
+                    if(h.role === 'Jefe Regional') roleBadge = 'bg-purple-100 text-purple-800';
+                    if(h.role === 'Gestión Humana') roleBadge = 'bg-blue-100 text-blue-800';
+                    if(h.role === 'Sistema') roleBadge = 'bg-gray-100 text-gray-500 border border-gray-200';
+
+                    modalBitacoraBody.innerHTML += `
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">${h.date}</td>
+                            <td class="px-4 py-3 font-medium text-gray-900">${h.actor}</td>
+                            <td class="px-4 py-3">
+                                <span class="${roleBadge} py-1 px-3 rounded-full text-xs font-bold border border-transparent">
+                                    ${h.role}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 text-sm">${h.action}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                modalBitacoraBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-400">No hay historial disponible.</td></tr>`;
+            }
             bitacoraModal.classList.remove('hidden');
         }
 

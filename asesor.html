@@ -36,7 +36,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Reclamaciones comisiones</h2>
-                    <p class="text-sm text-gray-500 mt-1 max-w-2xl">Gestión y auditoría de novedades reportadas en el periodo actual.</p>
+                    <p class="text-sm text-gray-500 mt-1 max-w-2xl">Radicación y gestión de reclamación de comisiones</p>
                 </div>
                 <button id="btnOpenNewClaim" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
@@ -53,11 +53,132 @@
                             <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div id="multiSelectDropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-80 overflow-y-auto">
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="CSC - Comision por cuota" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">CSC - Comision por cuota</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="CQC - Comision por cuota negocios estrategicos" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">CQC - Comision por cuota negocios estrategicos</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="ACP - Acelerador ORO PLUS" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">ACP - Acelerador ORO PLUS</span></label>
-                            <label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100"><input type="checkbox" value="Comisión errada" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad"><span class="ml-2 text-sm text-gray-700">Comisión errada</span></label>
-                        </div>
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CSC - Comision por cuota" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CSC - Comision por cuota</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CQC - Comision por cuota negocios estrategicos" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CQC - Comision por cuota negocios estrategicos</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CEC - Comision por cuota colectivo espejo" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CEC - Comision por cuota colectivo espejo</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CSU - Comision por usuario" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CSU - Comision por usuario</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CEU - Comision por usuario colectivo espejo o negocio estrategico" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CEU - Comision por usuario colectivo espejo o negocio estrategico</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACA - Acelerador por pago anticipado anual" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACA - Acelerador por pago anticipado anual</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACS - Acelerador por pago anticipado semestral" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACS - Acelerador por pago anticipado semestral</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACD - Acelerador por debito automatico" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACD - Acelerador por debito automatico</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACP - Acelerador ORO PLUS" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACP - Acelerador ORO PLUS</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACE - Acelerador ventas asociados" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACE - Acelerador ventas asociados</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DTR - Desacelerador" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DTR - Desacelerador</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="AA% - Acelerador asesor valor porcentaje" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">AA% - Acelerador asesor valor porcentaje</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="GAR - Garantizado" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">GAR - Garantizado</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CAE - Comision por distribucion de ventas en colectivo espejo" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CAE - Comision por distribucion de ventas en colectivo espejo</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CVC - Comision por cuota" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CVC - Comision por cuota</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="CVU - Comision por usuario" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">CVU - Comision por usuario</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DES - Mora" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DES - Mora</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DEV - Devolucion desacelerador" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DEV - Devolucion desacelerador</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DWG - Desacelerador por Traslado de Usuarios" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DWG - Desacelerador por Traslado de Usuarios</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DSM - Desacelerador MI" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DSM - Desacelerador MI</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="DSA - Desacelerador SAO" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">DSA - Desacelerador SAO</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="BTP - Bono por traslado otras MP" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">BTP - Bono por traslado otras MP</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="ACT - Acelerador pronto pago trimestral" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">ACT - Acelerador pronto pago trimestral</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="EMP - Empaquetamiento" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">EMP - Empaquetamiento</span>
+</label>
+
+<label class="flex items-center px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
+    <input type="checkbox" value="SEG - Seguros" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 filter-novedad">
+    <span class="ml-2 text-sm text-gray-700">SEG - Seguros</span>
+</label>
+
+              </div>
                     </div>
 
                     <div class="relative"><select id="filter_anio" class="w-full bg-gray-50 border-l-[5px] border-blue-600 text-gray-600 py-3 px-4 shadow-sm text-sm"><option value="">Año</option><option value="2025">2025</option><option value="2024">2024</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div>
@@ -172,7 +293,30 @@
                                 <select id="new_novedad" class="w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
                                     <option value="">Seleccione...</option>
                                     <option value="CSC - Comision por cuota">CSC - Comision por cuota</option>
-                                    <option value="Comisión errada">Comisión errada</option>
+                                    <option value="CQC - Comision por cuota negocios estrategicos">CQC - Comision por cuota negocios estrategicos</option>
+                                    <option value="CEC - Comision por cuota colectivo espejo">CEC - Comision por cuota colectivo espejo</option>
+                                    <option value="CSU - Comision por usuario">CSU - Comision por usuario</option>
+                                    <option value="CEU - Comision por usuario colectivo espejo o negocio estrategico">CEU - Comision por usuario colectivo espejo o negocio estrategico</option>
+                                    <option value="ACA - Acelerador por pago anticipado anual">ACA - Acelerador por pago anticipado anual</option>
+                                    <option value="ACS - Acelerador por pago anticipado semestral">ACS - Acelerador por pago anticipado semestral</option>
+                                    <option value="ACD - Acelerador por debito automatico">ACD - Acelerador por debito automatico</option>
+                                    <option value="ACP - Acelerador ORO PLUS">ACP - Acelerador ORO PLUS</option>
+                                    <option value="ACE - Acelerador ventas asociados">ACE - Acelerador ventas asociados</option>
+                                    <option value="DTR - Desacelerador">DTR - Desacelerador</option>
+                                    <option value="AA% - Acelerador asesor valor porcentaje">AA% - Acelerador asesor valor porcentaje</option>
+                                    <option value="GAR - Garantizado">GAR - Garantizado</option>
+                                    <option value="CAE - Comision por distribucion de ventas en colectivo espejo">CAE - Comision por distribucion de ventas en colectivo espejo</option>
+                                    <option value="CVC - Comision por cuota">CVC - Comision por cuota</option>
+                                    <option value="CVU - Comision por usuario">CVU - Comision por usuario</option>
+                                    <option value="DES - Mora">DES - Mora</option>
+                                    <option value="DEV - Devolucion desacelerador">DEV - Devolucion desacelerador</option>
+                                    <option value="DWG - Desacelerador por Traslado de Usuarios">DWG - Desacelerador por Traslado de Usuarios</option>
+                                    <option value="DSM - Desacelerador MI">DSM - Desacelerador MI</option>
+                                    <option value="DSA - Desacelerador SAO">DSA - Desacelerador SAO</option>
+                                    <option value="BTP - Bono por traslado otras MP">BTP - Bono por traslado otras MP</option>
+                                    <option value="ACT - Acelerador pronto pago trimestral">ACT - Acelerador pronto pago trimestral</option>
+                                    <option value="EMP - Empaquetamiento">EMP - Empaquetamiento</option>
+                                    <option value="SEG - Seguros">SEG - Seguros</option>
                                     </select>
                             </div>
 
@@ -251,7 +395,7 @@
                 id: 'fila_prueba_2',
                 novedad: 'ACP - Acelerador ORO PLUS',
                 anio: '2025', periodo: 'Feb', tipoDoc: 'CC - Cédula de ciudadanía', numDoc: '1234',
-                plan: 'Exequial', programa: 'Plata', contrato: '2002', idCont: '556677',
+                plan: 'Familiar', programa: 'Plata', contrato: '2002', idCont: '556677',
                 usuario: 'Pedro Perez', parentesco: 'Cónyuge', pago: 'Pospago',
                 motivo: 'El acelerador no se aplicó correctamente en el periodo.'
             }
