@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficina Virtual - Coomeva</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. ESTILOS GENERALES
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background-color: #f0f2f5; padding-top: 70px; }
+
+        /* --- HEADER --- */
+        .header-bar {
+            width: 100%; height: 70px;
+            background: linear-gradient(90deg, #0060aa 0%, #007cc3 50%, #00569c 100%);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; color: white; position: fixed; top: 0; left: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
+        }
+
+        .left-section, .right-section { display: flex; align-items: center; gap: 15px; }
+        
+        .icon-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px; border-radius: 50%; transition: background 0.2s; }
+        .icon-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .icon-btn svg { width: 28px; height: 28px; stroke: white; stroke-width: 2; fill: none; }
+        
+        .title-container { display: flex; align-items: baseline; margin-left: 10px; gap: 8px; }
+        .home-text { font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
+        .vertical-separator { width: 1px; height: 20px; background-color: rgba(255,255,255,0.6); margin: 0 5px; align-self: center; }
+        .oficina-text { font-weight: 400; font-size: 18px; }
+        .asesores-text { font-family: 'Kaushan Script', cursive; color: #4dd0e1; font-size: 24px; margin-left: 2px; }
+
+        .user-info { text-align: right; display: flex; flex-direction: column; justify-content: center; }
+        .user-name { font-weight: 700; font-size: 14px; text-transform: uppercase; }
+        .user-details { font-size: 12px; font-weight: 300; margin: 2px 0; }
+        .user-details .separator { margin: 0 3px; font-weight: bold; }
+        .user-role { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+        
+        /* Notificaciones */
+        .actions { display: flex; align-items: center; gap: 15px; margin-left: 10px; }
+        .notification-container { position: relative; cursor: pointer; padding: 5px; margin-left: 10px;}
+        .bell-icon { width: 28px; height: 28px; fill: white; stroke: none; }
+        .badge { position: absolute; top: 2px; right: 2px; background-color: #ff3b30; color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #0060aa; }
+        .badge.hidden { display: none; } /* Para ocultar cuando sea 0 */
+
+        /* Tooltip Notificación (Estilo Req 2.5 color diferente a blanco) */
+        .tooltip-wrapper {
+            position: absolute; top: 50px; right: -10px; width: 350px;
+            background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 0; z-index: 2000; display: none; animation: fadeIn 0.2s ease-out;
+        }
+        .tooltip-wrapper.show { display: block; }
+        .tooltip-arrow { position: absolute; top: -6px; right: 14px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid white; }
+        
+        .tooltip-card { 
+            padding: 15px; font-size: 13px; color: #333; line-height: 1.5; border-radius: 8px;
+            background-color: #ebf6fb; /* Color azulito claro (Req 2.5) */
+            border: 1px solid #dcdcdc;
+        }
+        .tooltip-date { display: block; font-size: 11px; color: #666; margin-bottom: 5px; font-weight: 700; }
+        .link-text { color: #0060aa; text-decoration: underline; cursor: pointer; font-weight: 700; display: block; margin-top: 5px;}
+        .link-text:hover { color: #004ba0; }
+
+        /* --- SIDEBAR --- */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
+        .overlay.open { opacity: 1; visibility: visible; }
+
+        .sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100%; background-color: white; z-index: 1002; box-shadow: 2px 0 8px rgba(0,0,0,0.15); transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; }
+        .sidebar.open { transform: translateX(0); }
+
+        .sidebar-header { height: 100px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #eee; padding: 20px; }
+        .sidebar-logo { max-width: 100%; max-height: 70px; display: block; background-color: #f5f5f5; }
+        
+        .sidebar-menu { flex: 1; overflow-y: auto; padding-top: 10px; }
+        .menu-group { border-bottom: 1px solid #f9f9f9; }
+        .menu-parent { display: flex; align-items: center; padding: 15px 20px; cursor: pointer; transition: background-color 0.2s; user-select: none; }
+        .menu-parent:hover { background-color: #f5f5f5; }
+        .menu-icon { width: 24px; height: 24px; margin-right: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .menu-icon svg { fill: #0273b7; width: 100%; height: 100%; }
+        .menu-text { flex: 1; font-size: 13px; font-weight: 500; color: #444; text-transform: uppercase; }
+        .menu-arrow { font-size: 12px; color: #999; transition: transform 0.3s ease; }
+        .menu-parent.active .menu-arrow { transform: rotate(180deg); }
+        .menu-parent.active { background-color: #f0f7fc; border-left: 4px solid #0273b7; padding-left: 16px; }
+        .submenu { display: none; background-color: #fff; padding-bottom: 10px; }
+        .submenu.open { display: block; animation: slideDown 0.3s ease-out; }
+        .submenu-item { display: block; padding: 10px 20px 10px 60px; text-decoration: none; color: #666; font-size: 13px; transition: color 0.2s; }
+        .submenu-item:hover { color: #0273b7; background-color: #fafafa; font-weight: 500; }
+        .sidebar-footer { padding: 10px; text-align: right; font-size: 11px; color: #999; border-top: 1px solid #eee; background-color: #fff; }
+
+        /* =========================================
+           2. ESTILOS DE VENTANAS MODALES
+           ========================================= */
+        
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); 
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-backdrop.open { display: flex; }
+        
+        /* Contenedor Base */
+        .modal-box {
+            background-color: white; border-radius: 4px; overflow: hidden;
+            box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14);
+            display: flex; flex-direction: column; animation: scaleUp 0.2s;
+        }
+
+        .modal-header-bar {
+            background-color: #0073b7; padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-header-bar h2 { margin: 0; font-size: 22px; font-weight: 700; color: white; text-align: center; flex: 1; }
+        .close-btn-custom { background: none; border: none; cursor: pointer; color: white; padding: 0; display: flex; }
+        .close-btn-custom svg { width: 28px; height: 28px; fill: white; stroke: white; stroke-width: 2px;}
+
+        /* --- MODAL 1: DETALLE USUARIOS (ANCHO) --- */
+        #userModal { z-index: 3000; }
+        #userModal .modal-box { width: 800px; max-width: 95%; }
+        #userModal .modal-content-body { padding: 20px; }
+        #userModal p { margin-top: 0; margin-bottom: 20px; color: #333; font-size: 15px; }
+
+        .user-table { width: 100%; border-collapse: collapse; }
+        .user-table thead tr { background-color: #0073b7; }
+        .user-table th { text-align: center; color: white; font-weight: 600; font-size: 14px; padding: 12px; }
+        .user-table tbody tr { background-color: #e8f4fb; border-bottom: 2px solid white; }
+        .user-table td { padding: 15px; vertical-align: middle; }
+        
+        .date { color: #5c7c94; font-size: 12px; font-weight: 500; display: block; margin-bottom: 5px; }
+        .user-desc { font-size: 13px; color: #222; line-height: 1.4; }
+        .phone { color: black; font-weight: 700; display: block; margin-top: 5px; }
+        
+        .action-btn { background: none; border: none; cursor: pointer; width: 100%; display: flex; justify-content: center; }
+        .action-btn svg { width: 35px; height: 35px; stroke: #0073b7; stroke-width: 1; fill: #0073b7; }
+        .action-btn:hover { transform: scale(1.1); }
+
+        /* --- MODAL 2: GESTIÓN REFERIDOS (ESTRECHO Y CENTRADO) --- */
+        #gestionModal { z-index: 3001; }
+        #gestionModal .modal-box { width: 400px; max-width: 90%; } 
+
+        #gestionModal .modal-content-body {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; padding: 30px;
+        }
+
+        #gestionModal p {
+            margin-top: 0; margin-bottom: 20px; font-size: 16px; color: #333; width: 100%;
+        }
+
+        .opciones { display: flex; justify-content: center; gap: 40px; width: 100%; margin-bottom: 25px; }
+        .opciones label { display: flex; align-items: center; gap: 8px; font-weight: bold; cursor: pointer; }
+        .opciones input[type="radio"] { accent-color: #0073b7; transform: scale(1.3); cursor: pointer; }
+
+        .observaciones { width: 100%; text-align: left; margin-bottom: 25px; }
+        .observaciones label { display: block; font-weight: 500; margin-bottom: 8px; color: #444; }
+        #obs-text { width: 100%; padding: 10px; border: 1px solid #0073b7; border-radius: 8px; resize: none; font-family: 'Roboto', sans-serif; }
+
+        .guardar-btn {
+            background-color: #0073b7; color: white; border: none;
+            padding: 12px 60px; border-radius: 30px; font-weight: bold;
+            cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .guardar-btn:hover { background-color: #005a91; }
+
+        /* Animaciones */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .oficina-text, .asesores-text, .user-details, .user-role { display: none; }
+            .home-text { font-size: 14px; }
+            .sidebar { width: 85%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo-no-text.webp" alt="Logo" class="sidebar-logo">
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 41.4 31.06"><path d="M41.4,4.13v22.81c-.03.09-.06.17-.08.26-.45,2.24-2.36,3.86-4.64,3.86-10.65,0-21.31,0-31.96,0-1.57,0-2.82-.68-3.78-1.92C.43,28.48.2,27.71,0,26.93,0,19.33,0,11.73,0,4.13c.03-.09.06-.17.08-.26C.53,1.62,2.45,0,4.72,0,15.38,0,26.03,0,36.68,0c1.57,0,2.83.68,3.78,1.92.51.65.74,1.42.94,2.2ZM12.93,24.16c.18,0,.35,0,.53,0,1.94,0,3.88,0,5.82,0,.91,0,1.42-.53,1.43-1.44,0-.22,0-.43,0-.65-.01-2.71-2.06-4.8-4.77-4.82-2.01-.02-4.01-.02-6.02,0-1.47.02-2.69.59-3.64,1.72-.88,1.04-1.15,2.28-1.11,3.62.04,1.09.49,1.57,1.58,1.58,2.06,0,4.12,0,6.18,0ZM17.24,11.22c0-2.38-1.93-4.33-4.31-4.32-2.36,0-4.28,1.92-4.3,4.29-.02,2.38,1.91,4.33,4.29,4.34,2.38,0,4.32-1.92,4.32-4.3ZM30.19,10.35c1.57,0,3.15,0,4.72,0,.75,0,1.32-.58,1.31-1.3,0-.7-.56-1.28-1.29-1.28-3.16,0-6.33-.01-9.49.01-.29,0-.63.16-.87.34-.42.31-.52.91-.34,1.39.19.5.65.83,1.22.83,1.57,0,3.15,0,4.72,0ZM30.2,17.25c1.55,0,3.1,0,4.64,0,.64,0,1.1-.31,1.3-.83.33-.89-.32-1.75-1.34-1.75-2.66,0-5.33,0-7.99,0-.44,0-.89-.01-1.33,0-.73.03-1.26.51-1.31,1.18-.06.8.49,1.4,1.31,1.4,1.57.01,3.15,0,4.72,0ZM30.18,21.58h0c-1.51,0-3.01,0-4.52,0-.21,0-.44,0-.64.07-.61.19-.94.78-.85,1.43.09.62.64,1.08,1.36,1.08,3.11,0,6.22,0,9.33,0,.24,0,.51-.08.73-.19.51-.27.74-.88.6-1.41-.16-.58-.63-.96-1.24-.97-1.59-.01-3.18,0-4.76,0Z"/></svg></div><span class="menu-text">CARNÉ DE USUARIOS</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Carné de usuarios</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div><span class="menu-text">AUTORIZACIONES</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Seguimiento de autorizaciones</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 40.15 37.71"><path d="M28.1,3.06c6.63.02,12.16,5.43,12.04,12.02-.14,7.82-5.89,12.15-12.15,12.12-6.33-.04-11.91-4.5-12.02-12.16-.09-6.6,5.46-12,12.12-11.98ZM32.47,14.9c-1.81,0-3.19,1.38-3.2,3.21-.01,1.83,1.39,3.25,3.21,3.25,1.81,0,3.19-1.4,3.2-3.22,0-1.85-1.38-3.25-3.21-3.24ZM23.68,8.96c-1.73-.04-3.21,1.4-3.24,3.15-.03,1.78,1.36,3.25,3.13,3.31,1.81.06,3.24-1.32,3.28-3.18.04-1.85-1.31-3.24-3.17-3.28ZM31.76,9.97c-.03-.44-.22-.68-.56-.76-.42-.1-.67.14-.86.48-1.93,3.41-3.87,6.82-5.8,10.23-.27.48-.2.87.18,1.1.38.23.8.09,1.07-.39,1.94-3.41,3.87-6.82,5.8-10.23.09-.15.13-.32.17-.42Z"/><path d="M18.71,28.79c1.56-.03,2.88-.3,4.14-.84.19-.08.47-.1.67-.03,2.86.99,5.74,1.05,8.62.14.29-.09.47-.06.64.19.15.22.34.41.51.62.62.76.59,1.6-.09,2.29-.63.64-1.27,1.27-1.9,1.9-.84.83-1.6.88-2.54.13-.79-.63-1.58-1.28-2.33-1.96-.37-.34-.65-.38-1.12-.13-.83.43-1.72.74-2.6,1.07-.26.1-.39.19-.41.48-.09,1.18-.22,2.35-.32,3.52-.08.91-.71,1.51-1.62,1.53-1,.02-2,.01-3,0-.88-.01-1.5-.55-1.6-1.44-.14-1.17-.23-2.35-.32-3.52-.02-.31-.12-.45-.43-.57-.96-.36-1.91-.77-2.84-1.19-.26-.12-.42-.12-.63.06-.87.75-1.76,1.48-2.65,2.21-.82.68-1.63.64-2.39-.12-.62-.61-1.23-1.22-1.84-1.83.78-.78,1.55-.85,2.43-.16.9.71,1.78,1.46,2.65,2.21.2.17.34.19.59.08.97-.43,1.94-.84,2.93-1.22.25-.1.36-.2.38-.46.08-1.1.19-2.2.28-3.3C15.81.53,16.38,0,17.62,0c.9,0,1.79,0,2.69,0,.97.01,1.58.59,1.67,1.56.03.37.05.75.11,1.11.04.26-.06.37-.27.48-2.6,1.36-4.54,3.35-5.88,5.96-.09.17-.3.33-.48.4-3.49,1.41-5.71,3.9-6.34,7.66-.84,5.03,2.22,10.55,8.22,11.45.52.08,1.04.12,1.38.15Z"/><path d="M21.31,26.97c-4.25,1.31-8.86-1.01-10.41-5.22-1.62-4.41.76-8.82,4.11-10.42-1.47,6.64.63,11.84,6.3,15.64Z"/><path d="M34.25,18.14c0,.98-.83,1.8-1.8,1.79-.95-.01-1.75-.82-1.76-1.79,0-.98.8-1.8,1.78-1.8.99,0,1.78.81,1.78,1.8Z"/><path d="M21.88,12.18c0-.99.8-1.8,1.79-1.79.97,0,1.76.8,1.77,1.77.02.97-.8,1.82-1.77,1.83-.97,0-1.79-.82-1.79-1.8Z"/></svg></div><span class="menu-text">COTIZADOR</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Cotizador</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 31.22 31.22"><path d="M10.19,21.03c-.3-.3-.58-.63-.83-.97-.42-.58-.3-1.39.29-1.82.58-.42,1.39-.3,1.82.28.17.23.36.45.57.66,1.04,1.04,2.43,1.62,3.91,1.62s2.87-.58,3.91-1.62l7.16-7.16c2.16-2.16,2.16-5.66,0-7.82-2.16-2.16-5.66-2.16-7.82,0l-1.38,1.38c-.51.51-1.33.51-1.84,0s-.51-1.33,0-1.84l1.38-1.38c3.17-3.17,8.33-3.17,11.5,0,3.17,3.17,3.17,8.33,0,11.5l-7.16,7.16c-1.54,1.54-3.58,2.38-5.75,2.38s-4.21-.85-5.75-2.38h0ZM8.13,31.22c2.17,0,4.21-.85,5.75-2.38l1.38-1.38c.51-.51.51-1.33,0-1.84-.51-.51-1.33-.51-1.84,0l-1.38,1.38c-1.04,1.04-2.43,1.62-3.91,1.62s-2.86-.58-3.91-1.62-1.62-2.43-1.62-3.91l7.16-7.16c1.04-1.04,2.43-1.62,3.91-1.62s2.87.58,3.91,1.62c.21.21.4.43.57.66.42.58,1.23.71,1.82.29.58-.42.71-1.24.29-1.82-.25-.34-.53-.67-.83-.97-1.54-1.54-3.58-2.38-5.75-2.38s-4.21.85-5.75,2.38l-7.15,7.16c-1.54,1.54-2.38,3.58-2.38,5.75s.85,4.21,2.38,5.75c1.54,1.54,3.58,2.38,5.75,2.38Z"/></svg></div><span class="menu-text">LINK DE PAGO PRIMERA CUOTA</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Primera cuota</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 36.55 25.4"><path d="M36.55,9.63c-2.28,4.64-4.57,9.28-6.85,13.92-.61,1.23-1.59,1.85-2.96,1.85-8.25,0-16.51,0-24.76,0-.14,0-.29,0-.43-.02-.85-.08-1.24-.67-.89-1.45.45-1,.95-1.97,1.43-2.95,1.75-3.56,3.51-7.13,5.27-10.69.62-1.26,1.6-1.89,3.01-1.89,8.27,0,16.53,0,24.8,0,.58,0,1.08.11,1.38.66v.57Z"/><path d="M0,21.07c0-.12,0-.24,0-.36,0-4.99,0-9.99,0-14.98,0-1.35.69-2.04,2.05-2.04,2.36,0,4.71,0,7.07,0,.13,0,.25,0,.44,0,0-.44-.02-.84,0-1.24.09-1.29,1.1-2.36,2.39-2.4,1.63-.05,3.26-.07,4.89,0,1.47.06,2.46,1.16,2.5,2.65,0,.32,0,.64,0,1,.16,0,.28,0,.41,0,2.38,0,4.76,0,7.14,0,1.26,0,1.97.7,1.98,1.96,0,.31,0,.62,0,.98-.17,0-.32,0-.47,0-6.01,0-12.02,0-18.02,0-2.1,0-3.64.96-4.58,2.85-1.86,3.75-3.7,7.51-5.55,11.27-.06.11-.12.23-.18.34-.02,0-.05-.01-.07-.02ZM11.3,3.66h6.27c0-.35,0-.67,0-.99-.01-.51-.37-.89-.88-.89-1.48-.01-2.97-.02-4.45,0-.56,0-.89.33-.94.88-.03.33,0,.66,0,1.01Z"/></svg></div><span class="menu-text">PORTAFOLIO DE SOLUCIONES</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Portafolio de soluciones</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 512 487.84"><path d="M182.68 304.85c-7.81-10.75-13.81-23.09-17.46-36.69-.76-2.87-1.41-5.74-1.94-8.61l-39.23 4.55c-.39 9.45-2.97 18.95-7.92 27.75l-.36.68c-8.56 14.83-22.33 24.79-37.66 28.9-15.09 4.04-31.73 2.4-46.42-5.86l-.67-.36c-14.83-8.56-24.8-22.33-28.9-37.66-4.05-15.1-2.4-31.73 5.86-46.42l.35-.67c8.57-14.83 22.34-24.8 37.67-28.91 15.09-4.04 31.73-2.39 46.42 5.87l.67.35c13.6 7.86 23.1 20.09 27.76 33.89l40.49-4.71h.09c.41-19.03 5.7-37.37 14.97-53.43v-.05c5.75-9.95 13.03-19.03 21.61-26.84l-24.07-36.02a63.118 63.118 0 0 1-18.15 5.17l-.06.01c-17.25 2.22-33.8-2.75-46.58-12.61-12.79-9.85-21.83-24.6-24.08-41.92v-.06c-2.23-17.26 2.74-33.8 12.6-46.59C107.52 11.82 122.28 2.78 139.6.53c17.28-2.24 33.84 2.74 46.64 12.6 12.79 9.85 21.83 24.61 24.08 41.93 2.24 17.28-2.73 33.84-12.6 46.65-.82 1.07-1.68 2.11-2.57 3.13l24.38 36.48c7.62-4.16 15.86-7.49 24.62-9.84 28-7.5 56.4-3.63 80.29 8.79l12.54-18.39c-8.83-9.75-14.65-22.37-15.81-36.48l-.01-.04c-1.39-17.04 4.25-33.06 14.51-45.17 10.28-12.13 25.17-20.34 42.23-21.75 17.06-1.41 33.09 4.24 45.21 14.51 12.13 10.27 20.34 25.16 21.75 42.23 1.41 17.05-4.24 33.08-14.5 45.21-10.28 12.12-25.17 20.33-42.23 21.74l-.06.01c-10.47.85-20.57-.95-29.6-4.86l-12.18 17.85c16.23 14.09 28.57 32.99 34.54 55.28 4.86 18.1 4.95 36.38 1.05 53.5l14.09 5.12c.37-.58.76-1.14 1.15-1.7 9.29-13.24 23.63-22.93 40.81-25.93 17.17-3 33.95 1.25 47.19 10.55 13.23 9.29 22.92 23.63 25.92 40.8 3.01 17.17-1.24 33.95-10.54 47.2-9.29 13.23-23.63 22.92-40.81 25.92-17.17 3.01-33.95-1.25-47.19-10.54-13.23-9.29-22.92-23.63-25.93-40.81a63.023 63.023 0 0 1-.16-20.86l-13.39-4.88c-.52 1.04-1.04 2.07-1.59 3.09-18.8 35.16-58.7 61.31-98.98 61.31-1.82 0-3.63-.05-5.43-.14l-2.42 15.43c12.16 5.02 22.82 13.94 29.93 26.19 8.59 14.82 10.37 31.71 6.29 47.03-4.08 15.36-14.02 29.17-28.84 37.76l-.13.08c-14.78 8.52-31.62 10.28-46.9 6.22-15.36-4.08-29.16-14.02-37.76-28.84l-.14-.25c-8.47-14.76-10.2-31.55-6.15-46.79 4.08-15.36 14.02-29.16 28.84-37.75l.14-.08a61.803 61.803 0 0 1 28.75-8.27l2.44-15.55c-21.95-7.15-44.85-24.71-58.39-43.37zm148.65-2.96c6.92-6.45 12.7-14 17.12-22.28 9.88-18.46 13.02-40.6 7.16-62.46-6.12-22.84-20.88-41.01-39.79-51.93-18.94-10.94-42.09-14.64-64.93-8.52-22.81 6.11-40.98 20.9-51.92 39.84l-.03-.01c-10.91 18.93-14.61 42.06-8.49 64.89 2.79 10.42 7.39 19.88 13.37 28.11 3.12 4.3 6.61 8.27 10.41 11.87 10.64-2.3 22.13-3.49 30.65-9.44.78-1.17 1.62-2.86 2.43-4.71 1.22-2.78 2.32-5.81 3.03-7.89-2.97-3.49-5.51-7.44-7.95-11.33l-8.04-12.79c-2.94-4.38-4.47-8.39-4.57-11.69-.05-1.54.22-2.95.79-4.18.6-1.3 1.52-2.37 2.77-3.21.58-.4 1.24-.73 1.95-.99-.53-6.95-.71-15.67-.38-23 .16-1.73.51-3.47.99-5.21 2.06-7.33 7.2-13.25 13.58-17.3 3.51-2.25 7.37-3.92 11.39-5.06 2.55-.73-2.18-8.88.45-9.17 12.79-1.32 33.44 10.35 42.35 20 4.47 4.83 7.28 11.23 7.89 19.71l-.5 20.87c2.23.68 3.66 2.09 4.24 4.38.63 2.54-.05 6.12-2.21 10.98-.04.08-.09.18-.14.26l-9.16 15.1c-3.37 5.54-6.79 11.11-11.25 15.49.4.58.82 1.16 1.21 1.75 1.81 2.66 3.65 5.33 5.98 7.7.09.08.16.17.2.24 6.89 4.87 20.23 7.33 31.4 9.98zm-288.94-5.16c9.51 5.3 20.3 6.34 30.11 3.71 9.97-2.67 18.93-9.15 24.49-18.79l.3-.49c5.3-9.51 6.34-20.3 3.71-30.11-2.67-9.97-9.15-18.93-18.79-24.49l-.49-.31c-9.51-5.3-20.3-6.33-30.11-3.71-9.97 2.68-18.93 9.16-24.49 18.8l-.31.49c-5.3 9.51-6.33 20.29-3.71 30.11 2.68 9.97 9.16 18.92 18.8 24.49l.49.3zM180.56 88.45c6.47-8.41 9.74-19.3 8.26-30.67-1.46-11.32-7.41-21-15.83-27.48-8.41-6.47-19.3-9.74-30.67-8.27-11.32 1.47-21 7.42-27.48 15.84a41.344 41.344 0 0 0-8.38 29.76c.12.56.2 1.14.23 1.73 1.64 10.97 7.5 20.33 15.72 26.66 8.18 6.3 18.72 9.56 29.76 8.37.56-.12 1.14-.2 1.73-.22 10.96-1.65 20.33-7.51 26.66-15.72zm302.18 239a41.37 41.37 0 0 0 6.89-30.96c-1.97-11.28-8.33-20.69-17-26.78a41.33 41.33 0 0 0-30.96-6.9c-11.28 1.98-20.69 8.33-26.79 17.01a41.326 41.326 0 0 0-6.89 30.96c1.97 11.28 8.33 20.69 17 26.78a41.33 41.33 0 0 0 30.96 6.9c11.28-1.97 20.7-8.33 26.79-17.01zm-277.1 117.98c.25.39.49.79.7 1.21 5.6 9.29 14.39 15.53 24.13 18.12 9.79 2.6 20.55 1.54 30.04-3.75.38-.26.78-.49 1.2-.69 9.29-5.61 15.53-14.4 18.12-24.15 2.66-9.99 1.51-20.99-4.08-30.63a40.153 40.153 0 0 0-24.5-18.73c-9.78-2.6-20.55-1.54-30.03 3.75-.39.26-.79.49-1.2.69-9.3 5.61-15.54 14.4-18.13 24.15-2.6 9.78-1.55 20.54 3.75 30.03zm208.15-339.07a40.209 40.209 0 0 0 9.4-29.4c-.92-11.11-6.24-20.79-14.1-27.44-7.87-6.66-18.29-10.33-29.41-9.41-11.1.92-20.78 6.24-27.44 14.1a40.222 40.222 0 0 0-9.43 29.04l.06.72c1 10.96 6.29 20.5 14.07 27.09a40.208 40.208 0 0 0 29.04 9.43l.72-.06c10.95-1 20.5-6.29 27.09-14.07z"></path></svg></div><span class="menu-text">MIS AFILIACIONES</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Consulta Mis Afiliaciones</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 40 33.64"><path d="M40,25.72c-1.59.77-3.28,1.25-5.02,1.51-1.06.16-2.14.25-3.28.37,0-.27,0-.47,0-.67.02-1.3,0-2.61-.41-3.86-.93-2.81-2.79-4.73-5.55-5.78-.12-.04-.23-.09-.41-.15,1.39-1.41,2.13-3.07,2.22-5.02,1.69,0,3.35-.02,5,.01.59.01,1.2.09,1.77.23,2.96.73,5.15,3.18,5.59,6.19.01.1.05.19.08.29v6.87Z"/><path d="M30.3,28.2c0,1.07,0,2.13,0,3.2,0,.26-.07.39-.31.5-1.52.72-3.12,1.13-4.77,1.39-4.82.77-9.53.19-14.17-1.21-.74-.22-.74-.22-.74-1,0-1.87-.03-3.75.01-5.62.08-3.88,3.15-7.07,7.04-7.24,2.05-.09,4.11-.08,6.16.01,2.92.13,5.72,2.53,6.49,5.39.33,1.23.29,2.47.29,3.72,0,.29,0,.57,0,.86Z"/><path d="M13.04,12.16c.11,1.95.83,3.59,2.2,4.96-4.79,1.83-6.69,5.41-6.31,10.41-.74-.07-1.43-.11-2.1-.19-2.17-.27-4.29-.78-6.39-1.39-.32-.09-.44-.23-.44-.58.02-1.9,0-3.8.01-5.7.03-3.69,2.56-6.74,6.14-7.41.31-.06.62-.11.93-.11,1.87-.01,3.75,0,5.62-.01.1,0,.2.01.34.02Z"/><path d="M14.44,11.9c0-3.24,2.63-5.85,5.86-5.85,3.22,0,5.86,2.64,5.87,5.86,0,3.24-2.65,5.88-5.89,5.86-3.25-.02-5.84-2.63-5.83-5.87Z"/><path d="M10.02,0c3.23.01,5.84,2.61,5.85,5.82,0,.26-.08.43-.28.6-1.27,1.08-2.07,2.45-2.41,4.08-.04.17-.19.37-.34.46-2.04,1.09-4.09,1.06-6.02-.2-1.92-1.25-2.8-3.1-2.65-5.39C4.37,2.35,6.97,0,10.02,0Z"/><path d="M30.02,0c3.11.02,5.71,2.48,5.83,5.52.13,3.21-2.15,5.87-5.31,6.17-.94.09-1.84-.05-2.71-.39-.22-.08-.32-.19-.36-.43-.33-2.08-1.37-3.73-3.11-4.93-.22-.15-.22-.32-.21-.53C24.38,2.37,26.97-.02,30.02,0Z"/></svg></div><span class="menu-text">MI POBLACIÓN</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Consulta Mis Usuarios Población</a><a href="#" class="submenu-item">Consulta Mi Población</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 512 512"><g transform="translate(0,512) scale(0.1,-0.1)"><path d="M1803 4930 c-325 -41 -636 -166 -892 -358 -512 -386 -790 -1024 -720 -1660 45 -419 226 -796 525 -1096 349 -349 802 -536 1294 -536 390 0 755 117 1069 343 l83 60 114 -114 114 -114 137 138 138 137 -114 114 -114 114 60 83 c159 221 269 481 319 754 27 143 27 489 0 630 -70 379 -244 710 -512 979 -272 271 -605 443 -989 512 -106 18 -408 27 -512 14z m304 -580 c232 -21 408 -82 596 -206 282 -188 471 -478 538 -825 18 -96 16 -348 -5 -444 -42 -196 -119 -368 -230 -516 -185 -245 -444 -407 -761 -475 -122 -26 -350 -23 -485 5 -503 107 -881 495 -975 1001 -21 112 -21 329 0 439 76 398 318 720 671 894 143 71 289 113 437 126 51 5 94 9 97 10 3 0 55 -4 117 -9z"></path><path d="M1114 3548 c-26 -12 -37 -32 -68 -125 -70 -207 -60 -501 24 -699 25 -58 43 -74 85 -74 36 0 75 35 75 67 0 11 -11 50 -24 86 -65 172 -73 380 -21 547 15 47 29 103 32 126 4 36 1 44 -22 63 -30 23 -49 25 -81 9z"></path><path d="M1261 2524 c-30 -38 -26 -68 15 -114 29 -32 43 -40 70 -40 78 0 100 81 39 143 -46 47 -93 51 -124 11z"></path><path d="M3637 1482 c-176 -176 -227 -233 -227 -252 0 -20 102 -127 488 -511 556 -554 529 -534 687 -534 77 0 98 4 147 27 73 34 142 103 176 176 23 49 27 70 27 147 0 158 20 131 -534 688 -385 387 -491 487 -511 487 -20 0 -76 -51 -253 -228z"></path></g></svg></div><span class="menu-text">MIS COMISIONES</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Consulta Mis Comisiones</a></div></div>
+            <div class="menu-group"><div class="menu-parent" onclick="toggleSubmenu(this)"><div class="menu-icon"><svg viewBox="0 0 1272 1280"><g transform="translate(0,1280) scale(0.1,-0.1)"><path d="M2075 12791 c-340 -40 -672 -164 -975 -366 -374 -249 -693 -610 -876 -990 -143 -297 -209 -572 -220 -920 -15 -438 62 -797 250 -1170 120 -238 244 -411 426 -598 138 -143 240 -229 393 -331 292 -195 589 -310 957 -373 150 -25 580 -25 730 0 431 73 806 239 1135 501 107 86 295 277 385 391 610 780 679 1853 173 2690 -129 212 -344 459 -536 614 -120 97 -284 203 -425 274 -274 140 -511 215 -832 263 -112 17 -485 26 -585 15z"></path><path d="M9855 12790 c-634 -58 -1178 -342 -1602 -835 -372 -431 -563 -951 -563 -1530 0 -660 237 -1232 705 -1701 395 -396 791 -597 1355 -686 131 -20 557 -17 690 5 542 92 1008 334 1364 708 338 355 547 769 638 1259 26 146 36 502 18 660 -95 824 -585 1523 -1322 1885 -227 111 -456 182 -718 221 -117 17 -443 26 -565 14z"></path><path d="M8814 8018 c-106 -71 -267 -229 -344 -335 -114 -160 -193 -346 -225 -527 -13 -79 -15 -477 -15 -3622 l0 -3534 138 0 c76 0 261 3 410 7 l272 6 0 1418 c0 1534 1 1559 49 1583 83 42 243 56 639 56 l344 0 93 88 c52 49 118 105 147 125 75 52 196 102 308 129 52 12 96 23 98 24 2 1 -20 31 -48 66 -55 68 -93 140 -110 209 -15 60 -25 2582 -12 3019 9 283 13 334 31 398 71 244 249 438 481 522 42 16 136 38 209 49 74 11 136 22 138 25 8 8 -218 230 -264 261 -49 32 -41 33 -220 -29 -273 -95 -495 -136 -778 -143 -151 -4 -233 -1 -334 11 -262 32 -515 97 -671 173 -185 89 -230 92 -336 21z"></path><path d="M3250 7959 c-83 -30 -342 -95 -481 -121 -111 -21 -153 -23 -412 -22 -158 0 -284 -3 -280 -7 5 -4 159 -73 343 -154 184 -82 648 -287 1030 -456 382 -170 698 -305 702 -301 12 12 -36 169 -88 292 -129 308 -370 587 -652 756 -64 39 -85 40 -162 13z"></path><path d="M1338 7770 c-209 -38 -407 -173 -509 -346 -53 -90 -148 -302 -186 -413 -24 -71 -25 -85 -20 -206 4 -71 13 -155 20 -185 49 -190 154 -334 327 -446 77 -49 97 -59 415 -199 116 -51 318 -141 450 -200 132 -59 321 -142 420 -185 99 -43 284 -124 410 -180 127 -56 410 -181 630 -277 220 -96 477 -209 570 -250 94 -42 361 -160 595 -263 234 -103 515 -228 625 -277 110 -50 223 -96 250 -104 65 -17 292 -18 365 0 80 19 206 81 279 136 124 94 216 236 315 485 66 167 79 233 72 360 -16 308 -155 518 -430 649 -55 27 -276 126 -491 221 -214 95 -887 393 -1495 662 -608 270 -1298 576 -1535 681 -236 104 -473 210 -525 234 -171 80 -259 105 -390 109 -63 1 -136 -1 -162 -6z"></path><path d="M7978 7539 c-128 -99 -390 -299 -583 -444 -512 -387 -1253 -951 -1302 -991 -24 -19 -43 -39 -43 -43 0 -5 36 -32 81 -61 160 -104 267 -225 349 -395 69 -142 93 -249 93 -405 -1 -130 -10 -187 -59 -343 -32 -101 -136 -320 -196 -414 -157 -242 -395 -385 -707 -423 -52 -7 -112 -9 -133 -6 -49 8 -43 -6 14 -35 71 -36 130 -49 230 -49 122 0 194 21 284 85 38 26 329 246 649 489 319 243 747 569 951 724 282 214 375 290 388 316 14 30 16 99 16 628 0 326 5 667 10 758 17 262 69 475 165 676 46 96 52 114 36 114 -5 0 -115 -81 -243 -181z"></path><path d="M11254 7491 c-122 -20 -228 -75 -324 -170 -75 -74 -122 -155 -145 -253 -23 -96 -22 -3242 0 -3337 22 -92 71 -185 129 -246 l51 -52 101 -7 c205 -12 301 -39 499 -140 73 -37 119 -69 173 -120 l74 -71 27 32 c40 48 155 275 191 378 17 50 40 134 51 188 18 94 19 161 19 1695 0 1388 -2 1605 -15 1661 -46 194 -209 365 -405 426 -62 19 -339 29 -426 16z"></path><path d="M590 3105 l0 -3105 1805 0 1805 0 0 2239 c0 1232 -3 2247 -6 2256 -9 22 -27 30 -460 218 -572 249 -697 304 -964 427 -222 102 -1254 557 -1625 717 -278 119 -366 173 -473 287 -34 36 -66 66 -72 66 -7 0 -10 -973 -10 -3105z"></path><path d="M10815 3274 c-64 -10 -193 -49 -265 -79 -138 -57 -256 -149 -335 -258 -66 -92 -37 -87 -498 -87 -384 0 -406 -1 -428 -19 l-24 -19 -3 -1401 -2 -1401 1617 0 c890 0 1669 -3 1731 -7 l112 -6 0 1429 0 1429 -432 -4 c-294 -2 -443 0 -468 8 -28 8 -51 29 -96 86 -121 155 -269 248 -486 305 -64 17 -118 23 -238 25 -85 2 -168 1 -185 -1z m454 -204 c101 -36 292 -174 276 -200 -8 -13 -1145 -14 -1145 -1 0 18 116 111 180 145 139 72 211 86 445 82 157 -3 188 -6 244 -26z"></path></g></svg></div><span class="menu-text">MIS OPORTUNIDADES COMERCIALES</span><span class="menu-arrow">▼</span></div><div class="submenu"><a href="#" class="submenu-item">Consulta Mis Oportunidades</a></div></div>
+            <div class="menu-group">
+                <div class="menu-parent" onclick="toggleSubmenu(this)">
+                    <div class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <span class="menu-text">MIS REFERIDOS</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="submenu">
+                    <a href="gestion-referidos.html" class="submenu-item">Consulta Gestión de Referidos</a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">v.1.1.1</div>
+        </div>
+    </aside>
+
+    <header class="header-bar">
+        <div class="left-section">
+            <button class="icon-btn menu-btn" aria-label="Abrir menú">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="icon-btn home-btn" aria-label="Ir a inicio">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </button>
+            <div class="title-container">
+                <span class="home-text">HOME</span>
+                <div class="vertical-separator"></div>
+                <span class="oficina-text">OFICINA VIRTUAL DE</span>
+                <span class="asesores-text">asesores</span>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="user-info">
+                <div class="user-name">¡HOLA NATHALIA RENDON !</div>
+                <div class="user-details">CC. 66933748 <span class="separator">|</span> nathalia@coomeva.com.co</div>
+                <div class="user-role">ASESOR INTERNO</div>
+            </div>
+            <div class="actions">
+                <div class="notification-container" id="bellBtn">
+                    <svg class="bell-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                    </svg>
+                    <span class="badge" id="notifBadge">1</span>
+                    
+                    <div class="tooltip-wrapper" id="notificationDropdown">
+                        <div class="tooltip-arrow"></div>
+                        <div class="tooltip-card" id="openModalLink">
+                            <span class="tooltip-date" id="notifDate">19/1/2026</span>
+                            <p>¡Tienes <strong id="userCount">1 usuarios</strong> que ya cumplieron 2 meses desde que inició su servicio!<br>
+                            <span class="link-text">Haz clic aquí para ver quiénes son y contactarlos.</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="icon-btn logout-btn" aria-label="Cerrar sesión">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-backdrop" id="userModal">
+        <div class="modal-box">
+            <div class="modal-header-bar">
+                <h2>Detalle de usuarios</h2>
+                <button class="close-btn-custom" onclick="toggleModal(false)">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-content-body">
+                <p>A continuación vas a visualizar el detalle de los usuarios que ya cumplieron <strong>2 meses</strong> desde que inició su servicio:</p>
+                
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Detalle</th>
+                            <th style="width: 100px;">Gestionar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="userRow">
+                            <td>
+                                <span class="date">2026-01-19</span>
+                                <div class="user-desc">
+                                    <strong>JENNIFFER ANDREA ESTUPIÑAN MESA</strong> ha cumplido dos meses desde que inició su servicio con el programa <strong>SAOCE - SALUD ORAL ESPECIAL</strong>. ¡Es hora de contactarl@!
+                                </div>
+                                <span class="phone">Al número 3102124818</span>
+                            </td>
+                            <td class="action-cell">
+                                <button class="action-btn" id="btnOpenGestion">
+                                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="gestionModal">
+        <div class="modal-box">
+            <div class="modal-header-bar">
+                <h2>Gestión de referidos</h2>
+                <button class="close-btn-custom" onclick="toggleGestionModal(false)">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-content-body">
+                <p>¿<b>JENNIFFER ANDREA ESTUPIÑAN MESA</b> brindó información sobre referidos?</p>
+                
+                <div class="opciones">
+                    <label>
+                        <input type="radio" name="referidos" value="si">
+                        <span>SI</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="referidos" value="no">
+                        <span>NO</span>
+                    </label>
+                </div>
+
+                <div class="observaciones">
+                    <label for="obs-text">Observaciones:</label>
+                    <textarea id="obs-text" rows="3" maxlength="200"></textarea>
+                </div>
+
+                <button class="guardar-btn" id="saveBtn">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+
+    <main style="padding: 20px;">
+        <h2>Bienvenido</h2>
+        <p>Selecciona una opción del menú.</p>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- VARIABLES DE ESTADO ---
+            let notificationCount = 1; // Cantidad inicial de notificaciones
+            let userAttempts = 0;      // Veces que se ha intentado marcar "NO"
+
+            // --- REFERENCIAS DOM ---
+            const menuBtn = document.querySelector('.menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const bellBtn = document.getElementById('bellBtn');
+            const notifDropdown = document.getElementById('notificationDropdown');
+            const badge = document.getElementById('notifBadge');
+            const userCountLabel = document.getElementById('userCount');
+            const notifDate = document.getElementById('notifDate');
+            
+            // Links y Botones
+            const openModalLink = document.getElementById('openModalLink');
+            const btnOpenGestion = document.getElementById('btnOpenGestion'); // Flecha azul
+            const saveBtn = document.getElementById('saveBtn'); // Botón Guardar
+
+            // Modales
+            const modal1 = document.getElementById('userModal'); 
+            const modal2 = document.getElementById('gestionModal'); 
+            const userRow = document.getElementById('userRow'); // La fila de la tabla
+
+            // --- FECHA ACTUAL AL CARGAR (Req 2.1) ---
+            const today = new Date().toLocaleDateString('es-CO'); 
+            if(notifDate) notifDate.textContent = today;
+
+            // --- SIDEBAR ---
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('open');
+            }
+            if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+            if(overlay) overlay.addEventListener('click', toggleSidebar);
+
+            window.toggleSubmenu = function(element) {
+                element.classList.toggle('active');
+                const submenu = element.nextElementSibling;
+                if (submenu && submenu.classList.contains('submenu')) {
+                    submenu.classList.toggle('open');
+                }
+            };
+
+            // --- NOTIFICACIONES (Toggle) ---
+            if(bellBtn && notifDropdown) {
+                bellBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    notifDropdown.classList.toggle('show');
+                });
+            }
+
+            // Click global para cerrar dropdowns y modales
+            document.addEventListener('click', (e) => {
+                // Dropdown
+                if(notifDropdown && notifDropdown.classList.contains('show')) {
+                    if (!notifDropdown.contains(e.target) && !bellBtn.contains(e.target)) {
+                        notifDropdown.classList.remove('show');
+                    }
+                }
+                // Modales (Fondo oscuro)
+                if(modal1 && e.target === modal1) toggleModal(false);
+                if(modal2 && e.target === modal2) toggleGestionModal(false);
+            });
+
+            // --- CONTROLADORES DE MODALES ---
+            window.toggleModal = function(show) {
+                if(show) {
+                    modal1.classList.add('open');
+                    if(notifDropdown) notifDropdown.classList.remove('show'); // Cerrar campana
+                } else {
+                    modal1.classList.remove('open');
+                }
+            }
+
+            window.toggleGestionModal = function(show) {
+                if(show) {
+                    modal2.classList.add('open');
+                } else {
+                    modal2.classList.remove('open');
+                }
+            }
+
+            // --- FLUJO DE EVENTOS ---
+
+            // 1. Abrir Modal Detalle desde Notificación
+            if(openModalLink) {
+                openModalLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleModal(true);
+                });
+            }
+
+            // 2. Abrir Modal Gestión desde Flecha Azul
+            if(btnOpenGestion) {
+                btnOpenGestion.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleGestionModal(true);
+                });
+            }
+
+            // 3. LOGICA DEL BOTÓN GUARDAR (Req 3.8, 3.9, 3.10)
+            if(saveBtn) {
+                saveBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Obtener opción seleccionada (SI/NO)
+                    const selectedOption = document.querySelector('input[name="referidos"]:checked');
+                    
+                    if(!selectedOption) {
+                        alert("Por favor seleccione una opción (SI o NO).");
+                        return;
+                    }
+
+                    const val = selectedOption.value; // 'si' o 'no'
+
+                    if (val === 'si') {
+                        // CASO SI: Guardar, eliminar fila, restar notificación (Req 3.8)
+                        alert("Gestión guardada exitosamente (SI).");
+                        completeManagement();
+                    } 
+                    else if (val === 'no') {
+                        // CASO NO: (Req 3.9)
+                        if (userAttempts === 0) {
+                            // Primera vez
+                            userAttempts++;
+                            alert("Primera gestión negativa registrada. La notificación permanecerá activa.");
+                            toggleGestionModal(false); // Cierra solo el modal de gestión
+                            // No cerramos el modal 1, ni borramos fila, ni bajamos contador
+                        } else {
+                            // Segunda vez
+                            alert("Segunda gestión negativa registrada. Usuario gestionado.");
+                            completeManagement();
+                        }
+                    }
+                });
+            }
+
+            // Función auxiliar para "Finalizar Gestión"
+            function completeManagement() {
+                // 1. Cerrar modales
+                toggleGestionModal(false);
+                toggleModal(false);
+
+                // 2. Eliminar fila visualmente (simulación)
+                if(userRow) userRow.remove();
+
+                // 3. Actualizar contador notificación
+                notificationCount--;
+                updateNotificationUI();
+            }
+
+            function updateNotificationUI() {
+                if(userCountLabel) userCountLabel.innerText = notificationCount + " usuarios";
+                if(badge) {
+                    badge.innerText = notificationCount;
+                    if(notificationCount <= 0) {
+                        badge.classList.add('hidden'); // Ocultar círculo rojo si es 0
+                        // Opcional: Cambiar texto del dropdown a "No tienes notificaciones"
+                        if(notifDropdown) notifDropdown.innerHTML = '<div class="tooltip-card" style="text-align:center; color:#666;">No tienes notificaciones pendientes</div>';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
