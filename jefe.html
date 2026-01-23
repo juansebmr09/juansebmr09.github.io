@@ -16,6 +16,15 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .pagination-btn.active { background-color: #1e40af; color: white; border-color: #1e40af; }
         .disabled-link { pointer-events: none; opacity: 0.5; background-color: #f3f4f6; }
+        
+        /* Estilos para el scroll del dropdown */
+        .dropdown-scroll::-webkit-scrollbar { width: 6px; }
+        .dropdown-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dropdown-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+
+        /* Estilo cursor sort */
+        .sortable { cursor: pointer; user-select: none; transition: background-color 0.2s; }
+        .sortable:hover { background-color: #e5e7eb; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col font-inter">
@@ -33,14 +42,37 @@
             </div>
 
             <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>
-                        <select id="filter_status" class="w-full border-gray-300 rounded-md text-sm bg-gray-50 focus:ring-blue-500">
-                            <option value="">Todos</option>
-                            <option value="Pendiente" selected>Pendiente</option> <option value="Devolución">Devolución</option> <option value="Pendiente Gestión Humana">Pendiente Gestión Humana</option>
-                            <option value="Aprobado">Aprobado</option>
-                            <option value="Rechazado">Rechazado</option>
-                        </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> 
+                    
+                    <div class="relative" id="statusMultiselectContainer">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado (Múltiple)</label>
+                        <button type="button" id="statusMultiselectBtn" class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 rounded-md focus:outline-none shadow-sm text-sm flex justify-between items-center text-left min-h-[38px]">
+                            <span id="statusBtnText" class="truncate">Pendiente</span>
+                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <div id="statusDropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-60 overflow-y-auto dropdown-scroll">
+                            <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
+                                <input type="checkbox" value="Pendiente" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" checked onchange="updateStatusButtonText()">
+                                <span class="text-sm">Pendiente</span>
+                            </label>
+                            <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
+                                <input type="checkbox" value="Devolución" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <span class="text-sm">Devolución</span>
+                            </label>
+                            <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
+                                <input type="checkbox" value="Pendiente Gestión Humana" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <span class="text-sm">Pendiente Gestión Humana</span>
+                            </label>
+                            <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
+                                <input type="checkbox" value="Aprobado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <span class="text-sm">Aprobado</span>
+                            </label>
+                            <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" value="Rechazado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <span class="text-sm">Rechazado</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>
@@ -77,13 +109,27 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-100">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Fecha Creación</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">No. Solicitud</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Cód. Asesor</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nombre Asesor</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estado</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Asignado A</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Última Gestión</th>
+                                <th onclick="sortRequests('date')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Fecha Creación <span id="sortIcon_date" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('id')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">No. Solicitud <span id="sortIcon_id" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('advCode')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Cód. Asesor <span id="sortIcon_advCode" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('advName')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Nombre Asesor <span id="sortIcon_advName" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('status')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Estado <span id="sortIcon_status" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('assignedTo')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Asignado A <span id="sortIcon_assignedTo" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
+                                <th onclick="sortRequests('lastUpdate')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                    <div class="flex items-center gap-1">Última Gestión <span id="sortIcon_lastUpdate" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                                </th>
                                 <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Acciones</th>
                             </tr>
                         </thead>
@@ -106,18 +152,29 @@
         </div>
 
         <div id="viewDetail" class="hidden flex-col w-full fade-in pb-20">
-            <div class="mb-4">
-                <button onclick="showDashboard()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 text-sm bg-white px-3 py-1 rounded border border-blue-100 shadow-sm transition">
+            <div class="mb-4 flex justify-between items-center">
+                <button onclick="showDashboard()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 text-sm bg-white px-3 py-2 rounded border border-blue-100 shadow-sm transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Volver a la bandeja
                 </button>
+
+                <div class="flex gap-3">
+                    <button onclick="showAttachments()" class="bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-bold py-2 px-3 rounded shadow-sm text-xs flex items-center gap-2 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                        Ver Adjuntos (1)
+                    </button>
+                    
+                    <label class="bg-white hover:bg-green-50 text-green-700 border border-green-200 font-bold py-2 px-3 rounded shadow-sm text-xs flex items-center gap-2 transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Adjuntar Soporte General
+                        <input type="file" class="hidden" onchange="alert('✅ Archivo general adjuntado: ' + this.files[0].name)">
+                    </label>
+                </div>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6 shadow-sm relative">
-                <button onclick="showAttachments()" class="absolute top-4 right-4 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-bold py-1.5 px-3 rounded shadow-sm text-xs flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                    Ver Adjuntos (1)
-                </button>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6 shadow-sm">
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-6 text-sm mt-1">
                     <div class="flex flex-col border-r border-blue-200 pr-4">
                         <span class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">No. Solicitud</span>
@@ -216,10 +273,22 @@
                     <input type="text" id="modal_respuesta_readonly" class="hidden w-full border-transparent bg-gray-100 text-gray-800 font-bold rounded-md p-2" disabled>
                 </div>
 
-                <div class="mb-2">
+                <div class="mb-4">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Justificación <span id="req_justification" class="text-red-500 hidden">*</span></label>
                     <textarea id="modal_justificacion" rows="4" class="w-full border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none disabled:bg-gray-100 disabled:text-gray-600 disabled:border-transparent" placeholder="Ingrese la justificación de la decisión..."></textarea>
                 </div>
+
+                <div class="mb-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Soporte de Respuesta (Opcional)</label>
+                    <div id="modal_file_container">
+                        <input type="file" id="modal_file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                    </div>
+                    <div id="modal_file_display" class="hidden flex items-center gap-2 mt-1 p-2 bg-gray-50 rounded border border-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        <span id="modal_file_name" class="text-sm text-gray-700 font-medium italic"></span>
+                    </div>
+                </div>
+
             </div>
 
             <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
@@ -295,8 +364,8 @@
         ];
 
         let mockDetails = [
-            { requestId: '45212025001', rowId: 'r1', novedad: 'Comisión errada', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '' },
-            { requestId: '45212025001', rowId: 'r2', novedad: 'ACP - Acelerador', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '' }
+            { requestId: '45212025001', rowId: 'r1', novedad: 'Comisión errada', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
+            { requestId: '45212025001', rowId: 'r2', novedad: 'ACP - Acelerador', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '', fileAttached: null }
         ];
 
         // INICIALIZACIÓN: TABLA VACÍA
@@ -305,22 +374,109 @@
         let itemsPerPage = 5;
         let currentDetailRequestId = null;
         let hasSearched = false; 
+        
+        // Estado de ordenamiento
+        let currentSortField = ''; // Campo actualmente ordenado
+        let sortDirection = 'asc'; // 'asc' o 'desc'
 
         document.addEventListener('DOMContentLoaded', () => {
              renderDashboard(); 
+             
+             // Event Listeners para el multi-select
+             const statusBtn = document.getElementById('statusMultiselectBtn');
+             const statusDropdown = document.getElementById('statusDropdown');
+             const statusContainer = document.getElementById('statusMultiselectContainer');
+
+             statusBtn.addEventListener('click', () => {
+                 statusDropdown.classList.toggle('hidden');
+             });
+
+             document.addEventListener('click', (e) => {
+                 if (!statusContainer.contains(e.target)) {
+                     statusDropdown.classList.add('hidden');
+                 }
+             });
         });
+
+        // Función para actualizar texto del botón de estado
+        function updateStatusButtonText() {
+            const checkboxes = document.querySelectorAll('.status-checkbox:checked');
+            const btnText = document.getElementById('statusBtnText');
+            
+            if (checkboxes.length === 0) {
+                btnText.textContent = "Seleccione...";
+            } else if (checkboxes.length <= 2) {
+                const values = Array.from(checkboxes).map(cb => cb.value).join(", ");
+                btnText.textContent = values;
+            } else {
+                btnText.textContent = `${checkboxes.length} seleccionados`;
+            }
+        }
+        
+        // --- FUNCIÓN ORDENAMIENTO GLOBAL ---
+        function sortRequests(field) {
+            if (currentRequests.length === 0) return;
+
+            // Toggle dirección si es el mismo campo, sino reset a 'asc'
+            if (currentSortField === field) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                sortDirection = 'asc';
+            }
+            
+            // Iconos por defecto (flecha doble neutra)
+            const defaultIconSVG = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>';
+            // Flecha arriba (ASC)
+            const upArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
+            // Flecha abajo (DESC)
+            const downArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+
+            // Resetear todos los iconos
+            document.querySelectorAll('.sort-icon').forEach(el => el.innerHTML = defaultIconSVG);
+            
+            // Establecer icono activo
+            const activeIcon = document.getElementById(`sortIcon_${field}`);
+            if(activeIcon) {
+                activeIcon.innerHTML = sortDirection === 'asc' ? upArrowSVG : downArrowSVG;
+            }
+
+            // Lógica de ordenamiento
+            currentRequests.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+
+                // Convertir fechas si es necesario
+                if (field === 'date' || field === 'lastUpdate') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Resetear a pag 1 y renderizar
+            currentPage = 1;
+            renderDashboard();
+        }
 
         // --- FUNCIONES DASHBOARD ---
         function applyFilters() {
             hasSearched = true;
-            const fStatus = document.getElementById('filter_status').value;
+            
+            const checkedStatuses = Array.from(document.querySelectorAll('.status-checkbox:checked')).map(cb => cb.value);
             const fReqId = document.getElementById('filter_reqId').value.trim();
             const fAdvCode = document.getElementById('filter_advisorCode').value.trim();
             const fDateFrom = document.getElementById('filter_dateFrom').value;
             const fDateTo = document.getElementById('filter_dateTo').value;
 
             currentRequests = mockRequests.filter(req => {
-                if (fStatus && req.status !== fStatus) return false;
+                if (checkedStatuses.length > 0 && !checkedStatuses.includes(req.status)) return false;
                 if (fReqId && !req.id.includes(fReqId)) return false;
                 if (fAdvCode && !req.advCode.includes(fAdvCode)) return false;
                 if (fDateFrom && new Date(req.date) < new Date(fDateFrom)) return false;
@@ -328,17 +484,37 @@
                 return true;
             });
             currentPage = 1;
+            
+            // Si ya hay un ordenamiento activo, mantenerlo al filtrar
+            if (currentSortField) {
+                currentRequests.sort((a, b) => {
+                    let valA = a[currentSortField];
+                    let valB = b[currentSortField];
+                    if (currentSortField === 'date' || currentSortField === 'lastUpdate') {
+                        valA = new Date(valA); valB = new Date(valB);
+                    } else if (typeof valA === 'string') {
+                        valA = valA.toLowerCase(); valB = valB.toLowerCase();
+                    }
+                    if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
             renderDashboard();
         }
 
         function clearFilters() {
-            document.getElementById('filter_status').value = "Pendiente"; 
+            const checkboxes = document.querySelectorAll('.status-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = (cb.value === "Pendiente");
+            });
+            updateStatusButtonText();
+
             document.getElementById('filter_reqId').value = "";
             document.getElementById('filter_advisorCode').value = "";
             document.getElementById('filter_dateFrom').value = "";
             document.getElementById('filter_dateTo').value = "";
-            
-
         }
 
         function renderDashboard() {
@@ -367,7 +543,7 @@
                 let badgeColor = "bg-gray-100 text-gray-800";
                 if(req.status === 'Pendiente') badgeColor = "bg-yellow-100 text-yellow-800";
                 if(req.status === 'Devolución') badgeColor = "bg-orange-100 text-orange-800";
-                if(req.status === 'Pendiente Gestión Humana') badgeColor = "bg-blue-100 text-blue-800"; // Nuevo estado visual
+                if(req.status === 'Pendiente Gestión Humana') badgeColor = "bg-blue-100 text-blue-800"; 
                 if(req.status === 'Aprobado') badgeColor = "bg-green-100 text-green-800";
                 if(req.status === 'Rechazado') badgeColor = "bg-red-100 text-red-800";
 
@@ -528,17 +704,36 @@
             const respSelect = document.getElementById('modal_respuesta');
             const respRead = document.getElementById('modal_respuesta_readonly');
             
+            // Elementos de archivo
+            const fileInput = document.getElementById('modal_file');
+            const fileContainer = document.getElementById('modal_file_container');
+            const fileDisplay = document.getElementById('modal_file_display');
+            const fileName = document.getElementById('modal_file_name');
+            
             display.value = row.novedad;
             Array.from(select.options).forEach(opt => { if(row.novedad.includes(opt.value.substring(0,3))) select.value = opt.value; });
             display.classList.remove('hidden'); select.classList.add('hidden');
             justif.value = row.justificacionJefe || "";
             
+            // Limpiar input de archivo siempre que se abre
+            fileInput.value = "";
+
             if (mode === 'view') {
                 document.getElementById('modalTitle').innerText = "Detalle de Respuesta";
                 document.getElementById('btnEditNovedad').classList.add('hidden');
                 document.getElementById('btnSaveModal').classList.add('hidden');
                 respSelect.classList.add('hidden'); respRead.classList.remove('hidden');
                 respRead.value = row.respuestaJefe; justif.disabled = true;
+                
+                // Lógica visualización archivo en modo VER
+                fileContainer.classList.add('hidden');
+                if (row.fileAttached) {
+                    fileDisplay.classList.remove('hidden');
+                    fileName.innerText = row.fileAttached;
+                } else {
+                    fileDisplay.classList.add('hidden');
+                }
+
             } else {
                 document.getElementById('modalTitle').innerText = "Responder Reclamación";
                 document.getElementById('btnEditNovedad').classList.remove('hidden');
@@ -546,22 +741,38 @@
                 respSelect.classList.remove('hidden'); respRead.classList.add('hidden');
                 respSelect.value = row.respuestaJefe || ""; justif.disabled = false;
                 toggleJustification();
+                
+                // Lógica visualización archivo en modo EDITAR
+                fileContainer.classList.remove('hidden');
+                fileDisplay.classList.add('hidden');
             }
             document.getElementById('responseModal').classList.remove('hidden');
         }
         function closeResponseModal() { document.getElementById('responseModal').classList.add('hidden'); }
         function toggleNovedadEdit() { const d = document.getElementById('modal_novedad_display'), s = document.getElementById('modal_novedad_select'); d.classList.toggle('hidden'); s.classList.toggle('hidden'); }
         function toggleJustification() { const v = document.getElementById('modal_respuesta').value, l = document.getElementById('req_justification'); if(v==='Rechazada'||v==='Devolución') l.classList.remove('hidden'); else l.classList.add('hidden'); }
+        
         function saveRowResponse() {
             const rowId = document.getElementById('modal_rowId').value;
             const res = document.getElementById('modal_respuesta').value;
             const jus = document.getElementById('modal_justificacion').value.trim();
             const novSel = document.getElementById('modal_novedad_select');
+            const fileInput = document.getElementById('modal_file');
+
             if (!res) { alert("Respuesta obligatoria"); return; }
             if ((res === 'Rechazada' || res === 'Devolución') && !jus) { alert("Justificación obligatoria"); return; }
+
             const row = mockDetails.find(r => r.rowId === rowId);
-            row.respuestaJefe = res; row.justificacionJefe = jus;
+            row.respuestaJefe = res; 
+            row.justificacionJefe = jus;
+            
+            // Guardar nombre del archivo si se seleccionó uno
+            if (fileInput.files.length > 0) {
+                row.fileAttached = fileInput.files[0].name;
+            }
+
             if (document.getElementById('modal_novedad_display').classList.contains('hidden')) row.novedad = novSel.value;
+
             closeResponseModal(); renderDetailTable();
         }
     </script>

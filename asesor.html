@@ -19,8 +19,10 @@
         .input-error { border-color: #ef4444 !important; ring: 2px; --tw-ring-color: #fca5a5; }
         .slide-in { animation: slideIn 0.3s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
-        .slide-out { animation: slideOut 0.4s forwards; }
-        @keyframes slideOut { to { opacity: 0; transform: translateX(50px); height: 0; padding: 0; margin: 0; border: 0; } }
+        
+        /* Estilo para fila bajo reclamación global (Solo color, sin bloqueo) */
+        .row-global-active { background-color: #fffbeb !important; } /* Amber-50 */
+        .row-global-active:hover { background-color: #fef3c7 !important; } /* Amber-100 */
     </style>
 </head>
 <body class="bg-white text-gray-800 h-screen flex flex-col relative">
@@ -38,10 +40,20 @@
                     <h2 class="text-2xl font-bold text-gray-800">Reclamaciones comisiones</h2>
                     <p class="text-sm text-gray-500 mt-1 max-w-2xl">Radicación y gestión de reclamación de comisiones</p>
                 </div>
-                <button id="btnOpenNewClaim" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    Nuevo Registro
-                </button>
+                
+                <div class="flex gap-3">
+                    <button id="btnOpenGlobalClaim" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors animate-[fadeIn_0.5s]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                        </svg>
+                        Reclamación Global Periodo
+                    </button>
+
+                    <button id="btnOpenNewClaim" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-5 rounded shadow-sm inline-flex items-center gap-2 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        Nuevo Registro
+                    </button>
+                </div>
             </div>
 
             <div class="flex flex-col xl:flex-row gap-6 mb-8 items-start">
@@ -78,6 +90,16 @@
                     <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Código Asesor</span><span class="font-semibold text-gray-800">4521</span></div>
                     <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Cédula Asesor</span><span class="font-semibold text-gray-800">1.020.304.050</span></div>
                     <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Nombre Asesor</span><span class="font-semibold text-gray-800">Nathalia Rendon</span></div>
+                </div>
+            </div>
+            
+            <div id="globalStatusBanner" class="hidden mb-4 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3 animate-[fadeIn_0.3s]">
+                <div class="bg-amber-100 p-2 rounded-full text-amber-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-amber-900 text-sm">Periodo en Reclamación Global</h4>
+                    <p class="text-amber-700 text-xs">Este periodo tiene una reclamación masiva activa (ID: <span id="lblGlobalID" class="font-mono font-bold"></span>). Puede agregar detalles individuales si lo requiere.</p>
                 </div>
             </div>
 
@@ -212,6 +234,70 @@
         </div>
     </div>
 
+    <div id="globalClaimModal" class="fixed inset-0 bg-amber-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
+        <div class="relative mx-auto w-[95%] max-w-2xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col">
+            <div class="flex items-center justify-between px-8 py-5 border-b border-amber-100 bg-amber-50 rounded-t-xl">
+                <div>
+                    <h3 class="text-xl font-bold text-amber-900 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        Reclamación Global del Periodo
+                    </h3>
+                    <p class="text-sm text-amber-700 mt-1">Impugnación de todos los registros para: <span id="globalModalPeriod" class="font-bold"></span></p>
+                </div>
+                <button class="js-close-global-claim text-gray-400 hover:text-amber-600"><svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            
+            <div class="px-8 py-6">
+                <div class="mb-4 p-4 bg-blue-50 text-blue-800 text-sm rounded border border-blue-100 flex gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <p>Al crear una reclamación global, se creará un Ticket Maestro para agrupar las incidencias, pero <strong>podrá seguir editando</strong> los detalles individuales si lo requiere.</p>
+                </div>
+
+                <form id="globalClaimForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Motivo General <span class="text-red-500">*</span></label>
+                        <select id="global_motivo" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">Seleccione el motivo principal...</option>
+                            <option value="Error Masivo en Aceleradores">Error Masivo en Aceleradores</option>
+                            <option value="Base Garantizada no aplicada">Base Garantizada no aplicada</option>
+                            <option value="Fallas en cargue de recaudos">Fallas en cargue de recaudos</option>
+                            <option value="Inconsistencia en Tarifas">Inconsistencia en Tarifas</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Descripción detallada <span class="text-red-500">*</span></label>
+                        <textarea id="global_descripcion" rows="4" class="w-full border border-gray-300 rounded-md p-3 focus:ring-amber-500 focus:border-amber-500" placeholder="Explique por qué impugna el periodo completo..."></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Soporte de Evidencia (Obligatorio)</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label for="global_file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click para subir</span> o arrastre el archivo</p>
+                                    <p class="text-xs text-gray-500">Excel, PDF, ZIP (MAX. 10MB)</p>
+                                </div>
+                                <input id="global_file" type="file" class="hidden" />
+                            </label>
+                        </div> 
+                    </div>
+                </form>
+            </div>
+
+            <div class="px-8 py-5 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl">
+                <button class="js-close-global-claim px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition shadow-sm">Cancelar</button>
+                <button id="btnSaveGlobalClaim" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition shadow-md flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                    Radicar Global
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-gray-200 mt-auto py-6">
         <div class="max-w-[1600px] mx-auto px-4 text-center">
             <a href="OVA.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors inline-flex items-center gap-2">
@@ -236,6 +322,7 @@
         ];
 
         // --- BASE DE DATOS SIMULADA ---
+        // Agregamos propiedad 'globalClaimId' para rastrear si pertenecen a una reclamación global
         let mockDatabase = [
             {
                 id: 'fila_ejemplo',
@@ -244,7 +331,8 @@
                 plan: 'Familiar', programa: 'Oro', contrato: 'CT-001', 
                 idContratante: '998877', idUsuario: '112233', 
                 usuario: 'Juan Pérez', parentesco: 'Titular', pago: 'Pospago',
-                motivos: [] 
+                motivos: [],
+                globalClaimId: null // Nueva propiedad
             },
             {
                 id: 'fila_prueba_1',
@@ -255,9 +343,13 @@
                 usuario: 'Maria Lopez', parentesco: 'Titular', pago: 'Prepago',
                 motivos: [
                     { motivo: 'Pago no cruzado', observacion: 'No se reflejó el pago de la cuota inicial.' }
-                ]
+                ],
+                globalClaimId: null
             }
         ];
+
+        // Almacén de reclamaciones globales activas
+        let globalClaims = []; // { id: 'GL-2025-ENE-01', anio: '2025', periodo: 'Ene' ... }
 
         // --- RENDERIZAR OPCIONES DE MOTIVOS ---
 
@@ -345,6 +437,7 @@
 
             const rowId = btn.closest('tr').getAttribute('data-row-id');
             const record = mockDatabase.find(r => r.id === rowId);
+            
             currentRowInput.value = rowId;
 
             // Limpiar modal previo
@@ -372,7 +465,7 @@
                 });
             }
 
-            const isReadOnly = btn.classList.contains('js-view-details');
+            const isReadOnly = btn.classList.contains('js-view-details'); 
             const hasData = record.motivos && record.motivos.length > 0;
 
             if (isReadOnly) {
@@ -384,7 +477,7 @@
                     listContainer.querySelectorAll('input').forEach(i => i.disabled = true);
                     obsContainer.querySelectorAll('textarea').forEach(t => t.disabled = true);
                 } else {
-                    // Ver detalles pero está vacío -> Permitir editar/agregar
+                    // Ver detalles pero está vacío -> Permitir agregar
                     modalTitle.innerText = "Agregar Motivos";
                     btnSaveComment.classList.remove('hidden');
                     listContainer.querySelectorAll('input').forEach(i => i.disabled = false);
@@ -484,7 +577,8 @@
                 usuario: document.getElementById('new_usuario').value,
                 parentesco: document.getElementById('new_parentezco').value,
                 pago: document.getElementById('new_pago').value,
-                motivos: newMotivosData
+                motivos: newMotivosData,
+                globalClaimId: null
             };
 
             mockDatabase.push(newRecord);
@@ -492,13 +586,94 @@
             alert("✅ Registro guardado. Presione Consultar para actualizar.");
         });
 
+        // --- LOGICA RECLAMACIÓN GLOBAL ---
+        const btnOpenGlobalClaim = document.getElementById('btnOpenGlobalClaim');
+        const globalClaimModal = document.getElementById('globalClaimModal');
+        const btnSaveGlobalClaim = document.getElementById('btnSaveGlobalClaim');
+
+        btnOpenGlobalClaim.addEventListener('click', () => {
+            const anio = document.getElementById('filter_anio').value;
+            const periodo = document.getElementById('filter_periodo').value;
+            
+            document.getElementById('globalModalPeriod').innerText = `${periodo} ${anio}`;
+            globalClaimModal.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('.js-close-global-claim').forEach(btn => btn.addEventListener('click', () => globalClaimModal.classList.add('hidden')));
+
+        btnSaveGlobalClaim.addEventListener('click', () => {
+            const motivo = document.getElementById('global_motivo').value;
+            const desc = document.getElementById('global_descripcion').value;
+            // Aquí validaríamos el archivo
+            
+            if(!motivo || !desc) {
+                alert("Complete el motivo y la descripción para la reclamación global.");
+                return;
+            }
+
+            const anio = document.getElementById('filter_anio').value;
+            const periodo = document.getElementById('filter_periodo').value;
+            const globalID = `GL-${anio}-${periodo}-${Math.floor(Math.random()*1000)}`;
+
+            // Guardar en "Base de datos" global
+            globalClaims.push({
+                id: globalID,
+                anio: anio,
+                periodo: periodo,
+                motivo: motivo,
+                descripcion: desc
+            });
+
+            // Actualizar TODOS los registros que coincidan con el periodo en la BD
+            let updatedCount = 0;
+            mockDatabase.forEach(row => {
+                if(row.anio === anio && row.periodo === periodo) {
+                    row.globalClaimId = globalID;
+                    updatedCount++;
+                }
+            });
+
+            globalClaimModal.classList.add('hidden');
+            alert(`✅ Se ha generado la Reclamación Global ${globalID}. Se han asociado ${updatedCount} registros.`);
+            
+            // Simular click en consultar para refrescar la tabla
+            document.getElementById('btnConsultar').click();
+        });
+
+
         // --- RENDER TABLA ---
         function renderRow(item) {
             const hasMotivos = item.motivos && item.motivos.length > 0;
+            const isGlobal = !!item.globalClaimId;
+            
+            let rowClass = 'hover:bg-gray-50 transition-colors h-12 slide-in';
+            let globalIndicator = '';
+
+            // SI ES GLOBAL: Solo pintamos de amarillo, PERO NO BLOQUEAMOS NADA
+            if (isGlobal) {
+                rowClass += ' row-global-active'; // Color amarillo
+                globalIndicator = `
+                    <span class="text-amber-600 mr-2" title="Registro parte de Reclamación Global">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                    </span>
+                `;
+            }
+
             const pencilClass = hasMotivos ? '' : 'hidden';
+            
+            // Botones de acción siempre activos
+            const actionButtons = `
+                ${globalIndicator}
+                <button class="js-view-details text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver motivos">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </button>
+                <button class="js-edit-details ${pencilClass} text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in ml-2" title="Editar motivos">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                </button>
+            `;
 
             const html = `
-                <tr data-row-id="${item.id}" class="hover:bg-gray-50 transition-colors h-12 slide-in">
+                <tr data-row-id="${item.id}" class="${rowClass}">
                     <td class="px-4 py-2 text-center border-r border-gray-200">
                         <input type="checkbox" class="row-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-400 focus:ring-blue-500 cursor-pointer">
                     </td>
@@ -513,13 +688,8 @@
                     <td class="border-r border-gray-200 px-2 text-sm">${item.parentesco}</td>
                     <td class="border-r border-gray-200 px-2 text-sm">${item.pago}</td>
                     <td class="px-2 py-2">
-                        <div class="actions-cell flex items-center justify-center gap-2">
-                            <button class="js-view-details text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver motivos">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </button>
-                            <button class="js-edit-details ${pencilClass} text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in" title="Editar motivos">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
-                            </button>
+                        <div class="actions-cell flex items-center justify-center">
+                            ${actionButtons}
                         </div>
                     </td>
                 </tr>
@@ -533,6 +703,34 @@
             const fPeriodo = document.getElementById('filter_periodo').value;
             const fTipoDoc = document.getElementById('filter_tipodoc').value;
             const fNumDoc = document.getElementById('filter_numdoc').value.trim();
+            
+            // MOSTRAR/OCULTAR BOTÓN GLOBAL: Solo si hay AÑO y PERIODO seleccionado
+            const btnGlobal = document.getElementById('btnOpenGlobalClaim');
+            const globalStatusBanner = document.getElementById('globalStatusBanner');
+            
+            // Resetear visuales globales
+            globalStatusBanner.classList.add('hidden');
+            let periodIsGlobalLocked = false;
+            let currentGlobalId = '';
+
+            // Verificar si este periodo ya tiene reclamación global
+            if (fAnio && fPeriodo) {
+                const existingGlobal = globalClaims.find(gc => gc.anio === fAnio && gc.periodo === fPeriodo);
+                if (existingGlobal) {
+                    periodIsGlobalLocked = true;
+                    currentGlobalId = existingGlobal.id;
+                    // Si ya está reclamado, no mostramos el botón de crear nueva reclamación global
+                    btnGlobal.classList.add('hidden');
+                    // Mostramos el banner informativo
+                    globalStatusBanner.classList.remove('hidden');
+                    document.getElementById('lblGlobalID').innerText = currentGlobalId;
+                } else {
+                    // Si no está reclamado, mostramos el botón para permitir hacerlo
+                    btnGlobal.classList.remove('hidden');
+                }
+            } else {
+                btnGlobal.classList.add('hidden'); // No se puede reclamar sin filtro especifico
+            }
 
             const tableBody = document.getElementById('tableBody');
             const noResultsMsg = document.getElementById('noResultsMsg');
@@ -568,20 +766,25 @@
             document.getElementById('tableBody').innerHTML = "";
             document.getElementById('errorMsg').classList.add('hidden');
             document.getElementById('noResultsMsg').classList.add('hidden');
+            document.getElementById('btnOpenGlobalClaim').classList.add('hidden'); // Ocultar boton global
+            document.getElementById('globalStatusBanner').classList.add('hidden');
         });
 
         // Botones de acción masiva
         document.getElementById('selectAllRows').addEventListener('change', (e) => {
-            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked);
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
         });
         document.getElementById('btnFilterSelected').addEventListener('click', () => {
             document.querySelectorAll('#tableBody tr').forEach(row => {
-                if(!row.querySelector('.row-checkbox').checked) row.remove();
+                const cb = row.querySelector('.row-checkbox');
+                if(!cb || !cb.checked) row.remove();
             });
         });
         document.getElementById('btnSendAll').addEventListener('click', () => {
              const checkboxes = document.querySelectorAll('.row-checkbox:checked');
              if(checkboxes.length > 0) alert("Gestión enviada correctamente.");
+             else alert("No hay registros seleccionados o habilitados para envío.");
         });
 
     </script>
