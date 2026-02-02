@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Humana - Reliquidación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://unpkg.com/lucide@latest"></script> 
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilos para inputs de moneda/números */
+        .input-currency { text-align: right; font-family: 'Courier New', monospace; font-weight: 600; }
+        
+        /* Toggle Switch Personalizado */
+        .toggle-checkbox:checked { right: 0; border-color: #10B981; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
+        
+        /* Cursor para ordenar */
+        .sortable { cursor: pointer; user-select: none; transition: background-color 0.2s; }
+        .sortable:hover { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-inter">
+
+    <header class="relative w-full bg-[#007cc3] shadow-md z-20">
+        <img src="Headder.png" alt="Header Gestión Humana" class="w-full h-auto object-cover block min-h-[50px]">
+        
+        <a href="OVA.html" class="absolute top-0 left-0 h-full w-[90px] cursor-pointer hover:bg-white/10 transition duration-200" title="Volver a Selección de Rol"></a>
+    </header>
+
+    <main class="flex-grow p-6 max-w-[1800px] mx-auto w-full">
+
+        <div id="viewDashboard" class="flex flex-col w-full fade-in">
+            
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Control de Liquidaciones</h2>
+                    <p class="text-sm text-gray-500 mt-1">Valide ajustes, ingrese tarifas reales y gestione las reliquidaciones.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="alert('Generando reporte Excel consolidado...')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded shadow text-xs flex items-center gap-2">
+                        <i data-lucide="sheet" class="w-4 h-4"></i> Reporte General
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b pb-1">Filtros de Estructura Comercial</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"> 
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Regional</label>
+                        <select id="filter_regional" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                            <option value="">Todas</option>
+                            <option value="Antioquia">Antioquia</option>
+                            <option value="Occidente">Occidente</option>
+                            <option value="Centro">Centro</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Director / Gerente</label>
+                        <select id="filter_director" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                            <option value="">Todos</option>
+                            <option value="Dir1">Juan Director</option>
+                            <option value="Dir2">Maria Gerente</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Jefe Inmediato</label>
+                        <select id="filter_boss" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                            <option value="">Todos</option>
+                            <option value="Carlos Pérez">Carlos Pérez</option>
+                            <option value="Ana Rodríguez">Ana Rodríguez</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Estado Gestión</label>
+                        <select id="filter_status" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                            <option value="">Todos</option>
+                            <option value="Pendiente Gestión Humana" selected>Pendiente GH</option>
+                            <option value="Finalizado Pago">Finalizado Pago</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button onclick="applyFilters()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded text-sm shadow transition">
+                            CONSULTAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th onclick="sortRequests('date')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                <div class="flex items-center gap-1">Fecha <span id="sortIcon_date" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                            </th>
+                            <th onclick="sortRequests('id')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                <div class="flex items-center gap-1">Solicitud <span id="sortIcon_id" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                            </th>
+                            <th onclick="sortRequests('advName')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                <div class="flex items-center gap-1">Asesor <span id="sortIcon_advName" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                            </th>
+                            <th onclick="sortRequests('regional')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                <div class="flex items-center gap-1">Regional <span id="sortIcon_regional" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                                Tipo Reclamación
+                            </th>
+                            <th onclick="sortRequests('status')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">
+                                <div class="flex items-center gap-1">Estado <span id="sortIcon_status" class="sort-icon text-gray-400 group-hover:text-blue-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg></span></div>
+                            </th>
+                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody>
+                </table>
+                <div id="emptyState" class="hidden p-10 text-center text-gray-400">No se encontraron solicitudes con esos filtros.</div>
+            </div>
+        </div>
+
+        <div id="viewWorkbench" class="hidden flex-col w-full fade-in pb-20">
+            <div class="mb-4 flex items-center justify-between">
+                <button onclick="closeWorkbench()" class="flex items-center gap-2 text-gray-600 hover:text-blue-700 font-medium transition text-sm">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a la lista
+                </button>
+                <div class="text-right"><span class="text-xs text-gray-400 uppercase font-bold">Solicitud Activa</span><div class="text-lg font-bold text-blue-800" id="wb_reqId">---</div></div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-sm font-bold text-gray-800 border-b pb-2 mb-3 flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-blue-600"></i> Datos del Asesor</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-gray-500">Nombre:</span> <span class="font-medium" id="wb_advName">---</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Cédula:</span> <span class="font-medium" id="wb_advId">---</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Cargo:</span> <span class="font-medium">Ejecutivo Comercial</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Jefe:</span> <span class="font-medium" id="wb_bossName">---</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                        <h3 class="text-sm font-bold text-blue-900 border-b border-blue-200 pb-2 mb-3 flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4"></i> Detalle Reclamación</h3>
+                        <div class="text-sm text-blue-800 mb-4">
+                            <p class="font-bold">Motivo (Jefe):</p><p class="italic mb-2" id="wb_motive">---</p>
+                            <p class="font-bold">Observación:</p><p class="italic">"Se adjunta soporte de incapacidad por maternidad."</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="alert('Descargando soporte...')" class="flex items-center gap-1 bg-white px-3 py-2 rounded border border-blue-200 text-xs font-bold text-blue-600 hover:bg-blue-50 transition w-full justify-center"><i data-lucide="paperclip" class="w-3 h-3"></i> Soporte Asesor</button>
+                            <button onclick="alert('Descargando soporte...')" class="flex items-center gap-1 bg-white px-3 py-2 rounded border border-blue-200 text-xs font-bold text-purple-600 hover:bg-purple-50 transition w-full justify-center"><i data-lucide="paperclip" class="w-3 h-3"></i> Soporte Jefe</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-8">
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-800 text-white px-6 py-4 flex justify-between items-center">
+                            <div><h3 class="font-bold text-lg">Panel de Ajuste y Reliquidación</h3><p class="text-xs text-gray-400">Ingrese los valores reales.</p></div>
+                            <div class="flex items-center gap-3"><span class="text-xs font-bold uppercase text-gray-300">Modo Impacto:</span><label for="impactToggle" class="inline-flex relative items-center cursor-pointer"><input type="checkbox" id="impactToggle" class="sr-only peer" onchange="toggleImpactMode()"><div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div><span class="ml-3 text-xs font-medium text-gray-300 transition-colors" id="impactLabel">Individual</span></label></div>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-8">
+                                <h4 class="text-sm font-bold text-gray-700 uppercase mb-4 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs">1</span> Parámetros de Ajuste</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <div><label class="block text-xs font-bold text-gray-600 mb-1">Nueva Tarifa</label><select id="input_tarifa" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500"><option value="0">Sin cambios</option><option value="0.05">ORO - 5%</option><option value="0.03">PLATA - 3%</option></select></div>
+                                    <div><label class="block text-xs font-bold text-gray-600 mb-1">Valor Cuota Real ($)</label><input type="number" id="input_valor" class="w-full border-gray-300 rounded text-sm input-currency focus:ring-blue-500" placeholder="0" value="150000"></div>
+                                    <div><label class="block text-xs font-bold text-gray-600 mb-1">Ajuste Global ($)</label><input type="number" id="input_global" class="w-full border-gray-200 bg-gray-100 text-gray-400 rounded text-sm input-currency" placeholder="Bloqueado" disabled></div>
+                                </div>
+                                <div class="mt-3 text-right"><button onclick="simulateCalculation()" class="text-blue-600 hover:text-blue-800 text-sm font-bold flex items-center gap-1 justify-end ml-auto bg-blue-50 px-3 py-1 rounded hover:bg-blue-100 transition"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Calcular Impacto</button></div>
+                            </div>
+                            <div id="simulationResult" class="hidden fade-in mb-8">
+                                <h4 class="text-sm font-bold text-gray-700 uppercase mb-4 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs">2</span> Resultado de Reliquidación</h4>
+                                <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200 text-sm"><thead class="bg-gray-100"><tr><th class="px-4 py-2 text-left font-bold text-gray-600">Usuario</th><th class="px-4 py-2 text-right font-bold text-gray-600">Comisión Anterior</th><th class="px-4 py-2 text-right font-bold text-blue-600">Nueva Comisión</th><th class="px-4 py-2 text-right font-bold text-gray-600">Diferencia</th></tr></thead><tbody class="divide-y divide-gray-100" id="simTableBody"></tbody><tfoot class="bg-gray-50 border-t-2 border-gray-300"><tr><td class="px-4 py-2 font-bold text-gray-800">TOTAL AJUSTE</td><td class="px-4 py-2 text-right text-gray-500" id="simTotalOld">$ 0</td><td class="px-4 py-2 text-right font-bold text-blue-800" id="simTotalNew">$ 0</td><td class="px-4 py-2 text-right font-bold" id="simTotalDiff">$ 0</td></tr></tfoot></table>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-700 uppercase mb-4 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs">3</span> Cierre y Notificación</h4>
+                                <div class="flex flex-col gap-4">
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                                        <div class="flex items-center gap-3"><div class="bg-white p-2 rounded-full border border-green-100"><i data-lucide="file-check" class="w-6 h-6 text-green-600"></i></div><div><h5 class="text-sm font-bold text-green-800">Nuevo Comprobante de Pago</h5><p class="text-xs text-green-700">El sistema ha generado el soporte con los valores ajustados.</p></div></div>
+                                        <button onclick="alert('Descargando comprobante PDF preliminar...')" class="bg-white text-green-700 border border-green-300 hover:bg-green-50 font-bold py-2 px-4 rounded text-xs flex items-center gap-2 shadow-sm transition"><i data-lucide="download" class="w-4 h-4"></i> Generar y Previsualizar PDF</button>
+                                    </div>
+                                    <button onclick="finalizeProcess()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-2"><i data-lucide="check-circle" class="w-5 h-5"></i> Confirmar Ajuste</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
+        <div class="max-w-[1800px] mx-auto px-4 text-center">
+            <a href="OVA.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors inline-flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver a los otros roles del mockup
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        const mockRequests = [
+            { id: '45212025001', date: '2025-01-15', advName: 'Nathalia Rendon', advId: '1.020.304.050', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'Pendiente Gestión Humana', type: 'Error Tarifa / Maternidad', director: 'Dir1' },
+            { id: '10102025003', date: '2025-01-20', advName: 'Maria Perez', advId: '55.666.777', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'Pendiente Gestión Humana', type: 'Venta Faltante', director: 'Dir1' }
+        ];
+        let currentRequests = [...mockRequests];
+        let currentSortField = ''; let sortDirection = 'asc';
+
+        document.addEventListener('DOMContentLoaded', () => { renderDashboard(); });
+
+        function sortRequests(field) {
+            if (currentRequests.length === 0) return;
+            if (currentSortField === field) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            else { currentSortField = field; sortDirection = 'asc'; }
+            // Iconos
+            const defaultIconSVG = '<svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>';
+            const upArrowSVG = '<svg class="h-3 w-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
+            const downArrowSVG = '<svg class="h-3 w-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+            document.querySelectorAll('.sort-icon').forEach(el => el.innerHTML = defaultIconSVG);
+            const activeIcon = document.getElementById(`sortIcon_${field}`);
+            if(activeIcon) activeIcon.innerHTML = sortDirection === 'asc' ? upArrowSVG : downArrowSVG;
+
+            currentRequests.sort((a, b) => {
+                let valA = a[field]; let valB = b[field];
+                if (field === 'date') { valA = new Date(valA); valB = new Date(valB); }
+                else if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = valB.toLowerCase(); }
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            renderDashboard();
+        }
+
+        function applyFilters() {
+            const region = document.getElementById('filter_regional').value;
+            const director = document.getElementById('filter_director').value;
+            const boss = document.getElementById('filter_boss').value;
+            const status = document.getElementById('filter_status').value;
+            currentRequests = mockRequests.filter(req => {
+                let match = true;
+                if(region && req.regional !== region) match = false;
+                if(director && req.director !== director) match = false;
+                if(boss && req.bossName !== boss) match = false;
+                if(status && req.status !== status) match = false;
+                return match;
+            });
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const body = document.getElementById('dashboardBody'); const empty = document.getElementById('emptyState'); body.innerHTML = "";
+            if (currentRequests.length === 0) { empty.classList.remove('hidden'); return; } else { empty.classList.add('hidden'); }
+            currentRequests.forEach(r => {
+                let badgeClass = r.status.includes('Pendiente') ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800';
+                body.innerHTML += `<tr class="hover:bg-blue-50 transition border-b"><td class="px-6 py-4 whitespace-nowrap text-gray-600">${r.date}</td><td class="px-6 py-4 font-bold text-blue-600">${r.id}</td><td class="px-6 py-4"><div class="text-sm font-medium text-gray-900">${r.advName}</div><div class="text-xs text-gray-400">${r.advId}</div></td><td class="px-6 py-4"><div class="text-sm text-gray-700">${r.regional}</div><div class="text-xs text-gray-500">Jefe: ${r.bossName}</div></td><td class="px-6 py-4 text-xs font-semibold text-gray-600"><span class="bg-gray-100 px-2 py-1 rounded">${r.type}</span></td><td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}">${r.status}</span></td><td class="px-6 py-4 text-center"><button onclick="openWorkbench('${r.id}')" class="text-blue-600 hover:text-blue-900 font-bold text-xs border border-blue-200 hover:bg-blue-100 px-3 py-1 rounded transition">Gestionar</button></td></tr>`;
+            });
+        }
+
+        let activeReq = null;
+        function openWorkbench(id) {
+            activeReq = mockRequests.find(r => r.id === id);
+            document.getElementById('wb_reqId').innerText = activeReq.id; document.getElementById('wb_advName').innerText = activeReq.advName;
+            document.getElementById('wb_advId').innerText = activeReq.advId; document.getElementById('wb_bossName').innerText = activeReq.bossName;
+            document.getElementById('wb_motive').innerText = activeReq.type;
+            document.getElementById('impactToggle').checked = false; toggleImpactMode();
+            document.getElementById('simulationResult').classList.add('hidden');
+            document.getElementById('viewDashboard').classList.add('hidden'); document.getElementById('viewWorkbench').classList.remove('hidden'); document.getElementById('viewWorkbench').classList.add('flex');
+        }
+        function closeWorkbench() { document.getElementById('viewWorkbench').classList.add('hidden'); document.getElementById('viewDashboard').classList.remove('hidden'); }
+
+        function toggleImpactMode() {
+            const isGlobal = document.getElementById('impactToggle').checked;
+            const label = document.getElementById('impactLabel'); const globalInput = document.getElementById('input_global');
+            if (isGlobal) { label.innerText = "Global (Impacto a toda la sábana)"; label.classList.remove('text-gray-300'); label.classList.add('text-green-400', 'font-bold'); globalInput.disabled = false; globalInput.classList.remove('bg-gray-100', 'text-gray-400'); globalInput.classList.add('bg-white', 'text-amber-700', 'border-amber-300'); globalInput.focus(); } 
+            else { label.innerText = "Individual (Solo usuario reclamado)"; label.classList.remove('text-green-400', 'font-bold'); label.classList.add('text-gray-300'); globalInput.disabled = true; globalInput.value = ""; globalInput.classList.add('bg-gray-100', 'text-gray-400'); globalInput.classList.remove('bg-white', 'text-amber-700', 'border-amber-300'); }
+            document.getElementById('simulationResult').classList.add('hidden');
+        }
+
+        function simulateCalculation() {
+            const isGlobal = document.getElementById('impactToggle').checked;
+            const baseValue = parseFloat(document.getElementById('input_valor').value) || 0;
+            const globalAdjust = parseFloat(document.getElementById('input_global').value) || 0;
+            const tbody = document.getElementById('simTableBody'); tbody.innerHTML = "";
+            let totalOld = 0; let totalNew = 0;
+            
+            const oldVal1 = 50000; const newVal1 = baseValue; const diff1 = newVal1 - oldVal1;
+            totalOld += oldVal1; totalNew += newVal1;
+            tbody.innerHTML += createRowHtml("Maria Lopez (Reclamado)", oldVal1, newVal1, diff1);
+
+            if (isGlobal) {
+                const impactPerUser = globalAdjust > 0 ? (globalAdjust / 2) : 15000;
+                const oldVal2 = 80000; const newVal2 = oldVal2 + impactPerUser; const diff2 = newVal2 - oldVal2; totalOld += oldVal2; totalNew += newVal2; tbody.innerHTML += createRowHtml("Pedro Perez (Indirecto)", oldVal2, newVal2, diff2, true);
+                const oldVal3 = 120000; const newVal3 = oldVal3 + impactPerUser; const diff3 = newVal3 - oldVal3; totalOld += oldVal3; totalNew += newVal3; tbody.innerHTML += createRowHtml("Juan Diaz (Indirecto)", oldVal3, newVal3, diff3, true);
+            }
+            const totalDiff = totalNew - totalOld;
+            document.getElementById('simTotalOld').innerText = formatMoney(totalOld); document.getElementById('simTotalNew').innerText = formatMoney(totalNew);
+            const diffElem = document.getElementById('simTotalDiff'); diffElem.innerText = (totalDiff > 0 ? "+" : "") + formatMoney(totalDiff);
+            diffElem.className = "px-4 py-2 text-right font-bold " + (totalDiff >= 0 ? "text-green-600" : "text-red-600");
+            document.getElementById('simulationResult').classList.remove('hidden');
+        }
+
+        function createRowHtml(name, oldV, newV, diff, isIndirect = false) {
+            const diffClass = diff >= 0 ? "text-green-600" : "text-red-600"; const diffSign = diff >= 0 ? "+" : ""; const bgClass = isIndirect ? "bg-gray-50" : "bg-blue-50/50";
+            return `<tr class="${bgClass}"><td class="px-4 py-2 font-medium">${name} ${isIndirect ? '<i data-lucide="corner-down-right" class="inline w-3 h-3 text-gray-400"></i>' : ''}</td><td class="px-4 py-2 text-right text-gray-500">${formatMoney(oldV)}</td><td class="px-4 py-2 text-right font-bold text-gray-800">${formatMoney(newV)}</td><td class="px-4 py-2 text-right ${diffClass}">${diffSign}${formatMoney(diff)}</td></tr>`;
+        }
+        function formatMoney(amount) { return "$" + amount.toLocaleString('es-CO'); }
+        function finalizeProcess() {
+            if(confirm("¿Confirma que la reliquidación es correcta? Se notificará al asesor.")) { alert("✅ Proceso completado exitosamente. El estado ha cambiado a 'Finalizado Pago'."); closeWorkbench(); if(activeReq) activeReq.status = "Finalizado Pago"; renderDashboard(); }
+        }
+    </script>
+</body>
+</html>
