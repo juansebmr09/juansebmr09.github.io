@@ -45,31 +45,36 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> 
                     
                     <div class="relative" id="statusMultiselectContainer">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado (Múltiple)</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado9</label>
                         <button type="button" id="statusMultiselectBtn" class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 rounded-md focus:outline-none shadow-sm text-sm flex justify-between items-center text-left min-h-[38px]">
                             <span id="statusBtnText" class="truncate">Pendiente</span>
                             <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         
                         <div id="statusDropdown" class="hidden absolute top-full left-0 w-full bg-white border border-gray-200 shadow-xl rounded-b-md z-50 mt-1 max-h-60 overflow-y-auto dropdown-scroll">
+                            <label class="flex items-center px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-200 bg-gray-50">
+                                <input type="checkbox" id="chkAllStatus" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2">
+                                <span class="text-sm font-bold text-gray-800">Seleccionar Todos</span>
+                            </label>
+                            
                             <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
-                                <input type="checkbox" value="Pendiente" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" checked onchange="updateStatusButtonText()">
+                                <input type="checkbox" value="Pendiente" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" checked>
                                 <span class="text-sm">Pendiente</span>
                             </label>
                             <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
-                                <input type="checkbox" value="Devolución" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <input type="checkbox" value="Devolución" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2">
                                 <span class="text-sm">Devolución</span>
                             </label>
                             <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
-                                <input type="checkbox" value="Pendiente Gestión Humana" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <input type="checkbox" value="Pendiente Gestión Humana" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2">
                                 <span class="text-sm">Pendiente Gestión Humana</span>
                             </label>
                             <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
-                                <input type="checkbox" value="Aprobado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <input type="checkbox" value="Aprobado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2">
                                 <span class="text-sm">Aprobado</span>
                             </label>
                             <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" value="Rechazado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2" onchange="updateStatusButtonText()">
+                                <input type="checkbox" value="Rechazado" class="status-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 mr-2">
                                 <span class="text-sm">Rechazado</span>
                             </label>
                         </div>
@@ -207,12 +212,12 @@
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-[#eeeeee]">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Tipo Novedad</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Motivo Reclamación</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Plan</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Motivo (Asesor)</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Observación (Asesor)</th>
                                 <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[150px] bg-blue-50 border-l border-blue-100">Respuesta Jefe</th>
                                 <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px] bg-blue-50">Acciones</th>
                             </tr>
@@ -244,17 +249,13 @@
                 <input type="hidden" id="modal_reqId">
 
                 <div class="mb-5">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Novedad (Corrección)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Motivo de reclamación</label>
                     <div class="flex gap-2">
                         <div class="relative flex-grow">
                             <input type="text" id="modal_novedad_display" class="w-full border-gray-300 bg-gray-100 text-gray-500 rounded-md py-2 px-3 text-sm cursor-not-allowed" disabled>
                             
                             <select id="modal_novedad_select" class="hidden w-full border-blue-500 bg-white text-gray-800 rounded-md py-2 px-3 text-sm focus:ring-blue-500">
-                                <option value="CSC - Comision por cuota">CSC - Comision por cuota</option>
-                                <option value="CQC - Comision por cuota negocios estrategicos">CQC - Comision por cuota negocios estrategicos</option>
-                                <option value="ACP - Acelerador ORO PLUS">ACP - Acelerador ORO PLUS</option>
-                                <option value="Comisión errada">Comisión errada</option>
-                            </select>
+                                </select>
                         </div>
                         <button id="btnEditNovedad" onclick="toggleNovedadEdit()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 border border-amber-300 p-2 rounded transition" title="Editar tipo de novedad">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -298,7 +299,7 @@
         </div>
     </div>
 
-    <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
         <div class="relative mx-auto w-[90%] max-w-3xl bg-white shadow-xl rounded-lg animate-[fade-in_0.2s_ease-out]">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
                 <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">Bitácora de Solicitud</h3>
@@ -321,51 +322,83 @@
     </footer>
 
 <script>
+        // 1. LISTA DE CONCEPTOS UNIFICADA
+        const conceptosList = [
+            "Venta no grabada",
+            "Venta no liquidada al porcentaje esperado",
+            "Desacelerador o castigo mal aplicado",
+            "Bonos no liquidados",
+            "Aceleradores",
+            "Garantizado",
+            "Código mal diligenciado",
+            "Anexos de maternidad",
+            "Puntos por ventas y/o reactivaciones no tenidas en cuenta en la liquidación del recaudo.",
+            "Ventas con campaña no liquidadas al porcentaje correcto",
+            "Reclamación por ventas acumuladas",
+            "Reliquidación de comisiones retroactiva por traslados",
+            "Venta y/o reactivación grabada a otro asesor",
+            "Recaudo liquidado a un porcentaje diferente al esperado",
+            "Reclamación por pago no aplicado",
+            "Incapacidad",
+            "Reclamación de Impuestos",
+            "Descuento de cuota salud",
+            "Pronto pago"
+        ];
+
+        // Llenar el select del modal
+        const selectNovedad = document.getElementById('modal_novedad_select');
+        conceptosList.forEach(c => {
+            selectNovedad.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+
+
 // DATOS MOCK CON HISTORIAL (BITÁCORA) INTEGRADO
         const mockRequests = [
             { 
-                id: '45212025001', date: '2025-01-15', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', 
+                id: '452126001', date: '2026-01-15', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', 
                 status: 'Pendiente', 
                 assignedTo: 'Mí', 
-                lastUpdate: '2025-01-16',
+                lastUpdate: '2026-01-16',
                 history: [
-                    { date: '2025-01-15', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
+                    { date: '2026-01-15', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
                 ]
             },
             { 
-                id: '88992025003', date: '2025-01-20', advCode: '8899', advId: '98.765.432', advName: 'Carlos Perez', 
+                id: '889926003', date: '2026-01-20', advCode: '8899', advId: '98.765.432', advName: 'Carlos Perez', 
                 status: 'Devolución', 
                 assignedTo: 'Asesor', 
-                lastUpdate: '2025-01-22',
+                lastUpdate: '2026-01-22',
                 history: [
-                    { date: '2025-01-20', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
-                    { date: '2025-01-22', actor: 'Jefe Regional', action: 'Devolución por inconsistencia', status: 'Devolución' }
+                    { date: '2026-01-20', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
+                    { date: '2026-01-22', actor: 'Jefe Regional', action: 'Devolución por inconsistencia', status: 'Devolución' }
                 ]
             },
             { 
-                id: '10102025005', date: '2025-02-05', advCode: '1010', advId: '1.111.222.333', advName: 'Maria Gomez', 
+                id: '101026005', date: '2026-02-05', advCode: '1010', advId: '1.111.222.333', advName: 'Maria Gomez', 
                 status: 'Pendiente Gestión Humana', 
                 assignedTo: 'Gestión Humana', 
-                lastUpdate: '2025-02-06',
+                lastUpdate: '2026-02-06',
                 history: [
-                    { date: '2025-02-05', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
-                    { date: '2025-02-06', actor: 'Jefe Regional', action: 'Aprobación inicial', status: 'Aprobado' }
+                    { date: '2026-02-05', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
+                    { date: '2026-02-06', actor: 'Jefe Regional', action: 'Aprobación inicial', status: 'Aprobado' }
                 ]
             },
             { 
-                id: '45212025006', date: '2025-02-06', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', 
+                id: '452126006', date: '2026-02-06', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', 
                 status: 'Pendiente', 
                 assignedTo: 'Mí',
-                lastUpdate: '2025-02-06',
+                lastUpdate: '2026-02-06',
                 history: [
-                    { date: '2025-02-06', actor: 'Asesor', action: 'Radicación', status: 'Radicado' }
+                    { date: '2026-02-06', actor: 'Asesor', action: 'Radicación', status: 'Radicado' }
                 ]
             }
         ];
 
+        // Datos ajustados para usar motivos de la nueva lista
         let mockDetails = [
-            { requestId: '45212025001', rowId: 'r1', novedad: 'Comisión errada', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
-            { requestId: '45212025001', rowId: 'r2', novedad: 'ACP - Acelerador', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '', fileAttached: null }
+            { requestId: '452126001', rowId: 'r1', novedad: 'Venta no liquidada al porcentaje esperado', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
+            { requestId: '452126001', rowId: 'r2', novedad: 'Aceleradores', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
+            { requestId: '889926003', rowId: 'r3', novedad: 'Venta no grabada', plan: 'Individual', programa: 'Bronce', contrato: '202', usuario: 'Pedro', motivoAsesor: 'No me pagaron la venta', respuestaJefe: 'Devolución', justificacionJefe: 'Soporte ilegible', fileAttached: null }
         ];
 
         // INICIALIZACIÓN: TABLA VACÍA
@@ -386,6 +419,8 @@
              const statusBtn = document.getElementById('statusMultiselectBtn');
              const statusDropdown = document.getElementById('statusDropdown');
              const statusContainer = document.getElementById('statusMultiselectContainer');
+             const chkAllStatus = document.getElementById('chkAllStatus');
+             const statusCheckboxes = document.querySelectorAll('.status-checkbox');
 
              statusBtn.addEventListener('click', () => {
                  statusDropdown.classList.toggle('hidden');
@@ -396,20 +431,42 @@
                      statusDropdown.classList.add('hidden');
                  }
              });
+
+             // Lógica del checkbox "Todos"
+             chkAllStatus.addEventListener('change', (e) => {
+                 statusCheckboxes.forEach(cb => cb.checked = e.target.checked);
+                 updateStatusButtonText();
+             });
+
+             // Lógica de checkboxes individuales
+             statusCheckboxes.forEach(cb => {
+                 cb.addEventListener('change', () => {
+                     chkAllStatus.checked = Array.from(statusCheckboxes).every(c => c.checked);
+                     updateStatusButtonText();
+                 });
+             });
         });
 
         // Función para actualizar texto del botón de estado
         function updateStatusButtonText() {
             const checkboxes = document.querySelectorAll('.status-checkbox:checked');
+            const allCheckboxes = document.querySelectorAll('.status-checkbox');
             const btnText = document.getElementById('statusBtnText');
+            const chkAllStatus = document.getElementById('chkAllStatus');
             
             if (checkboxes.length === 0) {
                 btnText.textContent = "Seleccione...";
+                chkAllStatus.checked = false;
+            } else if (checkboxes.length === allCheckboxes.length) {
+                btnText.textContent = "Todos los estados";
+                chkAllStatus.checked = true;
             } else if (checkboxes.length <= 2) {
                 const values = Array.from(checkboxes).map(cb => cb.value).join(", ");
                 btnText.textContent = values;
+                chkAllStatus.checked = false;
             } else {
                 btnText.textContent = `${checkboxes.length} seleccionados`;
+                chkAllStatus.checked = false;
             }
         }
         
@@ -479,8 +536,12 @@
                 if (checkedStatuses.length > 0 && !checkedStatuses.includes(req.status)) return false;
                 if (fReqId && !req.id.includes(fReqId)) return false;
                 if (fAdvCode && !req.advCode.includes(fAdvCode)) return false;
-                if (fDateFrom && new Date(req.date) < new Date(fDateFrom)) return false;
-                if (fDateTo && new Date(req.date) > new Date(fDateTo)) return false;
+                
+                if (fDateFrom || fDateTo) {
+                    const itemDate = new Date(req.date + 'T00:00:00');
+                    if (fDateFrom && itemDate < new Date(fDateFrom + 'T00:00:00')) return false;
+                    if (fDateTo && itemDate > new Date(fDateTo + 'T23:59:59')) return false;
+                }
                 return true;
             });
             currentPage = 1;
@@ -509,6 +570,7 @@
             checkboxes.forEach(cb => {
                 cb.checked = (cb.value === "Pendiente");
             });
+            document.getElementById('chkAllStatus').checked = false;
             updateStatusButtonText();
 
             document.getElementById('filter_reqId').value = "";
@@ -711,7 +773,22 @@
             const fileName = document.getElementById('modal_file_name');
             
             display.value = row.novedad;
-            Array.from(select.options).forEach(opt => { if(row.novedad.includes(opt.value.substring(0,3))) select.value = opt.value; });
+
+            // Encontrar la opción en el select que coincida con el valor guardado
+            let optionFound = false;
+            Array.from(select.options).forEach(opt => { 
+                if(row.novedad === opt.value) {
+                    select.value = opt.value;
+                    optionFound = true;
+                }
+            });
+            // Si no se encuentra coincidencia exacta, intentar con "includes" (fallback)
+            if(!optionFound) {
+                 Array.from(select.options).forEach(opt => { 
+                    if(row.novedad && row.novedad.includes(opt.value.substring(0,5))) select.value = opt.value; 
+                });
+            }
+
             display.classList.remove('hidden'); select.classList.add('hidden');
             justif.value = row.justificacionJefe || "";
             

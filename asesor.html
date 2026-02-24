@@ -85,11 +85,9 @@
             <div id="errorMsg" class="hidden text-red-600 bg-red-50 p-3 rounded border border-red-200 text-sm font-bold mb-4 text-center"></div>
 
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4 shadow-sm">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">No. Solicitud</span><span id="header_solicitud" class="font-bold text-blue-700 text-base">Cargando...</span></div>
                     <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Código Asesor</span><span class="font-semibold text-gray-800">4521</span></div>
-                    <div class="flex flex-col border-r border-blue-200 pr-4"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Cédula Asesor</span><span class="font-semibold text-gray-800">1.020.304.050</span></div>
-                    <div class="flex flex-col"><span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Nombre Asesor</span><span class="font-semibold text-gray-800">Nathalia Rendon</span></div>
                 </div>
             </div>
             
@@ -134,7 +132,7 @@
                 <div class="flex items-center gap-3 w-full md:w-auto bg-white p-2 rounded border border-dashed border-gray-400">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
                     <div class="relative overflow-hidden inline-block">
-                        <button class="border border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-1 px-3 rounded text-sm transition">Adjuntar Soporte Masivo</button>
+                        <button class="border border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-1 px-3 rounded text-sm transition">Adjuntar Soporte</button>
                         <input type="file" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
                     </div>
                     <span class="text-xs text-gray-500 hidden sm:inline">Para los registros seleccionados</span>
@@ -310,29 +308,28 @@
     </footer>
 
     <script>
-        // --- LISTA DE MOTIVOS (Para usar en Filtros y Nuevo Registro) ---
         const motivosList = [
-            "Pago no cruzado",
-            "Valor de comisión errado",
-            "Descuento injustificado",
-            "Error en acelerador",
-            "Venta mal cargada",
-            "Beneficiario incorrecto",
-            "Otro motivo"
+            "Venta no grabada",
+            "Venta no liquidada al porcentaje esperado",
+            "Desacelerador o castigo mal aplicado",
+            "Bonos no liquidados",
+            "Aceleradores",
+            "Garantizado",
+            "Código mal diligenciado",
+            "Anexos de maternidad"
         ];
 
         // --- BASE DE DATOS SIMULADA ---
-        // Agregamos propiedad 'globalClaimId' para rastrear si pertenecen a una reclamación global
         let mockDatabase = [
             {
                 id: 'fila_ejemplo',
                 fecha: '2025-01-15', 
                 anio: '2025', periodo: 'Ene', tipoDoc: 'CC - Cédula de ciudadanía', numDoc: '123456789',
-                plan: 'Familiar', programa: 'Oro', contrato: 'CT-001', 
+                plan: 'Familiar', programa: 'Oro', contrato: '23431', 
                 idContratante: '998877', idUsuario: '112233', 
                 usuario: 'Juan Pérez', parentesco: 'Titular', pago: 'Pospago',
                 motivos: [],
-                globalClaimId: null // Nueva propiedad
+                globalClaimId: null 
             },
             {
                 id: 'fila_prueba_1',
@@ -342,18 +339,14 @@
                 idContratante: '556677', idUsuario: '334455',
                 usuario: 'Maria Lopez', parentesco: 'Titular', pago: 'Prepago',
                 motivos: [
-                    { motivo: 'Pago no cruzado', observacion: 'No se reflejó el pago de la cuota inicial.' }
+                    { motivo: 'Venta no liquidada al porcentaje esperado', observacion: 'No se reflejó el pago de la cuota inicial.' }
                 ],
                 globalClaimId: null
             }
         ];
 
-        // Almacén de reclamaciones globales activas
-        let globalClaims = []; // { id: 'GL-2025-ENE-01', anio: '2025', periodo: 'Ene' ... }
+        let globalClaims = []; 
 
-        // --- RENDERIZAR OPCIONES DE MOTIVOS ---
-
-        // Función para renderizar Motivos + Textareas Dinámicos (Reutilizable para Nuevo y Editar)
         function setupDynamicMotivos(listContainerId, obsContainerId, prefix) {
             const listContainer = document.getElementById(listContainerId);
             const obsContainer = document.getElementById(obsContainerId);
@@ -368,13 +361,11 @@
                     <label for="${uniqueId}" class="text-sm text-gray-700 cursor-pointer select-none">${m}</label>
                 `;
                 
-                // Evento al hacer click en el checkbox
                 const checkbox = div.querySelector('input');
                 checkbox.addEventListener('change', function() {
                     const existingObs = document.getElementById(`${prefix}_obs_div_${index}`);
                     
                     if (this.checked) {
-                        // Crear textarea si no existe
                         if (!existingObs) {
                             const obsDiv = document.createElement('div');
                             obsDiv.id = `${prefix}_obs_div_${index}`;
@@ -385,14 +376,11 @@
                             `;
                             obsContainer.appendChild(obsDiv);
                             
-                            // Remover mensaje vacío si existe
                             const emptyMsg = obsContainer.querySelector('.italic');
                             if(emptyMsg) emptyMsg.style.display = 'none';
                         }
                     } else {
-                        // Eliminar textarea si existe
                         if (existingObs) existingObs.remove();
-                        // Mostrar mensaje vacío si no queda nada
                         if (obsContainer.children.length === 0 || (obsContainer.children.length === 1 && obsContainer.querySelector('.italic'))) {
                             const emptyMsg = obsContainer.querySelector('.italic');
                             if(emptyMsg) emptyMsg.style.display = 'block';
@@ -404,9 +392,7 @@
             });
         }
 
-        // Inicializar lógica dinámica en Modal Nuevo
         setupDynamicMotivos('newMotivosList', 'newObservationsContainer', 'new');
-        // Inicializar lógica dinámica en Modal Editar
         setupDynamicMotivos('editMotivosList', 'editObservationsContainer', 'edit');
 
 
@@ -415,8 +401,9 @@
             let consecutiveCounter = 1;
             const fixedCode = "4521";
             const currentYear = new Date().getFullYear();
+            const lastTwoDigits = currentYear % 100;
             const consecutiveStr = String(consecutiveCounter).padStart(3, '0');
-            document.getElementById('header_solicitud').innerText = `${fixedCode}${currentYear}${consecutiveStr}`;
+            document.getElementById('header_solicitud').innerText = `${fixedCode}${lastTwoDigits}${consecutiveStr}`;
         };
         initHeaderData();
 
@@ -430,7 +417,6 @@
         const closeCommentModal = () => commentModal.classList.add('hidden');
         document.querySelectorAll('.js-close-comment').forEach(btn => btn.addEventListener('click', closeCommentModal));
 
-        // Click en tabla (Ver u Editar)
         document.getElementById('tableBody').addEventListener('click', (e) => {
             const btn = e.target.closest('.js-view-details') || e.target.closest('.js-edit-details');
             if (!btn) return;
@@ -440,7 +426,6 @@
             
             currentRowInput.value = rowId;
 
-            // Limpiar modal previo
             const listContainer = document.getElementById('editMotivosList');
             const obsContainer = document.getElementById('editObservationsContainer');
             obsContainer.innerHTML = '<p class="text-sm text-gray-400 italic" id="editEmptyState">Seleccione un motivo para agregar observaciones.</p>';
@@ -449,15 +434,12 @@
             // Cargar datos existentes
             if (record && record.motivos) {
                 record.motivos.forEach(mObj => {
-                    // Buscar índice del motivo
                     const idx = motivosList.indexOf(mObj.motivo);
                     if (idx !== -1) {
                         const checkbox = document.getElementById(`edit_chk_${idx}`);
                         if (checkbox) {
                             checkbox.checked = true;
-                            // Disparar evento change manualmente para crear el textarea
                             checkbox.dispatchEvent(new Event('change'));
-                            // Llenar el valor
                             const txt = document.getElementById(`edit_txt_${idx}`);
                             if(txt) txt.value = mObj.observacion;
                         }
@@ -473,17 +455,14 @@
                 if (hasData) {
                     modalTitle.innerText = "Detalle de Motivos";
                     btnSaveComment.classList.add('hidden');
-                    // Deshabilitar inputs
                     listContainer.querySelectorAll('input').forEach(i => i.disabled = true);
                     obsContainer.querySelectorAll('textarea').forEach(t => t.disabled = true);
                 } else {
-                    // Ver detalles pero está vacío -> Permitir agregar
                     modalTitle.innerText = "Agregar Motivos";
                     btnSaveComment.classList.remove('hidden');
                     listContainer.querySelectorAll('input').forEach(i => i.disabled = false);
                 }
             } else {
-                // Modo Editar
                 modalTitle.innerText = "Editar Motivos";
                 btnSaveComment.classList.remove('hidden');
                 listContainer.querySelectorAll('input').forEach(i => i.disabled = false);
@@ -492,12 +471,10 @@
             openCommentModal();
         });
 
-        // Guardar Edición
         btnSaveComment.addEventListener('click', () => {
             const rowId = currentRowInput.value;
             const record = mockDatabase.find(r => r.id === rowId);
             
-            // Recolectar datos del form dinámico de edición
             const newMotivosData = [];
             motivosList.forEach((m, idx) => {
                 const chk = document.getElementById(`edit_chk_${idx}`);
@@ -517,7 +494,6 @@
 
             if(record) record.motivos = newMotivosData;
             
-            // Actualizar vista lápiz
             const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
             if(row) {
                 const editBtn = row.querySelector('.js-edit-details');
@@ -535,7 +511,6 @@
         btnOpenNewClaim.addEventListener('click', () => {
             newClaimModal.classList.remove('hidden');
             document.getElementById('newClaimForm').reset();
-            // Resetear area dinámica
             const obsContainer = document.getElementById('newObservationsContainer');
             obsContainer.innerHTML = '<p class="text-sm text-gray-400 italic text-center py-2">Seleccione al menos un motivo arriba para detallar la observación.</p>';
         });
@@ -604,7 +579,6 @@
         btnSaveGlobalClaim.addEventListener('click', () => {
             const motivo = document.getElementById('global_motivo').value;
             const desc = document.getElementById('global_descripcion').value;
-            // Aquí validaríamos el archivo
             
             if(!motivo || !desc) {
                 alert("Complete el motivo y la descripción para la reclamación global.");
@@ -615,7 +589,6 @@
             const periodo = document.getElementById('filter_periodo').value;
             const globalID = `GL-${anio}-${periodo}-${Math.floor(Math.random()*1000)}`;
 
-            // Guardar en "Base de datos" global
             globalClaims.push({
                 id: globalID,
                 anio: anio,
@@ -624,7 +597,6 @@
                 descripcion: desc
             });
 
-            // Actualizar TODOS los registros que coincidan con el periodo en la BD
             let updatedCount = 0;
             mockDatabase.forEach(row => {
                 if(row.anio === anio && row.periodo === periodo) {
@@ -636,7 +608,6 @@
             globalClaimModal.classList.add('hidden');
             alert(`✅ Se ha generado la Reclamación Global ${globalID}. Se han asociado ${updatedCount} registros.`);
             
-            // Simular click en consultar para refrescar la tabla
             document.getElementById('btnConsultar').click();
         });
 
@@ -649,9 +620,8 @@
             let rowClass = 'hover:bg-gray-50 transition-colors h-12 slide-in';
             let globalIndicator = '';
 
-            // SI ES GLOBAL: Solo pintamos de amarillo, PERO NO BLOQUEAMOS NADA
             if (isGlobal) {
-                rowClass += ' row-global-active'; // Color amarillo
+                rowClass += ' row-global-active'; 
                 globalIndicator = `
                     <span class="text-amber-600 mr-2" title="Registro parte de Reclamación Global">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
@@ -661,7 +631,6 @@
 
             const pencilClass = hasMotivos ? '' : 'hidden';
             
-            // Botones de acción siempre activos
             const actionButtons = `
                 ${globalIndicator}
                 <button class="js-view-details text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors" title="Ver motivos">
@@ -704,32 +673,26 @@
             const fTipoDoc = document.getElementById('filter_tipodoc').value;
             const fNumDoc = document.getElementById('filter_numdoc').value.trim();
             
-            // MOSTRAR/OCULTAR BOTÓN GLOBAL: Solo si hay AÑO y PERIODO seleccionado
             const btnGlobal = document.getElementById('btnOpenGlobalClaim');
             const globalStatusBanner = document.getElementById('globalStatusBanner');
             
-            // Resetear visuales globales
             globalStatusBanner.classList.add('hidden');
             let periodIsGlobalLocked = false;
             let currentGlobalId = '';
 
-            // Verificar si este periodo ya tiene reclamación global
             if (fAnio && fPeriodo) {
                 const existingGlobal = globalClaims.find(gc => gc.anio === fAnio && gc.periodo === fPeriodo);
                 if (existingGlobal) {
                     periodIsGlobalLocked = true;
                     currentGlobalId = existingGlobal.id;
-                    // Si ya está reclamado, no mostramos el botón de crear nueva reclamación global
                     btnGlobal.classList.add('hidden');
-                    // Mostramos el banner informativo
                     globalStatusBanner.classList.remove('hidden');
                     document.getElementById('lblGlobalID').innerText = currentGlobalId;
                 } else {
-                    // Si no está reclamado, mostramos el botón para permitir hacerlo
                     btnGlobal.classList.remove('hidden');
                 }
             } else {
-                btnGlobal.classList.add('hidden'); // No se puede reclamar sin filtro especifico
+                btnGlobal.classList.add('hidden'); 
             }
 
             const tableBody = document.getElementById('tableBody');
@@ -766,7 +729,7 @@
             document.getElementById('tableBody').innerHTML = "";
             document.getElementById('errorMsg').classList.add('hidden');
             document.getElementById('noResultsMsg').classList.add('hidden');
-            document.getElementById('btnOpenGlobalClaim').classList.add('hidden'); // Ocultar boton global
+            document.getElementById('btnOpenGlobalClaim').classList.add('hidden'); 
             document.getElementById('globalStatusBanner').classList.add('hidden');
         });
 

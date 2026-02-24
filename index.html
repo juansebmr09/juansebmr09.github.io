@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- Estilos Generales --- */
         * {
             margin: 0;
             padding: 0;
@@ -16,7 +15,6 @@
         }
 
         body {
-            /* Gradiente corporativo moderno */
             background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
             min-height: 100vh;
             display: flex;
@@ -25,7 +23,6 @@
             padding: 20px;
         }
 
-        /* --- Tarjeta Principal --- */
         .welcome-card {
             background: rgba(255, 255, 255, 0.95);
             width: 100%;
@@ -40,7 +37,6 @@
             animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* --- Imagen / Logo --- */
         .logo-container {
             padding: 10px;
             margin-bottom: 5px;
@@ -52,10 +48,9 @@
             height: auto;
             display: block;
             margin: 0 auto;
-            mix-blend-mode: multiply; /* Integra el logo si tiene fondo blanco */
+            mix-blend-mode: multiply; 
         }
 
-        /* --- Títulos --- */
         .header-text h1 {
             color: #1e293b;
             font-size: 1.6rem;
@@ -70,7 +65,6 @@
             line-height: 1.5;
         }
 
-        /* --- Botón Principal (Hero Button) --- */
         .main-action-btn {
             background: linear-gradient(90deg, #0061ff 0%, #2979ff 100%);
             color: white;
@@ -89,14 +83,12 @@
             overflow: hidden;
         }
 
-        /* Icono dentro del botón */
         .main-action-btn svg {
             width: 24px;
             height: 24px;
             fill: white;
         }
 
-        /* Efectos Hover */
         .main-action-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(0, 97, 255, 0.4);
@@ -107,7 +99,6 @@
             transform: translateY(-1px);
         }
 
-        /* --- Footer --- */
         .copyright {
             margin-top: 30px;
             font-size: 0.75rem;
@@ -115,7 +106,6 @@
             font-weight: 300;
         }
 
-        /* Animación suave */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }

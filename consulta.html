@@ -160,68 +160,60 @@
         // --- DATOS SIMULADOS CON ARCHIVOS PARA TRAZABILIDAD ---
         const mockData = [
             { 
-                id: '45212025001', date: '2025-01-15', advName: 'Nathalia Rendon', 
+                id: '452126001', date: '2026-01-15', advName: 'Nathalia Rendon', 
                 status: 'En trámite',
                 assignedTo: 'Jefe Regional', 
                 history: [
                     { 
-                        date: '2025-01-15 08:30 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
+                        date: '2026-01-15 08:30 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
                         action: 'Radicación de solicitud inicial',
-                        // AQUÍ ESTÁ LA EVIDENCIA DE LO QUE SUBIÓ EL ASESOR
                         files: [
                             { name: 'Formulario_Firmado.pdf', type: 'pdf' },
                             { name: 'Cédula_Cliente.pdf', type: 'pdf' }
                         ]
-                    },
-                    { date: '2025-01-15 08:31 AM', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional', files: [] }
+                    }
                 ]
             },
             { 
-                // CASO COMPLEJO: DEVOLUCIÓN POR DOCUMENTO INCORRECTO
-                id: '45212025002', date: '2025-01-20', advName: 'Nathalia Rendon', 
+                id: '452126002', date: '2026-01-20', advName: 'Nathalia Rendon', 
                 status: 'Devolución', 
                 assignedTo: 'Mí',
                 history: [
                     { 
-                        date: '2025-01-20 10:00 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
+                        date: '2026-01-20 10:00 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
                         action: 'Radicación de solicitud',
                         files: [
-                            { name: 'Soporte_Pago_Enero.pdf', type: 'pdf' } // El asesor cree que subió esto
+                            { name: 'Soporte_Pago_Enero.pdf', type: 'pdf' } 
                         ]
                     },
-                    { date: '2025-01-20 10:05 AM', actor: 'Sistema', role: 'Sistema', action: 'Asignación automática a Jefe Regional', files: [] },
                     { 
-                        date: '2025-01-22 02:15 PM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
+                        date: '2026-01-22 02:15 PM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
                         action: 'Devolución: El soporte adjunto no corresponde al periodo solicitado (subió Diciembre, se requiere Enero).',
-                        // EL JEFE PUEDE ADJUNTAR EVIDENCIA DEL RECHAZO O UN FORMATO GUÍA
                         files: [
                             { name: 'Pantallazo_Error.png', type: 'img' } 
                         ]
-                    },
-                    { date: '2025-01-22 02:16 PM', actor: 'Sistema', role: 'Sistema', action: 'Reasignación a Asesor para corrección', files: [] }
+                    }
                 ]
             },
             { 
-                id: '10102025005', date: '2025-02-05', advName: 'Maria Gomez', 
+                id: '1010226005', date: '2026-02-05', advName: 'Maria Gomez', 
                 status: 'Pendiente Gestión Humana', 
                 assignedTo: 'Gestión Humana', 
                 history: [
                     { 
-                        date: '2025-02-05 09:00 AM', actor: 'Maria Gomez', role: 'Asesor', 
+                        date: '2026-02-05 09:00 AM', actor: 'Maria Gomez', role: 'Asesor', 
                         action: 'Radicación de solicitud',
                         files: [{ name: 'Paquete_Completo_V3.zip', type: 'zip' }]
                     },
                     { 
-                        date: '2025-02-06 11:00 AM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
+                        date: '2026-02-06 11:00 AM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
                         action: 'Aprobación inicial y VoBo',
                         files: []
-                    },
-                    { date: '2025-02-06 11:05 AM', actor: 'Sistema', role: 'Sistema', action: 'Escalamiento a Gestión Humana', files: [] }
+                    }
                 ]
             }
         ];
 
-        // --- FUNCIÓN CONSULTAR ---
         btnConsultar.addEventListener('click', () => {
             const valSolicitud = inputSolicitud.value.trim();
             const valDesde = inputFechaDesde.value;
@@ -238,17 +230,30 @@
             renderTable(valSolicitud, valDesde, valHasta);
         });
 
-        // --- RENDERIZAR TABLA PRINCIPAL ---
         function renderTable(idFilter, dateFrom, dateTo) {
             resultsBody.innerHTML = '';
             
             const filteredData = mockData.filter(item => {
                 let pass = true;
-                if (idFilter && !item.id.includes(idFilter)) pass = false;
-                // Nota: Conversión simple de fecha para el ejemplo
-                const itemDate = new Date(item.date);
-                if (dateFrom && itemDate < new Date(dateFrom)) pass = false;
-                if (dateTo && itemDate > new Date(dateTo)) pass = false;
+                
+                if (idFilter && !item.id.includes(idFilter)) {
+                    pass = false;
+                }
+                
+                if (dateFrom || dateTo) {
+                    const itemDate = new Date(item.date + 'T00:00:00'); 
+                    
+                    if (dateFrom) {
+                        const from = new Date(dateFrom + 'T00:00:00');
+                        if (itemDate < from) pass = false;
+                    }
+                    
+                    if (dateTo) {
+                        const to = new Date(dateTo + 'T23:59:59');
+                        if (itemDate > to) pass = false;
+                    }
+                }
+                
                 return pass;
             });
 
@@ -303,7 +308,6 @@
             emptyState.classList.remove('hidden');
         });
 
-        // --- MODAL BITÁCORA ---
         window.openBitacora = function(id) {
             modalSolicitudId.textContent = id;
             modalBitacoraBody.innerHTML = ''; 
@@ -312,14 +316,12 @@
             
             if (item && item.history) {
                 item.history.forEach(h => {
-                    // Colores según el ROL
                     let roleBadge = 'bg-gray-100 text-gray-800';
                     if(h.role === 'Asesor') roleBadge = 'bg-green-100 text-green-800';
                     if(h.role === 'Jefe Regional') roleBadge = 'bg-purple-100 text-purple-800';
                     if(h.role === 'Gestión Humana') roleBadge = 'bg-blue-100 text-blue-800';
                     if(h.role === 'Sistema') roleBadge = 'bg-gray-100 text-gray-500 border border-gray-200';
 
-                    // Generar HTML para los archivos
                     let filesHtml = '';
                     if (h.files && h.files.length > 0) {
                         filesHtml = `<div class="flex flex-col gap-1">`;
