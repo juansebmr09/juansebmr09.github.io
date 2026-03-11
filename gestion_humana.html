@@ -54,28 +54,22 @@
             </div>
 
             <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"> 
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end"> 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Regional</label>
-                        <select id="filter_regional" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                        <select id="filter_regional" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
                             <option value="">Todas</option><option value="Antioquia">Antioquia</option><option value="Occidente">Occidente</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Director</label>
-                        <select id="filter_director" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
-                            <option value="">Todos</option><option value="Dir1">Juan Director</option><option value="Dir2">Maria Gerente</option>
-                        </select>
-                    </div>
-                    <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jefe Inmediato</label>
-                        <select id="filter_boss" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                        <select id="filter_boss" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
                             <option value="">Todos</option><option value="Carlos Pérez">Carlos Pérez</option><option value="Ana Rodríguez">Ana Rodríguez</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>
-                        <select id="filter_status" onchange="applyFilters()" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
+                        <select id="filter_status" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
                             <option value="">Todos</option>
                             <option value="Pendiente GH" selected>Pendiente GH</option>
                             <option value="En Gestión">En Gestión</option>
@@ -86,14 +80,23 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">No. Solicitud</label>
                         <input type="text" id="filter_id" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-white" placeholder="Ej: 4521...">
                     </div>
-                    <div class="flex items-end gap-2">
-                        <button onclick="clearFilters()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded text-sm transition" title="Limpiar">
-                            <i data-lucide="eraser" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="applyFilters()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded text-sm shadow transition">
-                            CONSULTAR
-                        </button>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha de Creación</label>
+                        <div class="flex items-center border border-gray-300 rounded-md bg-white overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                            <input type="date" id="filter_dateFrom" class="w-full border-none text-xs focus:ring-0 text-gray-600 p-2 outline-none" title="Desde">
+                            <span class="text-gray-400 font-bold px-1">→</span>
+                            <input type="date" id="filter_dateTo" class="w-full border-none text-xs focus:ring-0 text-gray-600 p-2 outline-none" title="Hasta">
+                        </div>
                     </div>
+                </div>
+                
+                <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+                    <button onclick="clearFilters()" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded shadow-sm transition flex items-center gap-2 text-sm" title="Limpiar Filtros">
+                        <i data-lucide="eraser" class="w-4 h-4"></i> Limpiar
+                    </button>
+                    <button onclick="applyFilters()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded shadow transition text-sm">
+                        CONSULTAR
+                    </button>
                 </div>
             </div>
 
@@ -153,7 +156,7 @@
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <button class="flex items-center justify-center gap-2 bg-white py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-100 transition shadow-sm">
                             <i data-lucide="file-text" class="w-4 h-4"></i>
-                            <span class="text-xs font-bold">Ver Soporte Asesor (Último)</span>
+                            <span class="text-xs font-bold">Ver Soportes Asesor</span>
                         </button>
                         <button class="flex items-center justify-center gap-2 bg-white py-2 rounded-lg border border-purple-200 text-purple-700 hover:bg-purple-50 transition shadow-sm">
                             <i data-lucide="file-check-2" class="w-4 h-4"></i>
@@ -162,7 +165,7 @@
 
                         <label id="ghUploadLabel" class="col-span-2 flex items-center justify-center gap-2 bg-white py-2 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition shadow-sm cursor-pointer">
                             <i data-lucide="upload" class="w-4 h-4"></i>
-                            <span class="text-xs font-bold">Adjuntar Nuevo Documento General (Gestión Humana)</span>
+                            <span class="text-xs font-bold">Adjuntar documentos</span>
                             <input type="file" id="ghUploadInput" class="hidden" onchange="handleGHFileUpload(this)">
                         </label>
                     </div>
@@ -190,7 +193,7 @@
                                     <th class="px-4 py-3 text-left font-bold text-gray-600 uppercase text-xs min-w-[150px]">Motivo(s) de Reclamación</th>
                                     <th class="px-4 py-3 text-left font-bold text-gray-600 uppercase text-xs min-w-[150px]">Obs. Asesor</th>
                                     <th class="px-4 py-3 text-left font-bold text-gray-600 uppercase text-xs min-w-[150px]">Obs. Jefe</th>
-                                    <th class="px-4 py-3 text-center font-bold text-gray-600 uppercase text-xs">Estado GH</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-600 uppercase text-xs">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="detailsBody" class="divide-y divide-gray-100 bg-white">
@@ -237,11 +240,6 @@
                             <div class="flex-grow flex flex-col">
                                 <label class="block text-sm font-bold text-gray-800 mb-1">Observación Específica <span class="text-red-500">*</span></label>
                                 <textarea id="gh_observation" class="w-full flex-grow border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500 resize-none shadow-sm disabled:bg-gray-100 disabled:text-gray-600" placeholder="Detalle la auditoría..."></textarea>
-                            </div>
-
-                            <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 shrink-0">
-                                <label class="block text-[11px] font-bold text-gray-800 mb-1">Soporte Específico (Opcional)</label>
-                                <input type="file" id="gh_row_file" class="block w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                             </div>
 
                             <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 shrink-0">
@@ -360,17 +358,6 @@
         </div>
     </div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
-        <div class="max-w-[1600px] mx-auto px-4 text-center">
-            <a href="OVA.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors inline-flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Volver a los otros roles del mockup
-            </a>
-        </div>
-    </footer>
-
     <script>
         lucide.createIcons();
 
@@ -397,7 +384,7 @@
         // 2. DATOS SIMULADOS (CON BITÁCORA INCLUIDA Y MOTIVOS)
         const mockRequests = [
             { 
-                id: '45212025001', date: '2025-01-15', advName: 'Nathalia Rendon', advId: '1.020.304.050', bossName: 'Carlos Pérez', regional: 'Antioquia', director: 'Dir1', status: 'Pendiente GH',
+                id: '45212025001', date: '2025-01-15', advName: 'Nathalia Rendon', advId: '1.020.304.050', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'Pendiente GH',
                 history: [
                     { date: '2025-01-10 08:30 AM', actor: 'Nathalia Rendon', role: 'Asesor', motivos: ['Falta pago de este mes'], action: 'Radicación de solicitud inicial', files: [{ name: 'Soporte_Mal_Mes.pdf' }] },
                     { date: '2025-01-12 02:15 PM', actor: 'Carlos Pérez', role: 'Jefe Regional', motivos: ['Falta pago de este mes'], action: 'Devolución: El archivo adjunto es de Diciembre. Favor subir Enero.', files: [] },
@@ -406,7 +393,7 @@
                 ]
             },
             { 
-                id: '88992025002', date: '2025-01-16', advName: 'Juan Gomez', advId: '98.765.432', bossName: 'Ana Rodríguez', regional: 'Occidente', director: 'Dir2', status: 'Finalizado',
+                id: '88992025002', date: '2025-01-16', advName: 'Juan Gomez', advId: '98.765.432', bossName: 'Ana Rodríguez', regional: 'Occidente', status: 'Finalizado',
                 history: [
                     { date: '2025-01-16 10:00 AM', actor: 'Juan Gomez', role: 'Asesor', motivos: ['Venta no grabada'], action: 'Radicación de solicitud', files: [{ name: 'Evidencia.zip' }] },
                     { date: '2025-01-16 11:30 AM', actor: 'Ana Rodríguez', role: 'Jefe Regional', motivos: ['Venta no grabada'], action: 'Aprobado.', files: [] },
@@ -414,7 +401,7 @@
                 ]
             },
             { 
-                id: '10102025003', date: '2025-01-20', advName: 'Maria Perez', advId: '55.666.777', bossName: 'Carlos Pérez', regional: 'Antioquia', director: 'Dir1', status: 'En Gestión',
+                id: '10102025003', date: '2025-01-20', advName: 'Maria Perez', advId: '55.666.777', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'En Gestión',
                 history: [
                     { date: '2025-01-20 08:00 AM', actor: 'Maria Perez', role: 'Asesor', motivos: ['Aceleradores', 'Bonos no liquidados'], action: 'Radicación de solicitud', files: [{ name: 'Reclamo_Masivo.pdf' }] },
                     { date: '2025-01-21 09:30 AM', actor: 'Carlos Pérez', role: 'Jefe Regional', motivos: ['Aceleradores', 'Bonos no liquidados'], action: 'Aprobado.', files: [] }
@@ -439,27 +426,37 @@
 
         function applyFilters() {
             const region = document.getElementById('filter_regional').value;
-            const director = document.getElementById('filter_director').value;
             const boss = document.getElementById('filter_boss').value;
             const status = document.getElementById('filter_status').value;
             const idText = document.getElementById('filter_id').value.trim();
+            const dateFrom = document.getElementById('filter_dateFrom').value;
+            const dateTo = document.getElementById('filter_dateTo').value;
 
             currentRequests = mockRequests.filter(req => {
                 let match = true;
                 if(region && req.regional !== region) match = false;
-                if(director && req.director !== director) match = false;
                 if(boss && req.bossName !== boss) match = false;
                 if(status && req.status !== status) match = false;
                 if(idText && !req.id.includes(idText)) match = false;
+                
+                if (dateFrom || dateTo) {
+                    const itemDate = new Date(req.date + 'T00:00:00');
+                    if (dateFrom && itemDate < new Date(dateFrom + 'T00:00:00')) match = false;
+                    if (dateTo && itemDate > new Date(dateTo + 'T23:59:59')) match = false;
+                }
+
                 return match;
             });
             renderDashboard();
         }
 
         function clearFilters() {
-            document.querySelectorAll('select').forEach(s => s.value = "");
-            document.getElementById('filter_id').value = "";
+            document.getElementById('filter_regional').value = "";
+            document.getElementById('filter_boss').value = "";
             document.getElementById('filter_status').value = "Pendiente GH";
+            document.getElementById('filter_id').value = "";
+            document.getElementById('filter_dateFrom').value = "";
+            document.getElementById('filter_dateTo').value = "";
             applyFilters();
         }
 
@@ -566,7 +563,7 @@
                 if(r.ghStatus === 'Rechazado') badgeClass = 'bg-red-100 text-red-700 font-bold border-red-200';
                 if(r.ghStatus === 'Devuelto') badgeClass = 'bg-orange-100 text-orange-700 font-bold border-orange-200';
 
-                // Renderizar los motivos en etiquetas pequeñas (NUEVA COLUMNA)
+                // Renderizar los motivos en etiquetas pequeñas
                 let motivosHtml = '';
                 if(r.ghConceptos && r.ghConceptos.length > 0) {
                     motivosHtml = r.ghConceptos.map(m => `<span class="inline-block bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded m-0.5 border border-blue-200 leading-tight">${m}</span>`).join('');
@@ -654,37 +651,34 @@
                 if (!obs) { alert("Debe ingresar una observación específica."); return; }
             }
 
-            // Guardar en Mock Detail (esto actualiza la tabla del Workbench)
+            // Guardar en Mock Detail
             const r = mockDetails.find(d => d.rowId === rowId);
             r.ghStatus = status;
             r.ghObs = obs;
             r.ghConceptos = selectedConcepts;
 
-            // Actualizar estado Global a 'En Gestión' si era Pendiente
+            // Actualizar estado Global
             if (activeReq.status === 'Pendiente GH' && status !== 'Pendiente') {
                 activeReq.status = 'En Gestión';
                 document.getElementById('wb_status_badge').innerText = activeReq.status;
                 document.getElementById('wb_status_badge').className = "px-3 py-1 rounded-full text-xs font-bold border bg-blue-100 text-blue-800 border-blue-200";
             }
 
-            // Verificar si hay archivo específico para guardar en bitácora
             const filesArray = [];
             if (fileInput && fileInput.files.length > 0) {
                 filesArray.push({ name: fileInput.files[0].name });
             }
 
-            // Agregar acción a la bitácora automáticamente
             const timestamp = new Date().toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' });
             activeReq.history.push({
                 date: timestamp,
                 actor: 'Analista GH',
                 role: 'Gestión Humana',
-                motivos: [...selectedConcepts], // Guardar los motivos exactos
+                motivos: [...selectedConcepts],
                 action: `Registro gestionado (${r.contrato}): Marcado como ${status}. Obs: ${obs}`,
                 files: filesArray
             });
 
-            // Limpiar input de archivo después de guardar
             if(fileInput) fileInput.value = '';
 
             renderWorkbenchTable();
@@ -710,12 +704,10 @@
                 const pendingCount = rows.filter(r => r.ghStatus === 'Pendiente').length;
                 txt.innerHTML = `Faltan <b class='text-red-500'>${pendingCount}</b> registros por gestionar para habilitar el cierre.`;
             } else if (hasDevuelto) {
-                // Bloqueo total si hay devueltos
                 btn.disabled = true;
                 btn.className = "bg-gray-300 text-gray-500 cursor-not-allowed font-bold py-3 px-8 rounded-lg transition flex items-center gap-2 text-sm";
                 txt.innerHTML = "<span class='text-orange-600 font-bold'>⚠️ Contiene registros devueltos. La solicitud no se puede cerrar (quedará En Gestión).</span>";
             } else {
-                // Todos resueltos y NINGUNO devuelto
                 btn.disabled = false;
                 btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition flex items-center gap-2 text-sm transform hover:-translate-y-0.5";
                 txt.innerHTML = "<span class='text-green-600 font-bold'>✓ Todos los registros gestionados correctamente. Puede finalizar la solicitud.</span>";
@@ -748,7 +740,6 @@
                 const file = input.files[0];
                 const timestamp = new Date().toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' });
                 
-                // Agregar directamente a la bitácora de la solicitud activa
                 activeReq.history.push({
                     date: timestamp,
                     actor: 'Analista GH',
@@ -778,13 +769,11 @@
 
             if (activeReq.history && activeReq.history.length > 0) {
                 activeReq.history.forEach(h => {
-                    // Colores por rol
                     let roleBadge = 'bg-gray-100 text-gray-800';
                     if(h.role === 'Asesor') roleBadge = 'bg-green-100 text-green-800';
                     if(h.role === 'Jefe Regional') roleBadge = 'bg-purple-100 text-purple-800';
                     if(h.role === 'Gestión Humana') roleBadge = 'bg-blue-100 text-blue-800';
 
-                    // Generar HTML de motivos en bitacora
                     let motivosHtml = '';
                     if (h.motivos && h.motivos.length > 0) {
                         motivosHtml = h.motivos.map(m => `<div class="bg-white border border-gray-200 text-gray-700 text-[10px] px-1.5 py-0.5 rounded mb-1 w-max shadow-sm">${m}</div>`).join('');
@@ -792,7 +781,6 @@
                         motivosHtml = `<span class="text-gray-400 text-xs italic">-</span>`;
                     }
 
-                    // Generar HTML de archivos adjuntos
                     let filesHtml = '';
                     if (h.files && h.files.length > 0) {
                         filesHtml = `<div class="flex flex-col gap-1">`;

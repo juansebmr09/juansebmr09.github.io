@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Solicitudes con Trazabilidad</title>
+    <title>Consulta de Solicitudes con Trazabilidad Completa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
@@ -14,9 +14,10 @@
         .slide-in { animation: slideIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
         .input-error { border-color: #ef4444 !important; ring: 2px; --tw-ring-color: #fca5a5; }
-        .modal-scroll::-webkit-scrollbar { width: 8px; }
-        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .modal-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .modal-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
 </head>
 <body class="bg-white text-gray-800 h-screen flex flex-col relative">
@@ -31,7 +32,7 @@
             
             <div class="mb-8 border-b pb-4">
                 <h2 class="text-2xl font-bold text-gray-800">Consulta de Reclamaciones</h2>
-                <p class="text-sm text-gray-500 mt-1">Busque el estado y la bitácora de sus solicitudes radicadas.</p>
+                <p class="text-sm text-gray-500 mt-1">Consulta las solicitudes de reclamaciones de comisiones activas y gestionadas.</p>
             </div>
 
             <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-10 shadow-sm">
@@ -79,7 +80,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Fecha de Creación</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Asignado a</th>
                                     <th class="px-6 py-3 text-center text-xs font-bold text-black uppercase tracking-wider">Estado</th>
-                                    <th class="px-6 py-3 text-center text-xs font-bold text-black uppercase tracking-wider">Acciones</th>
+                                    <th class="px-6 py-3 text-center text-xs font-bold text-black uppercase tracking-wider">Bitácora</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="resultsBody">
@@ -99,34 +100,123 @@
         </div>
     </main>
 
+    <div id="detalleModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-40 flex items-center justify-center py-10">
+        <div class="relative mx-auto w-[95%] max-w-[1400px] shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col max-h-[90vh]">
+            
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-blue-50 rounded-t-xl shrink-0">
+                <div>
+                    <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">Detalle de la Solicitud</h3>
+                    <p class="text-sm text-blue-700 mt-1">ID: <span id="detalleSolicitudId" class="font-bold">---</span> | Estado: <span id="detalleEstado" class="font-bold">---</span></p>
+                </div>
+                <button class="js-close-detalle text-gray-400 hover:text-red-500 transition-colors">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto modal-scroll flex-grow">
+                
+                <h4 class="text-sm font-bold text-gray-700 uppercase mb-3 border-b pb-2">Registros Incluidos</h4>
+                
+                <div class="border border-gray-200 rounded-lg overflow-x-auto mb-6 modal-scroll pb-2">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Fecha</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Documento</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Usuario</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Plan</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Programa</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Contrato</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ID Contra.</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ID Usu.</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Parentesco</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Pago</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider min-w-[250px]">Motivos y Observaciones</th>
+                                
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-800 uppercase tracking-wider whitespace-nowrap bg-blue-50 border-l border-blue-200">Estado Registro</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider min-w-[200px] bg-blue-50">Observación del Jefe</th>
+                                                            
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm" id="detalleRegistrosBody">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div id="seccionRespuesta" class="bg-orange-50 border border-orange-200 rounded-lg p-5">
+                    <h4 class="text-sm font-bold text-orange-800 uppercase mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                        Responder / Actualizar Solicitud General
+                    </h4>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Comentarios de ajuste *</label>
+                        <textarea id="edit_comentarios" rows="3" class="w-full border border-gray-300 rounded-md p-3 focus:ring-orange-500 focus:border-orange-500 text-sm" placeholder="Ej: Se adjunta el soporte correcto del mes de enero..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nuevo Soporte (Opcional)</label>
+                        <input type="file" id="edit_archivo" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-bold file:bg-orange-100 file:text-orange-700 hover:file:bg-orange-200 cursor-pointer border border-gray-300 rounded-md bg-white">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl shrink-0">
+                <button class="js-close-detalle px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium shadow-sm">Cancelar</button>
+                <button id="btnGuardarEdicion" class="px-5 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-bold shadow-sm flex items-center gap-2 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    Enviar Corrección
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editRowModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-[60] flex items-center justify-center py-10">
+        <div class="relative mx-auto w-[95%] max-w-xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.2s_ease-out] flex flex-col max-h-full">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl shrink-0">
+                <h3 class="text-lg font-bold text-gray-800">Editar Observaciones de Motivos</h3>
+                <button class="js-close-edit-row text-gray-400 hover:text-red-500 transition-colors">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto modal-scroll">
+                <p class="text-sm text-gray-500 mb-4 border-b pb-2">Editando registro de: <span id="lblEditRowName" class="font-bold text-blue-700"></span></p>
+                <div id="editRowMotivosContainer" class="flex flex-col gap-4"></div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl shrink-0">
+                <button class="js-close-edit-row px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium shadow-sm text-sm">Cancelar</button>
+                <button id="btnSaveRowEdit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold shadow-sm text-sm">Guardar Observaciones</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
         <div class="relative mx-auto w-[95%] max-w-6xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col max-h-[90vh]">
-            
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl shrink-0">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                         Trazabilidad Documental y Gestión
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">Solicitud No: <span id="modalSolicitudId" class="font-bold text-gray-700">---</span></p>
+                    <p class="text-sm text-gray-500 mt-1">Solicitud No: <span id="modalSolicitudIdBitacora" class="font-bold text-gray-700">---</span></p>
                 </div>
                 <button class="js-close-bitacora text-gray-400 hover:text-red-500 transition-colors">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-
-            <div class="p-6 overflow-y-auto modal-scroll">
+            <div class="p-6 overflow-y-auto modal-scroll flex-grow">
                 <div class="border border-gray-200 rounded-lg overflow-hidden">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-blue-50">
+                        <thead class="bg-purple-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-24">Fecha</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-32">Actor</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-24">Rol</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-1/3">Acción / Movimiento</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase w-1/4">Documentos (Trazabilidad)</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-32">Fecha</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-24">Rol</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-1/3">Acción / Movimiento</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-1/4">Documentos (Trazabilidad)</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200 text-sm" id="modalBitacoraBody">
@@ -134,9 +224,8 @@
                     </table>
                 </div>
             </div>
-
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-xl">
-                <button class="js-close-bitacora px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold shadow-sm">Cerrar</button>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-xl shrink-0">
+                <button class="js-close-bitacora px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-bold shadow-sm">Cerrar Trazabilidad</button>
             </div>
         </div>
     </div>
@@ -154,61 +243,107 @@
         const resultsBody = document.getElementById('resultsBody');
 
         const bitacoraModal = document.getElementById('bitacoraModal');
-        const modalSolicitudId = document.getElementById('modalSolicitudId');
+        const modalSolicitudIdBitacora = document.getElementById('modalSolicitudIdBitacora');
         const modalBitacoraBody = document.getElementById('modalBitacoraBody');
 
-        // --- DATOS SIMULADOS CON ARCHIVOS PARA TRAZABILIDAD ---
+        const detalleModal = document.getElementById('detalleModal');
+        const detalleSolicitudId = document.getElementById('detalleSolicitudId');
+        const detalleEstado = document.getElementById('detalleEstado');
+        const detalleRegistrosBody = document.getElementById('detalleRegistrosBody');
+        const seccionRespuesta = document.getElementById('seccionRespuesta');
+        let currentEditingId = null;
+
+        let editSolicitudId = null;
+        let editRowIndex = null;
+
+        // --- DATOS SIMULADOS ACTUALIZADOS (Estados, columnas de respuesta del jefe) ---
         const mockData = [
             { 
                 id: '452126001', date: '2026-01-15', advName: 'Nathalia Rendon', 
-                status: 'En trámite',
-                assignedTo: 'Jefe Regional', 
+                status: 'En trámite', assignedTo: 'Jefe Regional', 
+                records: [
+                    { 
+                        fecha: '2026-01-15', tipoDoc: 'CC', numDoc: '11223344', usuario: 'Carlos Perez', 
+                        plan: 'Familiar', programa: 'Oro', contrato: '23431', idContratante: '998877', 
+                        idUsuario: '112233', parentesco: 'Titular', pago: 'Pospago', 
+                        motivos: [
+                            { motivo: 'Venta no grabada', observacion: 'El cliente asegura haber pagado, pero GH no reporta.' }
+                        ]
+                        // No tiene respuesta de jefe porque está en trámite
+                    }
+                ],
                 history: [
                     { 
-                        date: '2026-01-15 08:30 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
-                        action: 'Radicación de solicitud inicial',
-                        files: [
-                            { name: 'Formulario_Firmado.pdf', type: 'pdf' },
-                            { name: 'Cédula_Cliente.pdf', type: 'pdf' }
-                        ]
+                        date: '2026-01-15 08:30 AM', role: 'Asesor', 
+                        action: 'Radicación de solicitud inicial', files: [{ name: 'Formulario_Firmado.pdf' }, { name: 'Cedula_Cliente.pdf' }]
                     }
                 ]
             },
             { 
                 id: '452126002', date: '2026-01-20', advName: 'Nathalia Rendon', 
-                status: 'Devolución', 
-                assignedTo: 'Mí',
-                history: [
+                status: 'Devolución', assignedTo: 'Asesor',
+                records: [
                     { 
-                        date: '2026-01-20 10:00 AM', actor: 'Nathalia Rendon', role: 'Asesor', 
-                        action: 'Radicación de solicitud',
-                        files: [
-                            { name: 'Soporte_Pago_Enero.pdf', type: 'pdf' } 
-                        ]
+                        fecha: '2026-01-18', tipoDoc: 'CC', numDoc: '99887766', usuario: 'Maria Gomez', 
+                        plan: 'Asociado', programa: 'Plata', contrato: '1001', idContratante: '556677', 
+                        idUsuario: '334455', parentesco: 'Titular', pago: 'Prepago', 
+                        motivos: [
+                            { motivo: 'Aceleradores', observacion: 'Falta aplicar el factor de acelerador regional.' }
+                        ],
+                        estadoRegistro: 'Aprobada', observacionJefe: ''
                     },
                     { 
-                        date: '2026-01-22 02:15 PM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
-                        action: 'Devolución: El soporte adjunto no corresponde al periodo solicitado (subió Diciembre, se requiere Enero).',
-                        files: [
-                            { name: 'Pantallazo_Error.png', type: 'img' } 
-                        ]
+                        fecha: '2026-01-18', tipoDoc: 'TI', numDoc: '55443322', usuario: 'Juan Lopera', 
+                        plan: 'Familiar', programa: 'Bronce', contrato: '1002', idContratante: '556677', 
+                        idUsuario: '334456', parentesco: 'Hijo', pago: 'Prepago', 
+                        motivos: [
+                            { motivo: 'Aceleradores', observacion: 'Mismo error, acelerador no aplicado al núcleo familiar.' }
+                        ],
+                        estadoRegistro: 'Devolución', observacionJefe: 'El documento adjunto no corresponde al beneficiario, por favor validar.'
+                    }
+                ],
+                history: [
+                    { 
+                        date: '2026-01-20 10:00 AM', role: 'Asesor', 
+                        action: 'Radicación de solicitud inicial', files: [{ name: 'Soporte_Pago_Enero.pdf' }]
+                    },
+                    { 
+                        date: '2026-01-22 02:15 PM', role: 'Jefe Regional', 
+                        action: 'Devolución de Solicitud. Se encontraron inconsistencias en los registros de beneficiarios.', files: [{ name: 'Pantallazo_Error.png' }]
                     }
                 ]
             },
             { 
-                id: '1010226005', date: '2026-02-05', advName: 'Maria Gomez', 
-                status: 'Pendiente Gestión Humana', 
-                assignedTo: 'Gestión Humana', 
-                history: [
+                id: '452126003', date: '2026-02-10', advName: 'Nathalia Rendon', 
+                status: 'Aprobado', assignedTo: 'Gestión Humana', 
+                records: [
                     { 
-                        date: '2026-02-05 09:00 AM', actor: 'Maria Gomez', role: 'Asesor', 
-                        action: 'Radicación de solicitud',
-                        files: [{ name: 'Paquete_Completo_V3.zip', type: 'zip' }]
+                        fecha: '2026-02-08', tipoDoc: 'CC', numDoc: '44556677', usuario: 'Ana Martinez', 
+                        plan: 'Familiar', programa: 'Plata', contrato: '45678', idContratante: '44556677', 
+                        idUsuario: '889900', parentesco: 'Titular', pago: 'Prepago', 
+                        motivos: [
+                            { motivo: 'Garantizado no aplicado', observacion: 'La base garantizada del mes anterior no se cruzó.' }
+                        ],
+                        estadoRegistro: 'Rechazada', observacionJefe: 'Revisado con cartera, el cliente presenta mora > 60 días, no aplica comisiones garantizadas.'
                     },
                     { 
-                        date: '2026-02-06 11:00 AM', actor: 'Carlos Pérez', role: 'Jefe Regional', 
-                        action: 'Aprobación inicial y VoBo',
-                        files: []
+                        fecha: '2026-02-08', tipoDoc: 'CC', numDoc: '10203040', usuario: 'Felipe Vargas', 
+                        plan: 'Individual', programa: 'Oro', contrato: '45679', idContratante: '10203040', 
+                        idUsuario: '889901', parentesco: 'Titular', pago: 'Prepago', 
+                        motivos: [
+                            { motivo: 'Venta no liquidada al porcentaje esperado', observacion: 'Se liquidó al 5% en vez del 8% de campaña.' }
+                        ],
+                        estadoRegistro: 'Aprobada', observacionJefe: 'Es correcto, aplica reliquidación.'
+                    }
+                ],
+                history: [
+                    { 
+                        date: '2026-02-10 09:00 AM', role: 'Asesor', 
+                        action: 'Radicación de solicitud inicial', files: [{ name: 'Soporte_Febrero.pdf' }]
+                    },
+                    { 
+                        date: '2026-02-12 04:30 PM', role: 'Jefe Regional', 
+                        action: 'Aprobación de Solicitud. Se traslada a Gestión Humana.', files: []
                     }
                 ]
             }
@@ -235,25 +370,13 @@
             
             const filteredData = mockData.filter(item => {
                 let pass = true;
-                
-                if (idFilter && !item.id.includes(idFilter)) {
-                    pass = false;
-                }
+                if (idFilter && !item.id.includes(idFilter)) pass = false;
                 
                 if (dateFrom || dateTo) {
                     const itemDate = new Date(item.date + 'T00:00:00'); 
-                    
-                    if (dateFrom) {
-                        const from = new Date(dateFrom + 'T00:00:00');
-                        if (itemDate < from) pass = false;
-                    }
-                    
-                    if (dateTo) {
-                        const to = new Date(dateTo + 'T23:59:59');
-                        if (itemDate > to) pass = false;
-                    }
+                    if (dateFrom && itemDate < new Date(dateFrom + 'T00:00:00')) pass = false;
+                    if (dateTo && itemDate > new Date(dateTo + 'T23:59:59')) pass = false;
                 }
-                
                 return pass;
             });
 
@@ -268,14 +391,19 @@
                 let badgeClass = 'bg-gray-100 text-gray-800';
                 
                 if(item.status === 'En trámite') badgeClass = 'bg-yellow-100 text-yellow-800';
-                if(item.status === 'Pendiente Gestión Humana') badgeClass = 'bg-blue-100 text-blue-800';
                 if(item.status === 'Aprobado') badgeClass = 'bg-green-100 text-green-800';
                 if(item.status === 'Devolución') badgeClass = 'bg-orange-100 text-orange-800';
+                if(item.status === 'Rechazado') badgeClass = 'bg-red-100 text-red-800'; // Agregado rechazado
 
                 const delay = index * 100; 
                 const rowHTML = `
                     <tr class="hover:bg-gray-50 transition-colors h-14 border-b border-gray-100 slide-in" style="animation-delay: ${delay}ms">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">${item.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="openDetalle('${item.id}')" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 focus:outline-none">
+                                ${item.id}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            </button>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${item.date}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">${item.assignedTo}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -298,29 +426,215 @@
             resultsContainer.classList.remove('hidden');
         }
 
-        // --- FUNCIÓN LIMPIAR ---
-        btnLimpiar.addEventListener('click', () => {
-            inputSolicitud.value = '';
-            inputFechaDesde.value = '';
-            inputFechaHasta.value = '';
-            validationMsg.classList.add('hidden');
-            resultsContainer.classList.add('hidden');
-            emptyState.classList.remove('hidden');
+        // --- LÓGICA DEL DETALLE CON COLUMNAS DINÁMICAS ---
+        window.openDetalle = function(id) {
+            const item = mockData.find(d => d.id === id);
+            if(!item) return;
+
+            currentEditingId = id;
+            detalleSolicitudId.textContent = item.id;
+            detalleEstado.textContent = item.status;
+            
+            // Pintar los registros
+            detalleRegistrosBody.innerHTML = '';
+            item.records.forEach((rec, index) => {
+                
+                let motivosHtml = rec.motivos.map(m => `
+                    <div class="mb-1.5 border-l-2 border-blue-400 pl-2">
+                        <span class="font-bold text-gray-800 block">${m.motivo}</span>
+                        <span class="text-gray-600 whitespace-normal leading-tight">${m.observacion || '<i class="text-gray-400">Sin observación</i>'}</span>
+                    </div>
+                `).join('');
+
+                // 1. Lógica del Estado del Registro (Pendiente por defecto)
+                let estadoR = rec.estadoRegistro || 'Pendiente';
+                let obsJefe = rec.observacionJefe || '-';
+                let badgeJefe = '';
+                let rowBgClass = "hover:bg-gray-50";
+
+                if (estadoR === 'Aprobada') {
+                    badgeJefe = '<span class="text-green-700 font-bold bg-green-100 px-2 py-1 rounded">Aprobada</span>';
+                } else if (estadoR === 'Rechazada') {
+                    badgeJefe = '<span class="text-red-700 font-bold bg-red-100 px-2 py-1 rounded">Rechazada</span>';
+                    rowBgClass = "bg-red-50 hover:bg-red-100"; // Resaltado fila rechazada
+                } else if (estadoR === 'Devolución') {
+                    badgeJefe = '<span class="text-orange-700 font-bold bg-orange-100 px-2 py-1 rounded">Devolución</span>';
+                    rowBgClass = "bg-orange-50 hover:bg-orange-100"; // Resaltado fila devuelta
+                } else {
+                    badgeJefe = '<span class="text-gray-600 font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200">Pendiente</span>';
+                }
+
+                let tdEstadoJefe = `
+                    <td class="px-3 py-2 text-center align-top border-l border-blue-100">${badgeJefe}</td>
+                    <td class="px-3 py-2 text-gray-700 text-xs align-top italic">${obsJefe}</td>
+                `;
+
+                // 2. Lógica del botón de Acción (Bloqueado si está aprobado o si la solicitud general cerró)
+                const canEdit = item.status !== 'Aprobado' && item.status !== 'Rechazado' && estadoR !== 'Aprobada';
+                
+                const actionBtn = canEdit ? `
+                    <button onclick="openEditRow('${item.id}', ${index})" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition-colors" title="Editar observaciones">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </button>
+                ` : '<span class="text-gray-500 text-[10px] font-bold bg-gray-200 px-2 py-1 rounded tracking-wide uppercase">Bloqueado</span>';
+
+                detalleRegistrosBody.innerHTML += `
+                    <tr class="${rowBgClass} transition-colors">
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.fecha}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.tipoDoc} ${rec.numDoc}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.usuario}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.plan}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.programa}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap font-mono align-top">${rec.contrato}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.idContratante}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.idUsuario}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.parentesco}</td>
+                        <td class="px-3 py-2 text-gray-700 whitespace-nowrap align-top">${rec.pago}</td>
+                        <td class="px-3 py-2 text-gray-700 min-w-[250px] text-xs align-top">${motivosHtml}</td>
+                        ${tdEstadoJefe}
+                        <td class="px-3 py-2 text-center whitespace-nowrap align-top">${actionBtn}</td>
+                    </tr>
+                `;
+            });
+
+            const btnGuardar = document.getElementById('btnGuardarEdicion');
+            const btnCancelar = document.querySelector('#detalleModal .js-close-detalle');
+
+            if (item.status === 'Devolución') {
+                seccionRespuesta.classList.remove('hidden');
+                btnGuardar.classList.remove('hidden'); 
+                if(btnCancelar) btnCancelar.textContent = "Cancelar"; 
+                
+                document.getElementById('edit_comentarios').value = '';
+                document.getElementById('edit_archivo').value = '';
+            } else {
+                seccionRespuesta.classList.add('hidden');
+                btnGuardar.classList.add('hidden'); 
+                if(btnCancelar) btnCancelar.textContent = "Cerrar"; 
+            }
+
+            detalleModal.classList.remove('hidden');
+        }
+        document.querySelectorAll('.js-close-detalle').forEach(btn => {
+            btn.addEventListener('click', () => detalleModal.classList.add('hidden'));
         });
 
+        // Guardar la respuesta GENERAL a una devolución
+        document.getElementById('btnGuardarEdicion').addEventListener('click', () => {
+            const comentarios = document.getElementById('edit_comentarios').value.trim();
+            const archivoInput = document.getElementById('edit_archivo');
+            
+            if(!comentarios) {
+                alert("Debe ingresar un comentario para responder a la devolución.");
+                return;
+            }
+
+            const item = mockData.find(d => d.id === currentEditingId);
+            
+            let filesArr = [];
+            if(archivoInput.files.length > 0) {
+                filesArr.push({ name: archivoInput.files[0].name });
+            }
+
+            const now = new Date();
+            const formattedDate = now.toISOString().split('T')[0] + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            item.history.push({
+                date: formattedDate,
+                role: 'Asesor',
+                action: 'Respuesta General a Devolución: ' + comentarios,
+                files: filesArr
+            });
+
+            item.status = 'En trámite';
+            item.assignedTo = 'Jefe Regional';
+
+            alert("✅ Corrección enviada con éxito. Se ha registrado en la bitácora.");
+            detalleModal.classList.add('hidden');
+            document.getElementById('btnConsultar').click();
+        });
+
+
+        // Abrir mini-modal de edición INDIVIDUAL de observaciones
+        window.openEditRow = function(solicitudId, rowIndex) {
+            editSolicitudId = solicitudId;
+            editRowIndex = rowIndex;
+            
+            const item = mockData.find(d => d.id === solicitudId);
+            const record = item.records[rowIndex];
+
+            document.getElementById('lblEditRowName').textContent = `${record.tipoDoc} ${record.numDoc} - ${record.usuario}`;
+            
+            const container = document.getElementById('editRowMotivosContainer');
+            container.innerHTML = ''; 
+
+            record.motivos.forEach((m, idx) => {
+                container.innerHTML += `
+                    <div class="bg-blue-50 p-3 rounded border border-blue-100 shadow-sm">
+                        <label class="block text-xs font-bold text-blue-900 mb-2">Motivo: ${m.motivo}</label>
+                        <textarea id="editRow_obs_${idx}" rows="2" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Escriba la observación...">${m.observacion}</textarea>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('editRowModal').classList.remove('hidden');
+        };
+
+        // Guardar la edición INDIVIDUAL de observaciones
+        document.getElementById('btnSaveRowEdit').addEventListener('click', () => {
+            const item = mockData.find(d => d.id === editSolicitudId);
+            const record = item.records[editRowIndex];
+
+            let changed = false;
+            let changesLog = [];
+
+            record.motivos.forEach((m, idx) => {
+                const newObs = document.getElementById(`editRow_obs_${idx}`).value.trim();
+                if(m.observacion !== newObs) {
+                    changed = true;
+                    changesLog.push(`${m.motivo}: "${newObs}"`);
+                    m.observacion = newObs; 
+                }
+            });
+
+            if(!changed) {
+                document.getElementById('editRowModal').classList.add('hidden');
+                return;
+            }
+
+            const now = new Date();
+            const formattedDate = now.toISOString().split('T')[0] + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            item.history.push({
+                date: formattedDate,
+                role: 'Asesor',
+                action: `Actualización de observaciones para el documento ${record.numDoc}. Detalles: ${changesLog.join(' | ')}`,
+                files: []
+            });
+
+            document.getElementById('editRowModal').classList.add('hidden');
+            openDetalle(editSolicitudId);
+            alert("✅ Observaciones actualizadas correctamente. Se ha dejado registro en la bitácora.");
+        });
+
+        document.querySelectorAll('.js-close-edit-row').forEach(btn => {
+            btn.addEventListener('click', () => document.getElementById('editRowModal').classList.add('hidden'));
+        });
+
+
+        // --- LÓGICA DE BITÁCORA GENERAL ---
         window.openBitacora = function(id) {
-            modalSolicitudId.textContent = id;
+            modalSolicitudIdBitacora.textContent = id;
             modalBitacoraBody.innerHTML = ''; 
 
             const item = mockData.find(d => d.id === id);
             
             if (item && item.history) {
-                item.history.forEach(h => {
+                [...item.history].reverse().forEach(h => {
                     let roleBadge = 'bg-gray-100 text-gray-800';
                     if(h.role === 'Asesor') roleBadge = 'bg-green-100 text-green-800';
                     if(h.role === 'Jefe Regional') roleBadge = 'bg-purple-100 text-purple-800';
                     if(h.role === 'Gestión Humana') roleBadge = 'bg-blue-100 text-blue-800';
-                    if(h.role === 'Sistema') roleBadge = 'bg-gray-100 text-gray-500 border border-gray-200';
 
                     let filesHtml = '';
                     if (h.files && h.files.length > 0) {
@@ -343,7 +657,6 @@
                     modalBitacoraBody.innerHTML += `
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-3 whitespace-nowrap text-gray-600 text-xs">${h.date}</td>
-                            <td class="px-4 py-3 font-medium text-gray-900">${h.actor}</td>
                             <td class="px-4 py-3">
                                 <span class="${roleBadge} py-1 px-3 rounded-full text-xs font-bold border border-transparent">
                                     ${h.role}
@@ -356,16 +669,24 @@
                         </tr>
                     `;
                 });
-            } else {
-                modalBitacoraBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">No hay historial disponible.</td></tr>`;
             }
             bitacoraModal.classList.remove('hidden');
         }
 
         document.querySelectorAll('.js-close-bitacora').forEach(btn => {
-            btn.addEventListener('click', () => {
-                bitacoraModal.classList.add('hidden');
-            });
+            btn.addEventListener('click', () => bitacoraModal.classList.add('hidden'));
+        });
+        
+        btnLimpiar.addEventListener('click', () => {
+            inputSolicitud.value = '';
+            inputFechaDesde.value = '';
+            inputFechaHasta.value = '';
+            validationMsg.classList.add('hidden');
+            
+            // Vaciar la tabla y mostrar el estado inicial
+            resultsBody.innerHTML = '';
+            resultsContainer.classList.add('hidden');
+            emptyState.classList.remove('hidden');
         });
 
     </script>

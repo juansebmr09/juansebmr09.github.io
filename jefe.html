@@ -22,6 +22,11 @@
         .dropdown-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
         .dropdown-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
 
+        .modal-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .modal-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
         /* Estilo cursor sort */
         .sortable { cursor: pointer; user-select: none; transition: background-color 0.2s; }
         .sortable:hover { background-color: #e5e7eb; }
@@ -38,14 +43,14 @@
         <div id="viewDashboard" class="flex flex-col w-full fade-in">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Bandeja de Aprobación</h1>
-                <p class="text-sm text-gray-500">Gestionar la solicitudes de reclamaciones asignadas.</p>
+                <p class="text-sm text-gray-500">Gestiona las solicitudes de reclamaciones asignadas.</p>
             </div>
 
             <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> 
                     
                     <div class="relative" id="statusMultiselectContainer">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado9</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>
                         <button type="button" id="statusMultiselectBtn" class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 rounded-md focus:outline-none shadow-sm text-sm flex justify-between items-center text-left min-h-[38px]">
                             <span id="statusBtnText" class="truncate">Pendiente</span>
                             <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -100,14 +105,17 @@
                 </div>
 
                 <div class="mt-4 flex justify-end gap-3 border-t pt-4 border-gray-100">
-                    <button onclick="clearFilters()" class="text-gray-500 hover:text-gray-700 text-sm font-medium px-4 py-2">Limpiar Filtros</button>
-                    <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition">
+                    <button onclick="clearFilters()" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2.5 px-4 rounded shadow-sm transition text-sm">
+                        Limpiar
+                    </button>
+                    <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-4 rounded shadow-sm flex items-center gap-2 transition">
                         Exportar Excel
                     </button>
-                    <button onclick="applyFilters()" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold py-2 px-6 rounded shadow-sm transition">CONSULTAR</button>
+                    <button onclick="applyFilters()" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold py-2.5 px-6 rounded shadow-sm transition">
+                        CONSULTAR
+                    </button>
                 </div>
             </div>
-
 
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-10">
                 <div class="overflow-x-auto">
@@ -174,7 +182,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                         </svg>
                         Adjuntar Soporte General
-                        <input type="file" class="hidden" onchange="alert('✅ Archivo general adjuntado: ' + this.files[0].name)">
+                        <input type="file" class="hidden" id="generalSupportFile" onchange="alert('✅ Archivo general adjuntado: ' + this.files[0].name)">
                     </label>
                 </div>
             </div>
@@ -274,23 +282,11 @@
                     <input type="text" id="modal_respuesta_readonly" class="hidden w-full border-transparent bg-gray-100 text-gray-800 font-bold rounded-md p-2" disabled>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Justificación <span id="req_justification" class="text-red-500 hidden">*</span></label>
                     <textarea id="modal_justificacion" rows="4" class="w-full border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none disabled:bg-gray-100 disabled:text-gray-600 disabled:border-transparent" placeholder="Ingrese la justificación de la decisión..."></textarea>
                 </div>
-
-                <div class="mb-2">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Soporte de Respuesta (Opcional)</label>
-                    <div id="modal_file_container">
-                        <input type="file" id="modal_file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                    </div>
-                    <div id="modal_file_display" class="hidden flex items-center gap-2 mt-1 p-2 bg-gray-50 rounded border border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                        <span id="modal_file_name" class="text-sm text-gray-700 font-medium italic"></span>
-                    </div>
                 </div>
-
-            </div>
 
             <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
                 <button onclick="closeResponseModal()" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition" id="btnCloseModal">Cancelar</button>
@@ -300,13 +296,43 @@
     </div>
 
     <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
-        <div class="relative mx-auto w-[90%] max-w-3xl bg-white shadow-xl rounded-lg animate-[fade-in_0.2s_ease-out]">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">Bitácora de Solicitud</h3>
-                <button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        <div class="relative mx-auto w-[95%] max-w-6xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col max-h-[90vh]">
+            
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl shrink-0">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Trazabilidad Documental y Gestión
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1">Solicitud No: <span id="modalSolicitudIdBitacora" class="font-bold text-gray-700">---</span></p>
+                </div>
+                <button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
-            <div class="p-6"><table class="min-w-full divide-y divide-gray-300 border border-gray-200 rounded"><thead class="bg-gray-100"><tr><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">No. Solicitud</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Fecha</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Responsable</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Estado</th><th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Acción</th></tr></thead><tbody id="bitacoraBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody></table></div>
-            <div class="bg-gray-50 px-6 py-3 rounded-b-lg flex justify-end"><button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-bold">Cerrar</button></div>
+
+            <div class="p-6 overflow-y-auto modal-scroll flex-grow">
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-purple-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-32">Fecha</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-24">Rol</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-1/3">Acción / Movimiento</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-purple-800 uppercase w-1/4">Documentos</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm" id="bitacoraBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-xl shrink-0">
+                <button onclick="document.getElementById('bitacoraModal').classList.add('hidden')" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-bold shadow-sm">Cerrar Trazabilidad</button>
+            </div>
         </div>
     </div>
 
@@ -321,7 +347,7 @@
         </div>
     </footer>
 
-<script>
+    <script>
         // 1. LISTA DE CONCEPTOS UNIFICADA
         const conceptosList = [
             "Venta no grabada",
@@ -352,7 +378,7 @@
         });
 
 
-// DATOS MOCK CON HISTORIAL (BITÁCORA) INTEGRADO
+        // DATOS MOCK ACTUALIZADOS CON LA ESTRUCTURA DE BITÁCORA UNIFICADA
         const mockRequests = [
             { 
                 id: '452126001', date: '2026-01-15', advCode: '4521', advId: '1.020.304.050', advName: 'Nathalia Rendon', 
@@ -360,7 +386,7 @@
                 assignedTo: 'Mí', 
                 lastUpdate: '2026-01-16',
                 history: [
-                    { date: '2026-01-15', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
+                    { date: '2026-01-15 08:30 AM', role: 'Asesor', action: 'Radicación de solicitud inicial', files: [{ name: 'Formulario_Firmado.pdf' }] }
                 ]
             },
             { 
@@ -369,8 +395,8 @@
                 assignedTo: 'Asesor', 
                 lastUpdate: '2026-01-22',
                 history: [
-                    { date: '2026-01-20', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
-                    { date: '2026-01-22', actor: 'Jefe Regional', action: 'Devolución por inconsistencia', status: 'Devolución' }
+                    { date: '2026-01-20 10:00 AM', role: 'Asesor', action: 'Radicación de solicitud inicial', files: [{ name: 'Soporte_Pago_Enero.pdf' }] },
+                    { date: '2026-01-22 02:15 PM', role: 'Jefe Regional', action: 'Devolución por inconsistencias en soportes', files: [{ name: 'Pantallazo_Error.png' }] }
                 ]
             },
             { 
@@ -379,8 +405,8 @@
                 assignedTo: 'Gestión Humana', 
                 lastUpdate: '2026-02-06',
                 history: [
-                    { date: '2026-02-05', actor: 'Asesor', action: 'Radicación', status: 'Radicado' },
-                    { date: '2026-02-06', actor: 'Jefe Regional', action: 'Aprobación inicial', status: 'Aprobado' }
+                    { date: '2026-02-05 09:00 AM', role: 'Asesor', action: 'Radicación de solicitud inicial', files: [{ name: 'Paquete_Completo_V3.zip' }] },
+                    { date: '2026-02-06 11:00 AM', role: 'Jefe Regional', action: 'Aprobación de la solicitud por parte del Jefe. Pasa a GH.', files: [] }
                 ]
             },
             { 
@@ -389,16 +415,15 @@
                 assignedTo: 'Mí',
                 lastUpdate: '2026-02-06',
                 history: [
-                    { date: '2026-02-06', actor: 'Asesor', action: 'Radicación', status: 'Radicado' }
+                    { date: '2026-02-06 10:30 AM', role: 'Asesor', action: 'Radicación de solicitud inicial', files: [] }
                 ]
             }
         ];
 
-        // Datos ajustados para usar motivos de la nueva lista
         let mockDetails = [
-            { requestId: '452126001', rowId: 'r1', novedad: 'Venta no liquidada al porcentaje esperado', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
-            { requestId: '452126001', rowId: 'r2', novedad: 'Aceleradores', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '', fileAttached: null },
-            { requestId: '889926003', rowId: 'r3', novedad: 'Venta no grabada', plan: 'Individual', programa: 'Bronce', contrato: '202', usuario: 'Pedro', motivoAsesor: 'No me pagaron la venta', respuestaJefe: 'Devolución', justificacionJefe: 'Soporte ilegible', fileAttached: null }
+            { requestId: '452126001', rowId: 'r1', novedad: 'Venta no liquidada al porcentaje esperado', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '452126001', rowId: 'r2', novedad: 'Aceleradores', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '889926003', rowId: 'r3', novedad: 'Venta no grabada', plan: 'Individual', programa: 'Bronce', contrato: '202', usuario: 'Pedro', motivoAsesor: 'No me pagaron la venta', respuestaJefe: 'Devolución', justificacionJefe: 'Soporte ilegible' }
         ];
 
         // INICIALIZACIÓN: TABLA VACÍA
@@ -408,9 +433,8 @@
         let currentDetailRequestId = null;
         let hasSearched = false; 
         
-        // Estado de ordenamiento
-        let currentSortField = ''; // Campo actualmente ordenado
-        let sortDirection = 'asc'; // 'asc' o 'desc'
+        let currentSortField = ''; 
+        let sortDirection = 'asc'; 
 
         document.addEventListener('DOMContentLoaded', () => {
              renderDashboard(); 
@@ -432,13 +456,11 @@
                  }
              });
 
-             // Lógica del checkbox "Todos"
              chkAllStatus.addEventListener('change', (e) => {
                  statusCheckboxes.forEach(cb => cb.checked = e.target.checked);
                  updateStatusButtonText();
              });
 
-             // Lógica de checkboxes individuales
              statusCheckboxes.forEach(cb => {
                  cb.addEventListener('change', () => {
                      chkAllStatus.checked = Array.from(statusCheckboxes).every(c => c.checked);
@@ -447,7 +469,6 @@
              });
         });
 
-        // Función para actualizar texto del botón de estado
         function updateStatusButtonText() {
             const checkboxes = document.querySelectorAll('.status-checkbox:checked');
             const allCheckboxes = document.querySelectorAll('.status-checkbox');
@@ -470,11 +491,9 @@
             }
         }
         
-        // --- FUNCIÓN ORDENAMIENTO GLOBAL ---
         function sortRequests(field) {
             if (currentRequests.length === 0) return;
 
-            // Toggle dirección si es el mismo campo, sino reset a 'asc'
             if (currentSortField === field) {
                 sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
             } else {
@@ -482,28 +501,21 @@
                 sortDirection = 'asc';
             }
             
-            // Iconos por defecto (flecha doble neutra)
             const defaultIconSVG = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>';
-            // Flecha arriba (ASC)
             const upArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
-            // Flecha abajo (DESC)
             const downArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
 
-            // Resetear todos los iconos
             document.querySelectorAll('.sort-icon').forEach(el => el.innerHTML = defaultIconSVG);
             
-            // Establecer icono activo
             const activeIcon = document.getElementById(`sortIcon_${field}`);
             if(activeIcon) {
                 activeIcon.innerHTML = sortDirection === 'asc' ? upArrowSVG : downArrowSVG;
             }
 
-            // Lógica de ordenamiento
             currentRequests.sort((a, b) => {
                 let valA = a[field];
                 let valB = b[field];
 
-                // Convertir fechas si es necesario
                 if (field === 'date' || field === 'lastUpdate') {
                     valA = new Date(valA);
                     valB = new Date(valB);
@@ -517,12 +529,10 @@
                 return 0;
             });
 
-            // Resetear a pag 1 y renderizar
             currentPage = 1;
             renderDashboard();
         }
 
-        // --- FUNCIONES DASHBOARD ---
         function applyFilters() {
             hasSearched = true;
             
@@ -546,7 +556,6 @@
             });
             currentPage = 1;
             
-            // Si ya hay un ordenamiento activo, mantenerlo al filtrar
             if (currentSortField) {
                 currentRequests.sort((a, b) => {
                     let valA = a[currentSortField];
@@ -577,6 +586,11 @@
             document.getElementById('filter_advisorCode').value = "";
             document.getElementById('filter_dateFrom').value = "";
             document.getElementById('filter_dateTo').value = "";
+
+            // Resetear la tabla al estado inicial (vacío)
+            hasSearched = false;
+            currentRequests = [];
+            renderDashboard();
         }
 
         function renderDashboard() {
@@ -623,7 +637,7 @@
                                 <button onclick="loadDetails('${req.id}')" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-full transition" title="${isLocked ? 'Ver Detalles' : 'Gestionar'}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${isLocked ? 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' : 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'}" /></svg>
                                 </button>
-                                <button onclick="openBitacoraModal('${req.id}')" class="text-purple-600 hover:text-purple-800 hover:bg-purple-50 p-1.5 rounded-full transition" title="Ver Bitácora"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg></button>
+                                <button onclick="openBitacoraModal('${req.id}')" class="text-purple-600 hover:text-purple-800 hover:bg-purple-50 p-1.5 rounded-full transition" title="Ver Bitácora"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
                             </div>
                         </td>
                     </tr>
@@ -633,7 +647,7 @@
             renderPagination(currentRequests.length);
         }
 
-        // --- LÓGICA DE FINALIZACIÓN Y BITÁCORA ---
+        // --- LÓGICA DE FINALIZACIÓN Y BITÁCORA UNIFICADA ---
 
         function finishManagement() {
             const rows = mockDetails.filter(d => d.requestId === currentDetailRequestId);
@@ -641,65 +655,107 @@
             
             // Lógica de estados
             let visualStatus = "Pendiente Gestión Humana";
-            let actionLog = "Aprobado por Jefe";
+            let actionLog = "Aprobación y traslado de la solicitud a Gestión Humana.";
             let nextAssigned = "Gestión Humana";
 
             // Si hay devoluciones, todo se devuelve
             if (rows.some(r => r.respuestaJefe === 'Devolución')) {
                 visualStatus = "Devolución";
-                actionLog = "Devolución por Jefe";
+                actionLog = "Devolución de la solicitud al asesor por inconsistencias en registros.";
                 nextAssigned = "Asesor";
             } 
             // Si todo es rechazado
             else if (rows.every(r => r.respuestaJefe === 'Rechazada')) {
                 visualStatus = "Rechazado";
-                actionLog = "Rechazo total por Jefe";
+                actionLog = "Rechazo total de los registros. Finaliza el flujo.";
                 nextAssigned = "Finalizado";
             }
 
-            // Actualizar objeto
+            // Validar si el jefe subió un soporte general
+            const generalSupportInput = document.getElementById('generalSupportFile');
+            let filesArr = [];
+            if(generalSupportInput.files.length > 0) {
+                filesArr.push({ name: generalSupportInput.files[0].name });
+            }
+
+            // Actualizar objeto principal
             const req = mockRequests.find(r => r.id === currentDetailRequestId);
-            const today = new Date().toISOString().split('T')[0];
+            
+            const now = new Date();
+            const formattedDate = now.toISOString().split('T')[0] + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
             req.status = visualStatus;
-            req.lastUpdate = today;
+            req.lastUpdate = now.toISOString().split('T')[0];
             req.assignedTo = nextAssigned;
 
-            // Agregar a la bitácora
+            // Agregar a la bitácora con la estructura unificada
             req.history.push({
-                date: today,
-                actor: 'Jefe Regional', 
+                date: formattedDate,
+                role: 'Jefe Regional', 
                 action: actionLog,
-                status: visualStatus // Guardamos el estado resultante en la bitácora
+                files: filesArr
             });
 
-            alert(`Gestión finalizada exitosamente.\nEstado: ${visualStatus}`);
+            alert(`✅ Gestión finalizada exitosamente.\nEstado actual: ${visualStatus}`);
+            generalSupportInput.value = ""; // Limpiar el input file
             showDashboard();
             applyFilters(); // Recargar tabla
         }
 
+        // --- FUNCIÓN UNIFICADA: VER BITÁCORA ---
         function openBitacoraModal(reqId) {
+            document.getElementById('modalSolicitudIdBitacora').textContent = reqId;
             const req = mockRequests.find(r => r.id === reqId);
             const body = document.getElementById('bitacoraBody');
             body.innerHTML = "";
 
             if(req.history && req.history.length > 0) {
-                req.history.forEach(h => {
+                // Invertimos el arreglo para que el movimiento más reciente salga de primero
+                [...req.history].reverse().forEach(h => {
+                    let roleBadge = 'bg-gray-100 text-gray-800';
+                    if(h.role === 'Asesor') roleBadge = 'bg-green-100 text-green-800';
+                    if(h.role === 'Jefe Regional') roleBadge = 'bg-purple-100 text-purple-800';
+                    if(h.role === 'Gestión Humana') roleBadge = 'bg-blue-100 text-blue-800';
+
+                    let filesHtml = '';
+                    if (h.files && h.files.length > 0) {
+                        filesHtml = `<div class="flex flex-col gap-1">`;
+                        h.files.forEach(f => {
+                            filesHtml += `
+                                <a href="#" class="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 hover:underline transition-colors text-xs font-medium">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    ${f.name}
+                                </a>
+                            `;
+                        });
+                        filesHtml += `</div>`;
+                    } else {
+                        filesHtml = `<span class="text-gray-400 text-xs italic">Sin adjuntos</span>`;
+                    }
+
                     body.insertAdjacentHTML('beforeend', `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-3 py-3 border-b text-gray-700 font-medium">${req.id}</td>
-                            <td class="px-3 py-3 border-b text-gray-600">${h.date}</td>
-                            <td class="px-3 py-3 border-b text-gray-600">${h.actor}</td>
-                            <td class="px-3 py-3 border-b"><span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full border border-gray-200">${h.status}</span></td>
-                            <td class="px-3 py-3 border-b text-gray-600 text-xs italic">${h.action}</td>
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600 text-xs">${h.date}</td>
+                            <td class="px-4 py-3">
+                                <span class="${roleBadge} py-1 px-3 rounded-full text-xs font-bold border border-transparent">
+                                    ${h.role}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 text-sm leading-snug">${h.action}</td>
+                            <td class="px-4 py-3 bg-gray-50 border-l border-gray-100">
+                                ${filesHtml}
+                            </td>
                         </tr>
                     `);
                 });
             } else {
-                body.innerHTML = "<tr><td colspan='5' class='text-center p-4 text-gray-500'>No hay historial disponible.</td></tr>";
+                body.innerHTML = "<tr><td colspan='5' class='text-center py-6 text-gray-500 italic'>No hay historial disponible para esta solicitud.</td></tr>";
             }
             document.getElementById('bitacoraModal').classList.remove('hidden');
         }
+
 
         // Resto de funciones auxiliares (renderPagination, changePageSize, exportToExcel, showDashboard, loadDetails, modals...)
         function changePageSize() { itemsPerPage = parseInt(document.getElementById('itemsPerPage').value); currentPage = 1; renderDashboard(); }
@@ -720,19 +776,21 @@
             XLSX.writeFile(wb, "Reporte.xlsx");
         }
         function showDashboard() { document.getElementById('viewDetail').classList.add('hidden'); document.getElementById('viewDashboard').classList.remove('hidden'); }
-        function showAttachments() { alert("📎 Mostrando modal con adjuntos..."); }
+        function showAttachments() { alert("📎 Mostrando modal con adjuntos enviados por el asesor..."); }
+        
         function loadDetails(reqId) {
             currentDetailRequestId = reqId;
             const req = mockRequests.find(r => r.id === reqId);
+            const isLocked = req.status !== 'Pendiente';
+
             document.getElementById('detail_reqId').innerText = req.id;
             document.getElementById('detail_advCode').innerText = req.advCode;
             document.getElementById('detail_advId').innerText = req.advId;
             document.getElementById('detail_advName').innerText = req.advName;
             document.getElementById('detail_date').innerText = req.date;
             
-            // Botón finalizar solo visible si está Pendiente
             const btnFinish = document.getElementById('btnFinishContainer'); 
-            if (req.status === 'Pendiente') btnFinish.classList.remove('hidden'); 
+            if (!isLocked) btnFinish.classList.remove('hidden'); 
             else btnFinish.classList.add('hidden');
 
             renderDetailTable();
@@ -740,8 +798,12 @@
             document.getElementById('viewDetail').classList.remove('hidden');
             document.getElementById('viewDetail').classList.add('flex');
         }
+
         function renderDetailTable() {
             const body = document.getElementById('detailsBody'); body.innerHTML = "";
+            const req = mockRequests.find(r => r.id === currentDetailRequestId);
+            const isLocked = req.status !== 'Pendiente';
+
             const rows = mockDetails.filter(d => d.requestId === currentDetailRequestId);
             rows.forEach(row => {
                 let statusColor = "text-gray-400"; let statusText = "Sin Gestionar"; let actionBtn = "";
@@ -749,13 +811,30 @@
                     if (row.respuestaJefe === 'Aprobada') { statusColor = "text-green-600 font-bold"; statusText = "Aprobada"; }
                     if (row.respuestaJefe === 'Rechazada') { statusColor = "text-red-600 font-bold"; statusText = "Rechazada"; }
                     if (row.respuestaJefe === 'Devolución') { statusColor = "text-orange-600 font-bold"; statusText = "Devolución"; }
-                    actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'view')" class="text-blue-600 font-bold text-xs">Ver Detalle</button>`;
+                    
+                    if (isLocked) {
+                        actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'view')" class="text-blue-600 font-bold text-xs hover:underline">Ver Detalle</button>`;
+                    } else {
+                        actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'edit')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1 rounded text-xs font-bold w-full transition border border-amber-200">Modificar</button>`;
+                    }
                 } else {
-                    actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'edit')" class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold w-full">Responder</button>`;
+                    actionBtn = `<button onclick="openResponseModal('${row.rowId}', 'edit')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-xs font-bold w-full transition border border-blue-200">Responder</button>`;
                 }
-                body.insertAdjacentHTML('beforeend', `<tr class="hover:bg-gray-50 text-sm"><td class="px-4 py-3 border-r">${row.novedad}</td><td class="px-4 py-3 border-r">${row.plan}</td><td class="px-4 py-3 border-r">${row.programa}</td><td class="px-4 py-3 border-r">${row.contrato}</td><td class="px-4 py-3 border-r">${row.usuario}</td><td class="px-4 py-3 border-r italic">"${row.motivoAsesor}"</td><td class="px-4 py-3 border-r text-center ${statusColor}">${statusText}</td><td class="px-4 py-3 text-center">${actionBtn}</td></tr>`);
+                body.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-gray-50 text-sm">
+                        <td class="px-4 py-3 border-r">${row.novedad}</td>
+                        <td class="px-4 py-3 border-r">${row.plan}</td>
+                        <td class="px-4 py-3 border-r">${row.programa}</td>
+                        <td class="px-4 py-3 border-r">${row.contrato}</td>
+                        <td class="px-4 py-3 border-r">${row.usuario}</td>
+                        <td class="px-4 py-3 border-r italic">"${row.motivoAsesor}"</td>
+                        <td class="px-4 py-3 border-r text-center ${statusColor}">${statusText}</td>
+                        <td class="px-4 py-3 text-center align-middle">${actionBtn}</td>
+                    </tr>
+                `);
             });
         }
+        
         // Funciones del modal de respuesta 
         function openResponseModal(rowId, mode) {
             const row = mockDetails.find(r => r.rowId === rowId);
@@ -765,12 +844,6 @@
             const justif = document.getElementById('modal_justificacion');
             const respSelect = document.getElementById('modal_respuesta');
             const respRead = document.getElementById('modal_respuesta_readonly');
-            
-            // Elementos de archivo
-            const fileInput = document.getElementById('modal_file');
-            const fileContainer = document.getElementById('modal_file_container');
-            const fileDisplay = document.getElementById('modal_file_display');
-            const fileName = document.getElementById('modal_file_name');
             
             display.value = row.novedad;
 
@@ -782,7 +855,6 @@
                     optionFound = true;
                 }
             });
-            // Si no se encuentra coincidencia exacta, intentar con "includes" (fallback)
             if(!optionFound) {
                  Array.from(select.options).forEach(opt => { 
                     if(row.novedad && row.novedad.includes(opt.value.substring(0,5))) select.value = opt.value; 
@@ -791,9 +863,6 @@
 
             display.classList.remove('hidden'); select.classList.add('hidden');
             justif.value = row.justificacionJefe || "";
-            
-            // Limpiar input de archivo siempre que se abre
-            fileInput.value = "";
 
             if (mode === 'view') {
                 document.getElementById('modalTitle').innerText = "Detalle de Respuesta";
@@ -801,15 +870,6 @@
                 document.getElementById('btnSaveModal').classList.add('hidden');
                 respSelect.classList.add('hidden'); respRead.classList.remove('hidden');
                 respRead.value = row.respuestaJefe; justif.disabled = true;
-                
-                // Lógica visualización archivo en modo VER
-                fileContainer.classList.add('hidden');
-                if (row.fileAttached) {
-                    fileDisplay.classList.remove('hidden');
-                    fileName.innerText = row.fileAttached;
-                } else {
-                    fileDisplay.classList.add('hidden');
-                }
 
             } else {
                 document.getElementById('modalTitle').innerText = "Responder Reclamación";
@@ -818,13 +878,10 @@
                 respSelect.classList.remove('hidden'); respRead.classList.add('hidden');
                 respSelect.value = row.respuestaJefe || ""; justif.disabled = false;
                 toggleJustification();
-                
-                // Lógica visualización archivo en modo EDITAR
-                fileContainer.classList.remove('hidden');
-                fileDisplay.classList.add('hidden');
             }
             document.getElementById('responseModal').classList.remove('hidden');
         }
+
         function closeResponseModal() { document.getElementById('responseModal').classList.add('hidden'); }
         function toggleNovedadEdit() { const d = document.getElementById('modal_novedad_display'), s = document.getElementById('modal_novedad_select'); d.classList.toggle('hidden'); s.classList.toggle('hidden'); }
         function toggleJustification() { const v = document.getElementById('modal_respuesta').value, l = document.getElementById('req_justification'); if(v==='Rechazada'||v==='Devolución') l.classList.remove('hidden'); else l.classList.add('hidden'); }
@@ -834,7 +891,6 @@
             const res = document.getElementById('modal_respuesta').value;
             const jus = document.getElementById('modal_justificacion').value.trim();
             const novSel = document.getElementById('modal_novedad_select');
-            const fileInput = document.getElementById('modal_file');
 
             if (!res) { alert("Respuesta obligatoria"); return; }
             if ((res === 'Rechazada' || res === 'Devolución') && !jus) { alert("Justificación obligatoria"); return; }
@@ -842,11 +898,6 @@
             const row = mockDetails.find(r => r.rowId === rowId);
             row.respuestaJefe = res; 
             row.justificacionJefe = jus;
-            
-            // Guardar nombre del archivo si se seleccionó uno
-            if (fileInput.files.length > 0) {
-                row.fileAttached = fileInput.files[0].name;
-            }
 
             if (document.getElementById('modal_novedad_display').classList.contains('hidden')) row.novedad = novSel.value;
 
