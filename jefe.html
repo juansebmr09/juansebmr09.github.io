@@ -225,6 +225,7 @@
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Documento</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[150px]">Observación (Asesor)</th>
                                 <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[150px] bg-blue-50 border-l border-blue-100">Respuesta Jefe</th>
                                 <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px] bg-blue-50">Acciones</th>
@@ -233,6 +234,8 @@
                         <tbody id="detailsBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody>
                     </table>
                 </div>
+
+
             </div>
             
             <div class="flex justify-end" id="btnFinishContainer">
@@ -421,9 +424,9 @@
         ];
 
         let mockDetails = [
-            { requestId: '452126001', rowId: 'r1', novedad: 'Venta no liquidada al porcentaje esperado', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '' },
-            { requestId: '452126001', rowId: 'r2', novedad: 'Aceleradores', plan: 'Exequial', programa: 'Plata', contrato: '101', usuario: 'Ana', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '' },
-            { requestId: '889926003', rowId: 'r3', novedad: 'Venta no grabada', plan: 'Individual', programa: 'Bronce', contrato: '202', usuario: 'Pedro', motivoAsesor: 'No me pagaron la venta', respuestaJefe: 'Devolución', justificacionJefe: 'Soporte ilegible' }
+            { requestId: '452126001', rowId: 'r1', novedad: 'Venta no liquidada al porcentaje esperado', plan: 'Familiar', programa: 'Oro', contrato: '100', usuario: 'Juan', documento: '12345678', motivoAsesor: 'Falta pago', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '452126001', rowId: 'r2', novedad: 'Aceleradores', plan: 'Individual', programa: 'Plata', contrato: '101', usuario: 'Ana', documento: '87654321', motivoAsesor: 'No aplica acelerador', respuestaJefe: '', justificacionJefe: '' },
+            { requestId: '889926003', rowId: 'r3', novedad: 'Venta no grabada', plan: 'Individual', programa: 'Bronce', contrato: '202', usuario: 'Pedro', documento: '11223344', motivoAsesor: 'No me pagaron la venta', respuestaJefe: 'Devolución', justificacionJefe: 'Soporte ilegible' }
         ];
 
         // INICIALIZACIÓN: TABLA VACÍA
@@ -827,6 +830,7 @@
                         <td class="px-4 py-3 border-r">${row.programa}</td>
                         <td class="px-4 py-3 border-r">${row.contrato}</td>
                         <td class="px-4 py-3 border-r">${row.usuario}</td>
+                        <td class="px-4 py-3 border-r">${row.documento || '---'}</td>
                         <td class="px-4 py-3 border-r italic">"${row.motivoAsesor}"</td>
                         <td class="px-4 py-3 border-r text-center ${statusColor}">${statusText}</td>
                         <td class="px-4 py-3 text-center align-middle">${actionBtn}</td>
@@ -834,7 +838,6 @@
                 `);
             });
         }
-        
         // Funciones del modal de respuesta 
         function openResponseModal(rowId, mode) {
             const row = mockDetails.find(r => r.rowId === rowId);

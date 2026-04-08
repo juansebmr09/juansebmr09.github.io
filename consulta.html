@@ -592,8 +592,14 @@
                 const newObs = document.getElementById(`editRow_obs_${idx}`).value.trim();
                 if(m.observacion !== newObs) {
                     changed = true;
-                    changesLog.push(`${m.motivo}: "${newObs}"`);
-                    m.observacion = newObs; 
+                    
+                    // Capturamos la observación antigua (si estaba vacía, ponemos "Sin observación")
+                    const oldObs = m.observacion || "Sin observación";
+                    
+                    // Registramos el cambio formateado: Antes -> Ahora
+                    changesLog.push(`<strong>${m.motivo}</strong>: Antes: <em>"${oldObs}"</em> ➔ Ahora: <em>"${newObs}"</em>`);
+                    
+                    m.observacion = newObs; // Actualizamos el dato real
                 }
             });
 
@@ -605,10 +611,11 @@
             const now = new Date();
             const formattedDate = now.toISOString().split('T')[0] + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
+            // Registramos en la bitácora usando <br> para separar en líneas y mejorar la lectura
             item.history.push({
                 date: formattedDate,
                 role: 'Asesor',
-                action: `Actualización de observaciones para el documento ${record.numDoc}. Detalles: ${changesLog.join(' | ')}`,
+                action: `Actualización de observaciones para el contrato ${record.contrato}.<br><br>Detalles de los cambios:<br> ${changesLog.join('<br>')}`,
                 files: []
             });
 
