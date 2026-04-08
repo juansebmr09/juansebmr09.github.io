@@ -17,12 +17,10 @@
         .sortable { cursor: pointer; user-select: none; transition: background-color 0.2s; }
         .sortable:hover { background-color: #f3f4f6; }
         
-        /* Scrollbar para la lista de conceptos y modal */
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px;}
         .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
         
-        /* Fila seleccionada activa */
         .row-active { background-color: #eff6ff !important; border-left: 4px solid #2563eb !important; }
     </style>
 </head>
@@ -89,7 +87,7 @@
                 </div>
                 
                 <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
-                    <button onclick="clearFilters()" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded shadow-sm transition flex items-center gap-2 text-sm" title="Limpiar Filtros">
+                    <button onclick="clearFilters()" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded shadow-sm transition flex items-center gap-2 text-sm">
                         <i data-lucide="eraser" class="w-4 h-4"></i> Limpiar
                     </button>
                     <button onclick="applyFilters()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded shadow transition text-sm">
@@ -102,11 +100,12 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th onclick="sortRequests('date')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Fecha<span class="sort-icon inline-block ml-1">▼</span></th>
+                            <th onclick="sortRequests('date')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Fecha <span class="sort-icon inline-block ml-1">▼</span></th>
                             <th onclick="sortRequests('id')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Solicitud <span class="sort-icon inline-block ml-1">▼</span></th>
                             <th onclick="sortRequests('advName')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Asesor <span class="sort-icon inline-block ml-1">▼</span></th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Regional</th>
                             <th onclick="sortRequests('status')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Estado <span class="sort-icon inline-block ml-1">▼</span></th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Valor Total</th>
                             <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Acción</th>
                         </tr>
                     </thead>
@@ -170,7 +169,7 @@
 
                     <button onclick="openBitacora()" class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">
                         <i data-lucide="history" class="w-4 h-4"></i>
-                        <span class="text-xs font-bold uppercase tracking-wide">Ver Trazabilidad y Archivos Históricos</span>
+                        <span class="text-xs font-bold uppercase tracking-wide">Ver Trazabilidad</span>
                     </button>
                 </div>
             </div>
@@ -190,7 +189,7 @@
                         <table class="min-w-max divide-y divide-gray-200 text-sm">
                             <thead class="bg-gray-50 sticky top-0 z-10 shadow-sm">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase border-r border-gray-200">Fecha de creación</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase border-r border-gray-200">Fecha</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase border-r border-gray-200">Plan</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase border-r border-gray-200">Programa</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase border-r border-gray-200">Contrato</th>
@@ -212,7 +211,6 @@
                 </div>
 
                 <div class="flex flex-col min-h-[300px]">
-                    
                     <div id="editorEmptyState" class="flex-grow bg-white border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 p-8 text-center shadow-sm">
                         <i data-lucide="mouse-pointer-click" class="w-12 h-12 mb-4 opacity-50"></i>
                         <p class="font-medium text-lg">Seleccione una fila en la tabla superior para habilitar el panel de resolución.</p>
@@ -237,7 +235,7 @@
 
                             <div class="flex flex-col h-full">
                                 <label class="block text-sm font-bold text-gray-800 mb-1 border-b pb-1">Motivos / Conceptos Aplicados <span class="text-red-500">*</span></label>
-                                <p class="text-[11px] text-gray-500 mb-2">Marque los motivos técnicos que justifican la decisión para <b>este registro</b>.</p>
+                                <p class="text-[11px] text-gray-500 mb-2">Marque los motivos técnicos que justifican la decisión.</p>
                                 
                                 <div class="border border-gray-300 rounded-lg flex-grow overflow-y-auto custom-scroll p-2 bg-gray-50 shadow-inner max-h-[160px]">
                                     <div class="space-y-1" id="conceptosContainer"></div>
@@ -246,7 +244,7 @@
 
                             <div class="flex flex-col gap-4 h-full">
                                 <div>
-                                    <label class="block text-sm font-bold text-gray-800 mb-1">Valor Reclamación</label>
+                                    <label class="block text-sm font-bold text-gray-800 mb-1">Valor Reclamación Aprobado</label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-500 font-bold">$</span>
@@ -298,30 +296,6 @@
 
     </main>
 
-    <div id="bitacoraModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center py-10" style="z-index: 9999;">
-        <div class="relative mx-auto w-[95%] max-w-6xl shadow-2xl rounded-xl bg-white flex flex-col max-h-[90vh]">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
-                <div><h3 class="text-xl font-bold text-gray-800">Trazabilidad Documental y Gestión</h3><p class="text-sm text-gray-500 mt-1">Historial de: <span id="modalSolicitudId" class="font-bold text-gray-700">---</span></p></div>
-                <button onclick="closeBitacora()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto custom-scroll">
-                <table class="min-w-full divide-y divide-gray-200"><thead class="bg-blue-50"><tr><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Fecha</th><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Actor</th><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Rol</th><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Motivos</th><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Acción</th><th class="px-4 py-3 text-left text-xs font-bold text-blue-800">Doc</th></tr></thead><tbody class="bg-white divide-y divide-gray-200 text-sm" id="modalBitacoraBody"></tbody></table>
-            </div>
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-xl"><button onclick="closeBitacora()" class="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold">Cerrar</button></div>
-        </div>
-    </div>
-
-    <div id="exportPaymentModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center py-10" style="z-index: 9999;">
-        <div class="bg-white rounded-xl shadow-2xl w-[90%] max-w-md overflow-hidden">
-            <div class="bg-blue-600 px-5 py-4 flex justify-between items-center"><h3 class="font-bold text-white">Generar Archivo de Pago</h3><button onclick="closeExportPaymentModal()"><i data-lucide="x" class="w-5 h-5 text-white"></i></button></div>
-            <div class="p-6">
-                <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Rango de Fechas (Aprobación)</label>
-                <div class="flex items-center gap-2 mb-2"><input type="date" id="paymentPeriodStart" class="w-full border-gray-300 rounded-lg text-sm"><span class="font-bold">-</span><input type="date" id="paymentPeriodEnd" class="w-full border-gray-300 rounded-lg text-sm"></div>
-            </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-200"><button onclick="closeExportPaymentModal()" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-bold">Cancelar</button><button onclick="downloadPaymentFile()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Descargar Excel</button></div>
-        </div>
-    </div>
-
     <script>
         lucide.createIcons();
 
@@ -350,11 +324,12 @@
             { id: '10102025003', date: '2025-01-20', advName: 'Maria Perez', advId: '55.666.777', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'En Gestión', history: [] }
         ];
 
-        // DATOS SIMULADOS ACTUALIZADOS CON NUEVAS COLUMNAS
+        // DATOS SIMULADOS ACTUALIZADOS (El reqId 88992025002 tiene 2 registros con valor para ver la sumatoria)
         const mockDetails = [
             { reqId: '45212025001', rowId: 'r1', fecha: '2025-01-10', plan: 'Plan Familiar', programa: 'Oro', contrato: '10015', idContratante: '998877', idUsuario: 'U1122', usuario: 'Maria Lopez', parentesco: 'Titular', pago: 'Mensual', valorReclamacion: '', obsAsesor: 'Falta pago de este mes', obsJefe: 'Revisado, procede ajuste.', ghStatus: 'Pendiente', ghObs: '', ghConceptos: ['Reclamación por pago no aplicado'] },
             { reqId: '45212025001', rowId: 'r2', fecha: '2025-01-11', plan: 'Plan Plus', programa: 'Plata', contrato: '10016', idContratante: '998877', idUsuario: 'U1133', usuario: 'Pedro Perez', parentesco: 'Conyuge', pago: 'Anual', valorReclamacion: '', obsAsesor: 'No se aplicó acelerador', obsJefe: 'El asesor tiene razón.', ghStatus: 'Pendiente', ghObs: '', ghConceptos: ['Aceleradores'] },
             { reqId: '88992025002', rowId: 'r3', fecha: '2025-01-14', plan: 'Plan Básico', programa: 'Bronce', contrato: '5544', idContratante: '1122', idUsuario: 'U998', usuario: 'Luis Diaz', parentesco: 'Titular', pago: 'Semestral', valorReclamacion: '55000', obsAsesor: 'Venta no aparece', obsJefe: 'Venta confirmada.', ghStatus: 'Aprobado', ghObs: 'Aplicado correctamente', ghConceptos: ['Venta no grabada'] },
+            { reqId: '88992025002', rowId: 'r3b', fecha: '2025-01-14', plan: 'Plan Extra', programa: 'Bronce', contrato: '5545', idContratante: '1122', idUsuario: 'U999', usuario: 'Ana Diaz', parentesco: 'Hijo', pago: 'Semestral', valorReclamacion: '25000', obsAsesor: 'Bono incompleto', obsJefe: 'Aprobado ajuste.', ghStatus: 'Aprobado', ghObs: 'Reajuste exitoso', ghConceptos: ['Bonos no liquidados'] },
             { reqId: '10102025003', rowId: 'r4', fecha: '2025-01-18', plan: 'Plan Familiar', programa: 'Oro', contrato: '2233', idContratante: '888', idUsuario: 'U333', usuario: 'Carmen Lopez', parentesco: 'Titular', pago: 'Mensual', valorReclamacion: '120000', obsAsesor: 'Revisar acelerador', obsJefe: 'Favor validar GH.', ghStatus: 'Aprobado', ghObs: 'Se aplica manual', ghConceptos: ['Aceleradores'] },
             { reqId: '10102025003', rowId: 'r5', fecha: '2025-01-19', plan: 'Plan Joven', programa: 'Plata', contrato: '2234', idContratante: '888', idUsuario: 'U334', usuario: 'Jose Lopez', parentesco: 'Hijo', pago: 'Mensual', valorReclamacion: '', obsAsesor: 'Castigo mal puesto', obsJefe: 'Escalado por duda en política.', ghStatus: 'Pendiente', ghObs: '', ghConceptos: ['Desacelerador o castigo mal aplicado'] }
         ];
@@ -364,9 +339,9 @@
 
         document.addEventListener('DOMContentLoaded', () => { renderDashboard(); });
 
-        function applyFilters() { /* Mantiene lógica de filtros */ renderDashboard(); }
-        function clearFilters() { /* Mantiene lógica */ }
-        function sortRequests(field) { /* Mantiene lógica */ }
+        function applyFilters() { /* lógica de filtros */ renderDashboard(); }
+        function clearFilters() { /* lógica limpieza */ }
+        function sortRequests(field) { /* lógica ordenamiento */ }
 
         function renderDashboard() {
             const body = document.getElementById('dashboardBody'); const empty = document.getElementById('emptyState'); body.innerHTML = "";
@@ -382,6 +357,19 @@
                 const btnText = isLocked ? 'Ver Detalle' : 'Gestionar';
                 const btnClass = isLocked ? 'text-gray-600 border-gray-300 hover:bg-gray-50' : 'text-blue-600 border-blue-200 hover:bg-blue-100';
 
+                // Lógica Sumatoria dinámica SOLO si está finalizado
+                let valorTotalStr = '-';
+                if (r.status === 'Finalizado') {
+                    const registrosAsociados = mockDetails.filter(d => d.reqId === r.id);
+                    let suma = 0;
+                    registrosAsociados.forEach(reg => {
+                        if (reg.valorReclamacion && !isNaN(reg.valorReclamacion)) {
+                            suma += parseFloat(reg.valorReclamacion);
+                        }
+                    });
+                    valorTotalStr = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(suma);
+                }
+
                 body.innerHTML += `
                     <tr class="hover:bg-blue-50 transition border-b">
                         <td class="px-6 py-4 whitespace-nowrap text-gray-600">${r.date}</td>
@@ -389,6 +377,7 @@
                         <td class="px-6 py-4"><div class="text-sm font-medium text-gray-900">${r.advName}</div><div class="text-xs text-gray-400">${r.advId}</div></td>
                         <td class="px-6 py-4"><div class="text-sm text-gray-700">${r.regional}</div><div class="text-xs text-gray-500">Jefe: ${r.bossName}</div></td>
                         <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass} shadow-sm">${r.status}</span></td>
+                        <td class="px-6 py-4 font-bold text-emerald-700">${valorTotalStr}</td>
                         <td class="px-6 py-4 text-center"><button onclick="openWorkbench('${r.id}')" class="${btnClass} font-bold text-xs border px-3 py-1.5 rounded shadow-sm transition">${btnText}</button></td>
                     </tr>`;
             });
@@ -433,7 +422,6 @@
                 if(r.ghStatus === 'Rechazado') badgeClass = 'bg-red-100 text-red-700 font-bold border-red-200';
                 if(r.ghStatus === 'Devuelto') badgeClass = 'bg-orange-100 text-orange-700 font-bold border-orange-200';
 
-                // Formateo del valor reclamación
                 let valorFormateado = '-';
                 if (r.valorReclamacion) {
                     valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(r.valorReclamacion);
@@ -468,7 +456,6 @@
 
             document.getElementById('panelHeaderTitle').innerText = `Resolviendo: Contrato ${r.contrato} - ${r.usuario}`;
 
-            // Llenar Form con valor reclamación
             document.getElementById('gh_observation').value = r.ghObs;
             document.getElementById('gh_statusSelect').value = r.ghStatus;
             document.getElementById('gh_valor_recl').value = r.valorReclamacion || '';
@@ -516,7 +503,7 @@
             r.ghStatus = status;
             r.ghObs = obs;
             r.ghConceptos = selectedConcepts;
-            r.valorReclamacion = valor; // Guardar nuevo valor
+            r.valorReclamacion = valor;
 
             if (activeReq.status === 'Pendiente GH' && status !== 'Pendiente') {
                 activeReq.status = 'En Gestión';
@@ -558,39 +545,17 @@
         }
 
         function finalizeRequest() {
-            if(confirm("¿Confirma la finalización de toda la solicitud? Esto bloqueará futuras ediciones.")) {
+            if(confirm("¿Confirma la finalización de toda la solicitud? Esto bloqueará futuras ediciones y calculará el consolidado final.")) {
                 activeReq.status = 'Finalizado';
                 alert("✅ Solicitud Finalizada Exitosamente.\nLos registros han sido cerrados.");
                 closeWorkbench();
-                applyFilters();
+                // RenderDashboard recargará los datos y calculará la sumatoria gracias a este applyFilters
+                applyFilters(); 
             }
         }
 
-        function handleGHFileUpload(input) {
-            if (input.files && input.files.length > 0) {
-                alert(`✅ Documento general "${input.files[0].name}" adjuntado exitosamente.`);
-                input.value = ""; 
-            }
-        }
-
-        function closeWorkbench() {
-            document.getElementById('viewWorkbench').classList.add('hidden');
-            document.getElementById('viewDashboard').classList.remove('hidden');
-        }
-
-        function openBitacora() { document.getElementById('bitacoraModal').classList.remove('hidden'); }
-        function closeBitacora() { document.getElementById('bitacoraModal').classList.add('hidden'); }
-        function exportToExcel() { alert("Generando Excel..."); }
-        function openExportPaymentModal() { document.getElementById('exportPaymentModal').classList.remove('hidden'); }
-        function closeExportPaymentModal() { document.getElementById('exportPaymentModal').classList.add('hidden'); }
-        function downloadPaymentFile() {
-            const start = document.getElementById('paymentPeriodStart').value;
-            const end = document.getElementById('paymentPeriodEnd').value;
-            if(!start || !end) { alert("Seleccione 'Desde' y 'Hasta'."); return; }
-            alert(`✅ Archivo generado exitosamente.`);
-            closeExportPaymentModal();
-        }
-
+        function handleGHFileUpload(input) { if (input.files && input.files.length > 0) { alert(`✅ Documento general "${input.files[0].name}" adjuntado exitosamente.`); input.value = ""; } }
+        function closeWorkbench() { document.getElementById('viewWorkbench').classList.add('hidden'); document.getElementById('viewDashboard').classList.remove('hidden'); }
     </script>
 </body>
 </html>
