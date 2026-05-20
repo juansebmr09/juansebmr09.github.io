@@ -23,6 +23,9 @@
         /* Estilo para fila bajo reclamación global (Solo color, sin bloqueo) */
         .row-global-active { background-color: #fffbeb !important; } /* Amber-50 */
         .row-global-active:hover { background-color: #fef3c7 !important; } /* Amber-100 */
+        
+        /* Ocultar botones deshabilitados visualmente pero mantener layout si se requiere */
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
     </style>
 </head>
 <body class="bg-white text-gray-800 h-screen flex flex-col relative">
@@ -109,16 +112,16 @@
                                 <th class="px-4 py-3 text-center border-r border-gray-300 w-10">
                                     <input type="checkbox" id="selectAllRows" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-400 focus:ring-blue-500 cursor-pointer">
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300 min-w-[100px]">Fecha</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Plan</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Programa</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Contrato</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">ID Contratante</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">ID Usuario</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Usuario</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Parentesco</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase border-r border-gray-300">Pago</th>
-                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase min-w-[100px]">Detalle</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="fecha">Fecha <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="plan">Plan <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="programa">Programa <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="contrato">Contrato <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="idContratante">ID Contratante <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="idUsuario">ID Usuario <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="usuario">Usuario <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="parentesco">Parentesco <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase whitespace-nowrap border-r border-gray-300 cursor-pointer hover:bg-gray-200 transition sort-header select-none" data-sort="pago">Pago <span class="sort-icon ml-1 text-gray-400">↕</span></th>
+                                <th class="px-4 py-3 text-center text-xs font-bold text-black uppercase whitespace-nowrap min-w-[120px]">Detalle</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
@@ -133,13 +136,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
                     <div class="relative overflow-hidden inline-block">
                         <button class="border border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-1 px-3 rounded text-sm transition">Adjuntar Soporte</button>
-                        <input type="file" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
+                        <input type="file" id="supportFilesInput" accept=".pdf" multiple class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
                     </div>
-                    <span class="text-xs text-gray-500 hidden sm:inline">Para los registros seleccionados</span>
+                    <span class="text-xs text-gray-500 hidden sm:inline">Para los registros seleccionados (Máx. 3 PDF)</span>
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <button id="btnFilterSelected" class="flex-1 md:flex-none bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded shadow-sm transition flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>Filtrar Seleccionados</button>
-                    <button id="btnSendAll" class="flex-1 md:flex-none bg-[#1e40af] hover:bg-blue-900 text-white font-bold py-2.5 px-6 rounded shadow-sm transition flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Enviar Reclamación</button>
+                    <button id="btnSendAll" disabled class="flex-1 md:flex-none bg-[#1e40af] text-white font-bold py-2.5 px-6 rounded shadow-sm transition flex items-center justify-center gap-2 btn-disabled"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Enviar Reclamación</button>
                 </div>
             </div>
         </div>
@@ -232,81 +235,6 @@
         </div>
     </div>
 
-    <div id="globalClaimModal" class="fixed inset-0 bg-amber-900 bg-opacity-70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center py-10">
-        <div class="relative mx-auto w-[95%] max-w-2xl shadow-2xl rounded-xl bg-white animate-[fade-in_0.3s_ease-out] flex flex-col">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-amber-100 bg-amber-50 rounded-t-xl">
-                <div>
-                    <h3 class="text-xl font-bold text-amber-900 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                        Reclamación Global del Periodo
-                    </h3>
-                    <p class="text-sm text-amber-700 mt-1">Impugnación de todos los registros para: <span id="globalModalPeriod" class="font-bold"></span></p>
-                </div>
-                <button class="js-close-global-claim text-gray-400 hover:text-amber-600"><svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            
-            <div class="px-8 py-6">
-                <div class="mb-4 p-4 bg-blue-50 text-blue-800 text-sm rounded border border-blue-100 flex gap-2">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                    <p>Al crear una reclamación global, se creará un Ticket Maestro para agrupar las incidencias, pero <strong>podrá seguir editando</strong> los detalles individuales si lo requiere.</p>
-                </div>
-
-                <form id="globalClaimForm">
-                    <div class="mb-4">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Motivo General <span class="text-red-500">*</span></label>
-                        <select id="global_motivo" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-amber-500 focus:border-amber-500">
-                            <option value="">Seleccione el motivo principal...</option>
-                            <option value="Error Masivo en Aceleradores">Error Masivo en Aceleradores</option>
-                            <option value="Base Garantizada no aplicada">Base Garantizada no aplicada</option>
-                            <option value="Fallas en cargue de recaudos">Fallas en cargue de recaudos</option>
-                            <option value="Inconsistencia en Tarifas">Inconsistencia en Tarifas</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Descripción detallada <span class="text-red-500">*</span></label>
-                        <textarea id="global_descripcion" rows="4" class="w-full border border-gray-300 rounded-md p-3 focus:ring-amber-500 focus:border-amber-500" placeholder="Explique por qué impugna el periodo completo..."></textarea>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Soporte de Evidencia (Obligatorio)</label>
-                        <div class="flex items-center justify-center w-full">
-                            <label for="global_file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click para subir</span> o arrastre el archivo</p>
-                                    <p class="text-xs text-gray-500">Excel, PDF, ZIP (MAX. 10MB)</p>
-                                </div>
-                                <input id="global_file" type="file" class="hidden" />
-                            </label>
-                        </div> 
-                    </div>
-                </form>
-            </div>
-
-            <div class="px-8 py-5 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl">
-                <button class="js-close-global-claim px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition shadow-sm">Cancelar</button>
-                <button id="btnSaveGlobalClaim" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition shadow-md flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                    Radicar Global
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
-        <div class="max-w-[1600px] mx-auto px-4 text-center">
-            <a href="OVA.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors inline-flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Volver a los otros roles del mockup
-            </a>
-        </div>
-    </footer>
-
     <script>
         const motivosList = [
             "Venta no grabada",
@@ -319,7 +247,6 @@
             "Anexos de maternidad"
         ];
 
-        // --- BASE DE DATOS SIMULADA ---
         let mockDatabase = [
             {
                 id: 'fila_ejemplo',
@@ -329,7 +256,8 @@
                 idContratante: '998877', idUsuario: '112233', 
                 usuario: 'Juan Pérez', parentesco: 'Titular', pago: 'Pospago',
                 motivos: [],
-                globalClaimId: null 
+                globalClaimId: null,
+                isSessionCreated: false 
             },
             {
                 id: 'fila_prueba_1',
@@ -341,11 +269,65 @@
                 motivos: [
                     { motivo: 'Venta no liquidada al porcentaje esperado', observacion: 'No se reflejó el pago de la cuota inicial.' }
                 ],
-                globalClaimId: null
+                globalClaimId: null,
+                isSessionCreated: false
             }
         ];
 
         let globalClaims = []; 
+
+        // VARIABLES Y LOGICA DE ORDENAMIENTO (NUEVO REQ 10)
+        let sortCol = null;
+        let sortAsc = true;
+
+        document.querySelectorAll('.sort-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const col = header.getAttribute('data-sort');
+                if (sortCol === col) {
+                    sortAsc = !sortAsc; // Cambia dirección si es la misma columna
+                } else {
+                    sortCol = col;
+                    sortAsc = true; // Empieza ascendente al cambiar de columna
+                }
+                
+                // Reiniciar todos los iconos visualmente
+                document.querySelectorAll('.sort-icon').forEach(icon => {
+                    icon.innerHTML = '↕';
+                    icon.classList.remove('text-blue-600', 'font-bold');
+                    icon.classList.add('text-gray-400');
+                });
+                
+                // Activar el icono de la columna actual
+                const currentIcon = header.querySelector('.sort-icon');
+                if(currentIcon) {
+                    currentIcon.innerHTML = sortAsc ? '↑' : '↓';
+                    currentIcon.classList.remove('text-gray-400');
+                    currentIcon.classList.add('text-blue-600', 'font-bold');
+                }
+
+                // Ordenar la base de datos mock
+                mockDatabase.sort((a, b) => {
+                    let valA = a[col] || '';
+                    let valB = b[col] || '';
+                    
+                    // Asegurar ordenamiento numérico si ambos son números válidos (ej: contratos)
+                    if(!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+                        valA = Number(valA);
+                        valB = Number(valB);
+                    } else {
+                        valA = String(valA).toLowerCase();
+                        valB = String(valB).toLowerCase();
+                    }
+
+                    if (valA < valB) return sortAsc ? -1 : 1;
+                    if (valA > valB) return sortAsc ? 1 : -1;
+                    return 0;
+                });
+
+                // Refrescar tabla forzando el click en Consultar
+                document.getElementById('btnConsultar').click();
+            });
+        });
 
         function setupDynamicMotivos(listContainerId, obsContainerId, prefix) {
             const listContainer = document.getElementById(listContainerId);
@@ -396,7 +378,6 @@
         setupDynamicMotivos('editMotivosList', 'editObservationsContainer', 'edit');
 
 
-        // --- LOGICA DE HEADER ---
         const initHeaderData = () => {
             let consecutiveCounter = 1;
             const fixedCode = "4521";
@@ -407,7 +388,6 @@
         };
         initHeaderData();
 
-        // --- GESTIÓN COMENTARIOS Y MODAL EDITAR ---
         const commentModal = document.getElementById('commentModal');
         const currentRowInput = document.getElementById('currentRowIdInput');
         const btnSaveComment = document.getElementById('btnSaveComment');
@@ -418,11 +398,20 @@
         document.querySelectorAll('.js-close-comment').forEach(btn => btn.addEventListener('click', closeCommentModal));
 
         document.getElementById('tableBody').addEventListener('click', (e) => {
-            const btn = e.target.closest('.js-view-details') || e.target.closest('.js-edit-details');
+            const btn = e.target.closest('.js-view-details') || e.target.closest('.js-edit-details') || e.target.closest('.js-add-details') || e.target.closest('.js-delete-record');
             if (!btn) return;
 
-            const rowId = btn.closest('tr').getAttribute('data-row-id');
+            const row = btn.closest('tr');
+            const rowId = row.getAttribute('data-row-id');
             const record = mockDatabase.find(r => r.id === rowId);
+
+            if (btn.classList.contains('js-delete-record')) {
+                if(confirm("¿Está seguro de que desea eliminar permanentemente este registro?")) {
+                    mockDatabase = mockDatabase.filter(r => r.id !== rowId);
+                    row.remove();
+                }
+                return;
+            }
             
             currentRowInput.value = rowId;
 
@@ -431,7 +420,6 @@
             obsContainer.innerHTML = '<p class="text-sm text-gray-400 italic" id="editEmptyState">Seleccione un motivo para agregar observaciones.</p>';
             listContainer.querySelectorAll('input').forEach(chk => chk.checked = false);
 
-            // Cargar datos existentes
             if (record && record.motivos) {
                 record.motivos.forEach(mObj => {
                     const idx = motivosList.indexOf(mObj.motivo);
@@ -448,20 +436,17 @@
             }
 
             const isReadOnly = btn.classList.contains('js-view-details'); 
-            const hasData = record.motivos && record.motivos.length > 0;
+            const isAdd = btn.classList.contains('js-add-details');
 
             if (isReadOnly) {
-                // Modo Ver: Solo lectura
-                if (hasData) {
-                    modalTitle.innerText = "Detalle de Motivos";
-                    btnSaveComment.classList.add('hidden');
-                    listContainer.querySelectorAll('input').forEach(i => i.disabled = true);
-                    obsContainer.querySelectorAll('textarea').forEach(t => t.disabled = true);
-                } else {
-                    modalTitle.innerText = "Agregar Motivos";
-                    btnSaveComment.classList.remove('hidden');
-                    listContainer.querySelectorAll('input').forEach(i => i.disabled = false);
-                }
+                modalTitle.innerText = "Detalle de Motivos";
+                btnSaveComment.classList.add('hidden');
+                listContainer.querySelectorAll('input').forEach(i => i.disabled = true);
+                obsContainer.querySelectorAll('textarea').forEach(t => t.disabled = true);
+            } else if (isAdd) {
+                modalTitle.innerText = "Agregar Motivos";
+                btnSaveComment.classList.remove('hidden');
+                listContainer.querySelectorAll('input').forEach(i => i.disabled = false);
             } else {
                 modalTitle.innerText = "Editar Motivos";
                 btnSaveComment.classList.remove('hidden');
@@ -494,17 +479,10 @@
 
             if(record) record.motivos = newMotivosData;
             
-            const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
-            if(row) {
-                const editBtn = row.querySelector('.js-edit-details');
-                if(editBtn) editBtn.classList.remove('hidden');
-            }
-
+            document.getElementById('btnConsultar').click();
             closeCommentModal();
         });
 
-
-        // --- NUEVO REGISTRO ---
         const newClaimModal = document.getElementById('newClaimModal');
         const btnOpenNewClaim = document.getElementById('btnOpenNewClaim');
         
@@ -518,8 +496,6 @@
         document.querySelectorAll('.js-close-new-claim').forEach(btn => btn.addEventListener('click', () => newClaimModal.classList.add('hidden')));
 
         document.getElementById('btnRealSaveClaim').addEventListener('click', () => {
-            
-            // Recolectar motivos
             const newMotivosData = [];
             motivosList.forEach((m, idx) => {
                 const chk = document.getElementById(`new_chk_${idx}`);
@@ -553,7 +529,8 @@
                 parentesco: document.getElementById('new_parentezco').value,
                 pago: document.getElementById('new_pago').value,
                 motivos: newMotivosData,
-                globalClaimId: null
+                globalClaimId: null,
+                isSessionCreated: true 
             };
 
             mockDatabase.push(newRecord);
@@ -561,58 +538,6 @@
             alert("✅ Registro guardado. Presione Consultar para actualizar.");
         });
 
-        // --- LOGICA RECLAMACIÓN GLOBAL ---
-        const btnOpenGlobalClaim = document.getElementById('btnOpenGlobalClaim');
-        const globalClaimModal = document.getElementById('globalClaimModal');
-        const btnSaveGlobalClaim = document.getElementById('btnSaveGlobalClaim');
-
-        btnOpenGlobalClaim.addEventListener('click', () => {
-            const anio = document.getElementById('filter_anio').value;
-            const periodo = document.getElementById('filter_periodo').value;
-            
-            document.getElementById('globalModalPeriod').innerText = `${periodo} ${anio}`;
-            globalClaimModal.classList.remove('hidden');
-        });
-
-        document.querySelectorAll('.js-close-global-claim').forEach(btn => btn.addEventListener('click', () => globalClaimModal.classList.add('hidden')));
-
-        btnSaveGlobalClaim.addEventListener('click', () => {
-            const motivo = document.getElementById('global_motivo').value;
-            const desc = document.getElementById('global_descripcion').value;
-            
-            if(!motivo || !desc) {
-                alert("Complete el motivo y la descripción para la reclamación global.");
-                return;
-            }
-
-            const anio = document.getElementById('filter_anio').value;
-            const periodo = document.getElementById('filter_periodo').value;
-            const globalID = `GL-${anio}-${periodo}-${Math.floor(Math.random()*1000)}`;
-
-            globalClaims.push({
-                id: globalID,
-                anio: anio,
-                periodo: periodo,
-                motivo: motivo,
-                descripcion: desc
-            });
-
-            let updatedCount = 0;
-            mockDatabase.forEach(row => {
-                if(row.anio === anio && row.periodo === periodo) {
-                    row.globalClaimId = globalID;
-                    updatedCount++;
-                }
-            });
-
-            globalClaimModal.classList.add('hidden');
-            alert(`✅ Se ha generado la Reclamación Global ${globalID}. Se han asociado ${updatedCount} registros.`);
-            
-            document.getElementById('btnConsultar').click();
-        });
-
-
-        // --- RENDER TABLA ---
         function renderRow(item) {
             const hasMotivos = item.motivos && item.motivos.length > 0;
             const isGlobal = !!item.globalClaimId;
@@ -629,7 +554,13 @@
                 `;
             }
 
-            const pencilClass = hasMotivos ? '' : 'hidden';
+            const pencilClass = hasMotivos ? '' : 'hidden'; 
+            const plusClass = hasMotivos ? 'hidden' : ''; 
+            const trashBtn = item.isSessionCreated ? `
+                <button class="js-delete-record text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-full shadow-sm fade-in ml-2" title="Eliminar registro">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                </button>
+            ` : '';
             
             const actionButtons = `
                 ${globalIndicator}
@@ -639,6 +570,10 @@
                 <button class="js-edit-details ${pencilClass} text-white bg-amber-500 hover:bg-amber-600 p-2 rounded-full shadow-sm fade-in ml-2" title="Editar motivos">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                 </button>
+                <button class="js-add-details ${plusClass} text-white bg-green-600 hover:bg-green-700 p-2 rounded-full shadow-sm fade-in ml-2" title="Agregar motivos">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button>
+                ${trashBtn}
             `;
 
             const html = `
@@ -646,17 +581,17 @@
                     <td class="px-4 py-2 text-center border-r border-gray-200">
                         <input type="checkbox" class="row-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-400 focus:ring-blue-500 cursor-pointer">
                     </td>
-                    <td class="border-r border-gray-200 px-4 py-2 font-medium text-gray-700 text-xs">${item.fecha}</td>
+                    <td class="border-r border-gray-200 px-4 py-2 font-medium text-gray-700 text-xs whitespace-nowrap">${item.fecha}</td>
                     
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.plan}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.programa}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.contrato}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.idContratante}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.idUsuario}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.usuario}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.parentesco}</td>
-                    <td class="border-r border-gray-200 px-2 text-sm">${item.pago}</td>
-                    <td class="px-2 py-2">
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.plan}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.programa}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.contrato}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.idContratante}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.idUsuario}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.usuario}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.parentesco}</td>
+                    <td class="border-r border-gray-200 px-2 text-sm whitespace-nowrap">${item.pago}</td>
+                    <td class="px-2 py-2 whitespace-nowrap">
                         <div class="actions-cell flex items-center justify-center">
                             ${actionButtons}
                         </div>
@@ -666,7 +601,6 @@
             document.getElementById('tableBody').insertAdjacentHTML('beforeend', html);
         }
 
-        // --- CONSULTAR ---
         document.getElementById('btnConsultar').addEventListener('click', () => {
             const fAnio = document.getElementById('filter_anio').value;
             const fPeriodo = document.getElementById('filter_periodo').value;
@@ -677,23 +611,6 @@
             const globalStatusBanner = document.getElementById('globalStatusBanner');
             
             globalStatusBanner.classList.add('hidden');
-            let periodIsGlobalLocked = false;
-            let currentGlobalId = '';
-
-            if (fAnio && fPeriodo) {
-                const existingGlobal = globalClaims.find(gc => gc.anio === fAnio && gc.periodo === fPeriodo);
-                if (existingGlobal) {
-                    periodIsGlobalLocked = true;
-                    currentGlobalId = existingGlobal.id;
-                    btnGlobal.classList.add('hidden');
-                    globalStatusBanner.classList.remove('hidden');
-                    document.getElementById('lblGlobalID').innerText = currentGlobalId;
-                } else {
-                    btnGlobal.classList.remove('hidden');
-                }
-            } else {
-                btnGlobal.classList.add('hidden'); 
-            }
 
             const tableBody = document.getElementById('tableBody');
             const noResultsMsg = document.getElementById('noResultsMsg');
@@ -718,6 +635,8 @@
 
             if(count === 0) noResultsMsg.classList.remove('hidden');
             else noResultsMsg.classList.add('hidden');
+            
+            checkSendButtonState();
         });
 
         document.getElementById('btnLimpiar').addEventListener('click', () => {
@@ -731,25 +650,79 @@
             document.getElementById('noResultsMsg').classList.add('hidden');
             document.getElementById('btnOpenGlobalClaim').classList.add('hidden'); 
             document.getElementById('globalStatusBanner').classList.add('hidden');
+            
+            // Reiniciar estado visual del ordenamiento
+            sortCol = null;
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.innerHTML = '↕';
+                icon.classList.remove('text-blue-600', 'font-bold');
+                icon.classList.add('text-gray-400');
+            });
+
+            checkSendButtonState();
         });
 
-        // Botones de acción masiva
+        document.getElementById('supportFilesInput').addEventListener('change', (e) => {
+            if (e.target.files.length > 3) {
+                alert("Puede adjuntar un máximo de 3 soportes por solicitud.");
+                e.target.value = ''; 
+                return;
+            }
+            
+            let allPdf = Array.from(e.target.files).every(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+            if(!allPdf) {
+                alert("Los soportes deben cargarse exclusivamente en formato .pdf");
+                e.target.value = '';
+            }
+        });
+
+        const checkSendButtonState = () => {
+            const btnSend = document.getElementById('btnSendAll');
+            const selectedCount = document.querySelectorAll('.row-checkbox:checked').length;
+            
+            if (selectedCount > 0) {
+                btnSend.removeAttribute('disabled');
+                btnSend.classList.remove('btn-disabled');
+                btnSend.classList.replace('bg-[#1e40af]', 'bg-blue-600');
+            } else {
+                btnSend.setAttribute('disabled', 'true');
+                btnSend.classList.add('btn-disabled');
+                btnSend.classList.replace('bg-blue-600', 'bg-[#1e40af]');
+            }
+        };
+
+        document.getElementById('tableBody').addEventListener('change', (e) => {
+            if (e.target.classList.contains('row-checkbox')) {
+                checkSendButtonState();
+            }
+        });
+
         document.getElementById('selectAllRows').addEventListener('change', (e) => {
             const checkboxes = document.querySelectorAll('.row-checkbox');
             checkboxes.forEach(cb => cb.checked = e.target.checked);
+            checkSendButtonState();
         });
+
         document.getElementById('btnFilterSelected').addEventListener('click', () => {
             document.querySelectorAll('#tableBody tr').forEach(row => {
                 const cb = row.querySelector('.row-checkbox');
                 if(!cb || !cb.checked) row.remove();
             });
         });
+
         document.getElementById('btnSendAll').addEventListener('click', () => {
              const checkboxes = document.querySelectorAll('.row-checkbox:checked');
-             if(checkboxes.length > 0) alert("Reclamación enviada correctamente.");
-             else alert("No hay registros seleccionados o habilitados para envío.");
+             if(checkboxes.length > 0) {
+                 alert("Reclamación enviada correctamente.");
+                 let currentText = document.getElementById('header_solicitud').innerText;
+                 let numPart = parseInt(currentText.slice(-3)) + 1;
+                 document.getElementById('header_solicitud').innerText = currentText.slice(0, -3) + String(numPart).padStart(3, '0');
+                 
+                 checkboxes.forEach(cb => cb.checked = false);
+                 document.getElementById('selectAllRows').checked = false;
+                 checkSendButtonState();
+             }
         });
-
     </script>
 </body>
 </html>

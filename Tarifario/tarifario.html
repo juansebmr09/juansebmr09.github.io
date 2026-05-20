@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVA - Tarifas Consolidadas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-cyan: #00c8c8;
+            --dark-blue: #1b365d;
+            --bg-gray: #f5f5f5;
+            --danger: #ff4757;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-gray);
+            color: #333;
+        }
+
+        /* HEADER */
+        .header-ova {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .header-title-ova {
+            font-size: 1.5rem;
+            margin: 0;
+            margin-left: 20px;
+        }
+
+        /* Sidebar Menú Hamburguesa */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            z-index: 2000;
+            padding-top: 60px;
+        }
+        .sidebar.open { left: 0; }
+        .close-sidebar {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark-blue);
+        }
+        .menu-item {
+            padding: 15px 20px;
+            font-weight: bold;
+            color: var(--dark-blue);
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .sub-menu {
+            display: none;
+            background-color: var(--bg-gray);
+            padding: 10px 20px 10px 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--primary-cyan);
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 600px;
+        }
+
+        .vista-titulo {
+            color: var(--dark-blue);
+            font-size: 2rem;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .texto-guia {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* ZONA DE CONTROLES: PILLS Y BUSCADOR */
+        .controls-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pills-container {
+            display: flex;
+            gap: 10px;
+        }
+        .pill-btn {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .pill-btn.active {
+            background-color: var(--primary-cyan);
+            color: white;
+        }
+
+        .buscador-wrapper {
+            position: relative;
+            width: 350px;
+        }
+        .buscador-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--primary-cyan);
+            border-radius: 20px;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .resultados-lista {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-top: 5px;
+            padding: 0;
+            list-style: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .resultados-lista.active { display: block; }
+        .resultado-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+        .resultado-item:hover { background-color: var(--bg-gray); color: var(--primary-cyan); }
+        .codigo-badge {
+            background-color: var(--dark-blue); color: white; padding: 3px 6px; border-radius: 4px; margin-right: 5px;
+        }
+
+        /* VISTAS DINÁMICAS */
+        .view { display: none; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Categorías */
+        .categorias-list { list-style: none; padding: 0; }
+        .categoria-item {
+            background: var(--bg-gray);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--dark-blue);
+            border-radius: 4px;
+        }
+        .categoria-titulo { font-weight: bold; color: var(--dark-blue); font-size: 1.1rem; }
+        
+        .sub-botones-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Botones estilo pincelada (Sin tipografía cursiva) */
+        .brush-btn {
+            background-color: var(--primary-cyan);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            font-weight: bold;
+            font-size: 0.95rem;
+            padding: 10px 25px;
+            border: none;
+            cursor: pointer;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            transition: 0.2s;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .brush-btn:hover { background-color: #00b3b3; transform: scale(1.05); }
+
+        /* Grilla Portafolio */
+        .grid-programas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-back {
+            background: none; border: none; color: var(--primary-cyan);
+            font-size: 1rem; cursor: pointer; font-weight: bold; margin-bottom: 20px;
+        }
+
+        /* Tablas */
+        .tables-wrapper {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .table-container {
+            flex: 1;
+            min-width: 450px;
+            border: 1px solid var(--dark-blue);
+        }
+        .table-header {
+            background-color: var(--dark-blue);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #e2e8f0; color: var(--dark-blue); }
+        .cod-tecnico { color: var(--danger); font-family: monospace; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header class="header-ova">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <h1 class="header-title-ova">Tarifas consolidadas</h1>
+    </header>
+
+    <div id="sidebar" class="sidebar">
+        <button class="close-sidebar" onclick="toggleMenu()">×</button>
+        <div class="menu-item" onclick="toggleSubmenu()">Tarifas</div>
+        <div id="submenu-tarifas" class="sub-menu" onclick="iniciarModulo()">Tarifas consolidadas</div>
+    </div>
+
+    <div class="main-container">
+        
+        <h2 class="vista-titulo">Tarifas consolidadas</h2>
+        <p class="texto-guia">Consulta las tarifas de cada uno de los planes</p>
+
+        <div class="controls-wrapper">
+            <div class="pills-container" id="pills-container">
+                </div>
+            
+            <div class="buscador-wrapper">
+                <input type="text" id="input-buscador" class="buscador-input" placeholder="Buscar Plan o Cód (ej: TRADAS)">
+                <ul id="lista-resultados" class="resultados-lista"></ul>
+            </div>
+        </div>
+
+        <div id="view-categorias" class="view active">
+            <ul class="categorias-list">
+                <li class="categoria-item">
+                    <div class="categoria-titulo">1. Tarifas por Plan</div>
+                    <div class="sub-botones-container">
+                        <button class="brush-btn" onclick="cargarPortafolio('Asociado')">Asociado</button>
+                        <button class="brush-btn" onclick="cargarPortafolio('Familiar')">Familiar</button>
+                        <button class="brush-btn" onclick="cargarPortafolio('Colectivo')">Colectivo</button>
+                    </div>
+                </li>
+                <li class="categoria-item"><div class="categoria-titulo">2. Grupos de Afinidad | Libranzas Otras Entidades | Nichos</div></li>
+                <li class="categoria-item"><div class="categoria-titulo">3. Tarifas Fuerzas Militares | Libranza</div></li>
+                <li class="categoria-item"><div class="categoria-titulo">4. Tarifas SAO</div></li>
+                <li class="categoria-item"><div class="categoria-titulo">5. Cupones de Pago Directo</div></li>
+                <li class="categoria-item"><div class="categoria-titulo">6. Tarifas Prestadores</div></li>
+                <li class="categoria-item"><div class="categoria-titulo">7. Tarifas CEM Familiar y Asociado</div></li>
+            </ul>
+        </div>
+
+        <div id="view-portafolio" class="view">
+            <button class="btn-back" onclick="navegarA('view-categorias')">← Volver a Categorías</button>
+            <h3 style="color: var(--dark-blue);">Medicina Integral - Plan <span id="titulo-tipologia"></span></h3>
+            <div id="grid-programas" class="grid-programas"></div>
+        </div>
+
+        <div id="view-tablas" class="view">
+            <button class="btn-back" onclick="navegarA('view-portafolio')">← Volver al Portafolio</button>
+            <h3 style="color: var(--dark-blue); text-align: center;" id="titulo-plan-tablas"></h3>
+            
+            <div class="tables-wrapper">
+                <div class="table-container">
+                    <div class="table-header">
+                        COOMEVA MEDICINA PREPAGADA S.A.<br>
+                        TARIFAS MES/USUARIO DE <span class="lbl-plan"></span> | AÑO <span class="lbl-anio"></span><br>
+                        <span style="color: #ffd700;">(NO Incluyen IVA)</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr id="thead-sin-iva-r1"></tr>
+                            <tr id="thead-sin-iva-r2"></tr>
+                        </thead>
+                        <tbody id="tbody-sin-iva"></tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        COOMEVA MEDICINA PREPAGADA S.A.<br>
+                        TARIFAS MES/USUARIO DE <span class="lbl-plan"></span> | AÑO <span class="lbl-anio"></span><br>
+                        <span style="color: #00ffcc;">(Incluyen IVA)</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr id="thead-con-iva-r1"></tr>
+                            <tr id="thead-con-iva-r2"></tr>
+                        </thead>
+                        <tbody id="tbody-con-iva"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DATOS SIMULADA ---
+        function generarTarifasRandom(columnas, rangos) {
+            const filas = [];
+            rangos.forEach(rango => {
+                let valSin = [], valCon = [];
+                columnas.forEach(() => {
+                    const precioBase = Math.floor(Math.random() * 500000) + 100000;
+                    const precioConIva = precioBase * 1.05;
+                    valSin.push('$ ' + precioBase.toLocaleString('es-CO'));
+                    valCon.push('$ ' + precioConIva.toLocaleString('es-CO'));
+                });
+                filas.push({ rango, valoresSin: valSin, valoresCon: valCon });
+            });
+            return { columnas, filas };
+        }
+
+        const bd = {
+            2026: {
+                programas: [
+                    { id: 'p1', nombre: 'Ambulatorio Especial', codigo: 'AAESFQ', tipologia: 'Asociado' },
+                    { id: 'p2', nombre: 'Tradicional', codigo: 'TRADAS', tipologia: 'Asociado' },
+                    { id: 'p3', nombre: 'Clásico', codigo: 'CLASAS', tipologia: 'Asociado' },
+                    { id: 'p4', nombre: 'Plata', codigo: 'PLATAS', tipologia: 'Asociado' },
+                    { id: 'p5', nombre: 'Oro', codigo: 'OROAS', tipologia: 'Asociado' },
+                    { id: 'p6', nombre: 'Plata Prime', codigo: 'PPRIME', tipologia: 'Asociado' },
+                    { id: 'p7', nombre: 'Ambulatorio Esencial', codigo: 'AESAS', tipologia: 'Asociado' },
+                    { id: 'p8', nombre: 'Preferente', codigo: 'PREFAS', tipologia: 'Asociado' },
+                    { id: 'p9', nombre: 'Plata Joven', codigo: 'PJOVEN', tipologia: 'Asociado' },
+                    { id: 'p10', nombre: 'Oro Prime Empresarial', codigo: 'OPRIME', tipologia: 'Asociado' },
+                    { id: 'p11', nombre: 'HCM', codigo: 'HCMAS', tipologia: 'Asociado' },
+                    { id: 'p12', nombre: 'Oro Plus', codigo: 'OPLUS', tipologia: 'Asociado' },
+                    { id: 'p13', nombre: 'Asociado', codigo: 'ASOC', tipologia: 'Asociado' },
+                    { id: 'p14', nombre: 'Tradicional Especial', codigo: 'TESPAS', tipologia: 'Asociado' }
+                ],
+                tarifas: {
+                    'p1': generarTarifasRandom(['Masculino', 'Femenino'], ['0 - 14', '15 - 29', '30 - 49', '50 - 59', '>= 60']),
+                    'p2': generarTarifasRandom(['Único'], ['0 - 30', '31 - 60', '> 60']),
+                    'p3': generarTarifasRandom(['Hombre', 'Mujer', 'Niño'], ['Standard']),
+                    'p4': generarTarifasRandom(['Masculino', 'Femenino'], ['0 - 19', '20 - 39', '40 - 59', '60 - 79', '>= 80']),
+                    'p5': generarTarifasRandom(['Tarifa Plena'], ['0 - 25', '26 - 50', '51 - 70', '> 70']),
+                    'p6': generarTarifasRandom(['Masculino', 'Femenino'], ['0 - 14', '15 - 29', '30 - 49', '50 - 59', '60 - 69', '>= 70']),
+                    'p7': generarTarifasRandom(['General'], ['Edad Única']),
+                    'p8': generarTarifasRandom(['Masculino', 'Femenino'], ['< 40', '40 - 60', '> 60']),
+                    'p9': generarTarifasRandom(['Jóvenes'], ['18 - 25', '26 - 30']),
+                    'p10': generarTarifasRandom(['Titular', 'Beneficiario'], ['< 64 años', '> 65 años']),
+                    'p11': generarTarifasRandom(['Masculino', 'Femenino'], ['0 - 50', '> 50']),
+                    'p12': generarTarifasRandom(['Tarifa Oro'], ['0 - 35', '36 - 65', '> 65']),
+                    'p13': generarTarifasRandom(['Masculino', 'Femenino'], ['0 - 14', '15 - 29', '30 - 49', '50 - 59', '60 - 69', '70 - 79', '>= 80']),
+                    'p14': generarTarifasRandom(['Especial'], ['Rango A', 'Rango B', 'Rango C'])
+                }
+            },
+            2027: { programas: [], tarifas: {} }
+        };
+
+        bd[2027].programas = [...bd[2026].programas];
+        bd[2026].programas.forEach(p => {
+            const estructuraOriginal = bd[2026].tarifas[p.id];
+            bd[2027].tarifas[p.id] = generarTarifasRandom(estructuraOriginal.columnas, estructuraOriginal.filas.map(f => f.rango));
+        });
+
+        // --- ESTADO DE LA APLICACIÓN ---
+        let anioActual = new Date().getFullYear();
+        if (anioActual < 2026) anioActual = 2026; 
+        let anioSeleccionado = anioActual;
+
+        // --- INICIALIZACIÓN (Años) ---
+        function inicializarPills() {
+            const container = document.getElementById('pills-container');
+            container.innerHTML = '';
+
+            const btnActual = document.createElement('button');
+            btnActual.className = 'pill-btn active';
+            btnActual.innerText = anioActual;
+            btnActual.onclick = () => cambiarAnio(anioActual, btnActual);
+            container.appendChild(btnActual);
+
+            const anioSiguiente = anioActual + 1;
+            if (bd[anioSiguiente]) {
+                const btnSiguiente = document.createElement('button');
+                btnSiguiente.className = 'pill-btn';
+                btnSiguiente.innerText = anioSiguiente;
+                btnSiguiente.onclick = () => cambiarAnio(anioSiguiente, btnSiguiente);
+                container.appendChild(btnSiguiente);
+            }
+        }
+
+        function cambiarAnio(anio, btnElement) {
+            anioSeleccionado = anio;
+            document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            if(document.getElementById('view-tablas').classList.contains('active')) {
+                navegarA('view-portafolio');
+            }
+            cerrarBuscador();
+        }
+
+        // --- NAVEGACIÓN ---
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+        function toggleSubmenu() {
+            const sm = document.getElementById('submenu-tarifas');
+            sm.style.display = sm.style.display === 'block' ? 'none' : 'block';
+        }
+        function iniciarModulo() {
+            toggleMenu();
+            navegarA('view-categorias');
+        }
+
+        function navegarA(idVista) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(idVista).classList.add('active');
+        }
+
+        // --- RENDER PORTAFOLIO ---
+        function cargarPortafolio(tipologia) {
+            document.getElementById('titulo-tipologia').innerText = tipologia;
+            const grid = document.getElementById('grid-programas');
+            grid.innerHTML = '';
+
+            const programas = bd[anioSeleccionado].programas.filter(p => p.tipologia === tipologia);
+            
+            programas.forEach(prog => {
+                const btn = document.createElement('button');
+                btn.className = 'brush-btn';
+                btn.innerText = prog.nombre;
+                btn.onclick = () => renderizarTablas(prog);
+                grid.appendChild(btn);
+            });
+
+            if(programas.length === 0) grid.innerHTML = '<p>No hay planes cargados para este año.</p>';
+            navegarA('view-portafolio');
+        }
+
+        // --- RENDER TABLAS DINÁMICAS ---
+        function renderizarTablas(programa) {
+            const data = bd[anioSeleccionado].tarifas[programa.id];
+            
+            document.getElementById('titulo-plan-tablas').innerText = programa.nombre.toUpperCase();
+            document.querySelectorAll('.lbl-plan').forEach(el => el.innerText = programa.nombre.toUpperCase());
+            document.querySelectorAll('.lbl-anio').forEach(el => el.innerText = anioSeleccionado);
+
+            const thS1 = document.getElementById('thead-sin-iva-r1');
+            const thS2 = document.getElementById('thead-sin-iva-r2');
+            const thC1 = document.getElementById('thead-con-iva-r1');
+            const thC2 = document.getElementById('thead-con-iva-r2');
+
+            [thS1, thS2, thC1, thC2].forEach(el => el.innerHTML = '');
+
+            thS1.innerHTML = `<th rowspan="2">RANGO EDAD</th><th colspan="${data.columnas.length}">${programa.nombre.toUpperCase()}</th>`;
+            thC1.innerHTML = `<th rowspan="2">RANGO EDAD</th><th colspan="${data.columnas.length}">${programa.nombre.toUpperCase()} <br><span class="cod-tecnico">${programa.codigo}</span></th>`;
+
+            let colsHtml = '';
+            data.columnas.forEach(col => colsHtml += `<th>${col}</th>`);
+            thS2.innerHTML = colsHtml;
+            thC2.innerHTML = colsHtml;
+
+            const tbSin = document.getElementById('tbody-sin-iva');
+            const tbCon = document.getElementById('tbody-con-iva');
+            tbSin.innerHTML = ''; tbCon.innerHTML = '';
+
+            data.filas.forEach(fila => {
+                let trS = `<tr><td><b>${fila.rango}</b></td>`;
+                fila.valoresSin.forEach(val => trS += `<td>${val}</td>`);
+                trS += `</tr>`;
+                tbSin.innerHTML += trS;
+
+                let trC = `<tr><td><b>${fila.rango}</b></td>`;
+                fila.valoresCon.forEach(val => trC += `<td>${val}</td>`);
+                trC += `</tr>`;
+                tbCon.innerHTML += trC;
+            });
+
+            navegarA('view-tablas');
+        }
+
+        // --- BUSCADOR ---
+        const inputBuscador = document.getElementById('input-buscador');
+        const listaResultados = document.getElementById('lista-resultados');
+
+        inputBuscador.addEventListener('input', function(e) {
+            const termino = e.target.value.toLowerCase().trim();
+            listaResultados.innerHTML = '';
+
+            if (termino.length < 2) {
+                cerrarBuscador(); return;
+            }
+
+            const programasAnio = bd[anioSeleccionado].programas;
+            const resultados = programasAnio.filter(p => 
+                p.nombre.toLowerCase().includes(termino) || 
+                p.codigo.toLowerCase().includes(termino)
+            );
+
+            if(resultados.length > 0) {
+                resultados.forEach(prog => {
+                    const li = document.createElement('li');
+                    li.className = 'resultado-item';
+                    li.innerHTML = `<span class="codigo-badge">${prog.codigo}</span> ${prog.nombre}`;
+                    li.onclick = () => {
+                        renderizarTablas(prog);
+                        inputBuscador.value = '';
+                        cerrarBuscador();
+                    };
+                    listaResultados.appendChild(li);
+                });
+            } else {
+                listaResultados.innerHTML = '<li class="resultado-item" style="color:#999;">No se encontraron resultados</li>';
+            }
+            listaResultados.classList.add('active');
+        });
+
+        function cerrarBuscador() { listaResultados.classList.remove('active'); }
+        document.addEventListener('click', e => { if (!document.querySelector('.buscador-wrapper').contains(e.target)) cerrarBuscador(); });
+
+        window.onload = inicializarPills;
+    </script>
+</body>
+</html>
