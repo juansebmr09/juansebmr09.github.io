@@ -54,20 +54,24 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Regional</label>
                         <select id="filter_regional" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
-                            <option value="">Todas</option><option value="Antioquia">Antioquia</option><option value="Occidente">Occidente</option>
+                            <option value="">Todas</option>
+                            <option value="Antioquia">Antioquia</option>
+                            <option value="Occidente">Occidente</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jefe Inmediato</label>
                         <select id="filter_boss" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
-                            <option value="">Todos</option><option value="Carlos Pérez">Carlos Pérez</option><option value="Ana Rodríguez">Ana Rodríguez</option>
+                            <option value="">Todos</option>
+                            <option value="Carlos Pérez">Carlos Pérez</option>
+                            <option value="Ana Rodríguez">Ana Rodríguez</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>
                         <select id="filter_status" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 bg-gray-50">
                             <option value="">Todos</option>
-                            <option value="Pendiente GH" selected>Pendiente GH</option>
+                            <option value="Pendiente GH">Pendiente GH</option>
                             <option value="En Gestión">En Gestión</option>
                             <option value="Finalizado">Finalizado</option>
                         </select>
@@ -100,11 +104,11 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th onclick="sortRequests('date')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Fecha <span class="sort-icon inline-block ml-1">▼</span></th>
-                            <th onclick="sortRequests('id')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Solicitud <span class="sort-icon inline-block ml-1">▼</span></th>
-                            <th onclick="sortRequests('advName')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Asesor <span class="sort-icon inline-block ml-1">▼</span></th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Solicitud</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Asesor</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Regional</th>
-                            <th onclick="sortRequests('status')" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase sortable group">Estado <span class="sort-icon inline-block ml-1">▼</span></th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estado</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Valor Total</th>
                             <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Acción</th>
                         </tr>
@@ -167,7 +171,9 @@
                         </label>
                     </div>
 
-                    <button onclick="openBitacora()" class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                    <div id="uploadedFilesContainer" class="flex flex-wrap gap-2 mb-3 empty:hidden"></div>
+
+                    <button class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">
                         <i data-lucide="history" class="w-4 h-4"></i>
                         <span class="text-xs font-bold uppercase tracking-wide">Ver Trazabilidad</span>
                     </button>
@@ -324,7 +330,6 @@
             { id: '10102025003', date: '2025-01-20', advName: 'Maria Perez', advId: '55.666.777', bossName: 'Carlos Pérez', regional: 'Antioquia', status: 'En Gestión', history: [] }
         ];
 
-        // DATOS SIMULADOS ACTUALIZADOS (El reqId 88992025002 tiene 2 registros con valor para ver la sumatoria)
         const mockDetails = [
             { reqId: '45212025001', rowId: 'r1', fecha: '2025-01-10', plan: 'Plan Familiar', programa: 'Oro', contrato: '10015', idContratante: '998877', idUsuario: 'U1122', usuario: 'Maria Lopez', parentesco: 'Titular', pago: 'Mensual', valorReclamacion: '', obsAsesor: 'Falta pago de este mes', obsJefe: 'Revisado, procede ajuste.', ghStatus: 'Pendiente', ghObs: '', ghConceptos: ['Reclamación por pago no aplicado'] },
             { reqId: '45212025001', rowId: 'r2', fecha: '2025-01-11', plan: 'Plan Plus', programa: 'Plata', contrato: '10016', idContratante: '998877', idUsuario: 'U1133', usuario: 'Pedro Perez', parentesco: 'Conyuge', pago: 'Anual', valorReclamacion: '', obsAsesor: 'No se aplicó acelerador', obsJefe: 'El asesor tiene razón.', ghStatus: 'Pendiente', ghObs: '', ghConceptos: ['Aceleradores'] },
@@ -335,17 +340,54 @@
         ];
 
         let currentRequests = [...mockRequests];
-        let currentSortField = ''; let sortDirection = 'asc';
 
-        document.addEventListener('DOMContentLoaded', () => { renderDashboard(); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            applyFilters(); 
+        });
 
-        function applyFilters() { /* lógica de filtros */ renderDashboard(); }
-        function clearFilters() { /* lógica limpieza */ }
-        function sortRequests(field) { /* lógica ordenamiento */ }
+        function applyFilters() {
+            const fRegional = document.getElementById('filter_regional').value;
+            const fBoss = document.getElementById('filter_boss').value;
+            const fStatus = document.getElementById('filter_status').value;
+            const fId = document.getElementById('filter_id').value.toLowerCase();
+            const fDateFrom = document.getElementById('filter_dateFrom').value;
+            const fDateTo = document.getElementById('filter_dateTo').value;
+
+            currentRequests = mockRequests.filter(r => {
+                let isValid = true;
+                if (fRegional && r.regional !== fRegional) isValid = false;
+                if (fBoss && r.bossName !== fBoss) isValid = false;
+                if (fStatus && r.status !== fStatus) isValid = false;
+                if (fId && !r.id.toLowerCase().includes(fId)) isValid = false;
+                if (fDateFrom && r.date < fDateFrom) isValid = false;
+                if (fDateTo && r.date > fDateTo) isValid = false;
+                return isValid;
+            });
+
+            renderDashboard();
+        }
+
+        function clearFilters() {
+            document.getElementById('filter_regional').value = "";
+            document.getElementById('filter_boss').value = "";
+            document.getElementById('filter_status').value = "";
+            document.getElementById('filter_id').value = "";
+            document.getElementById('filter_dateFrom').value = "";
+            document.getElementById('filter_dateTo').value = "";
+            applyFilters();
+        }
 
         function renderDashboard() {
-            const body = document.getElementById('dashboardBody'); const empty = document.getElementById('emptyState'); body.innerHTML = "";
-            if (currentRequests.length === 0) { empty.classList.remove('hidden'); return; } else { empty.classList.add('hidden'); }
+            const body = document.getElementById('dashboardBody'); 
+            const empty = document.getElementById('emptyState'); 
+            body.innerHTML = "";
+            
+            if (currentRequests.length === 0) { 
+                empty.classList.remove('hidden'); 
+                return; 
+            } else { 
+                empty.classList.add('hidden'); 
+            }
             
             currentRequests.forEach(r => {
                 let badgeClass = 'bg-gray-100 text-gray-800';
@@ -357,7 +399,6 @@
                 const btnText = isLocked ? 'Ver Detalle' : 'Gestionar';
                 const btnClass = isLocked ? 'text-gray-600 border-gray-300 hover:bg-gray-50' : 'text-blue-600 border-blue-200 hover:bg-blue-100';
 
-                // Lógica Sumatoria dinámica SOLO si está finalizado
                 let valorTotalStr = '-';
                 if (r.status === 'Finalizado') {
                     const registrosAsociados = mockDetails.filter(d => d.reqId === r.id);
@@ -399,6 +440,8 @@
             b.className = "px-3 py-1 rounded-full text-xs font-bold border " + 
                 (activeReq.status === 'Pendiente GH' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                  activeReq.status === 'En Gestión' ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-green-100 text-green-800 border-green-200');
+
+            document.getElementById('uploadedFilesContainer').innerHTML = "";
 
             document.getElementById('editorEmptyState').classList.remove('hidden');
             document.getElementById('resolutionPanel').classList.add('hidden');
@@ -549,13 +592,69 @@
                 activeReq.status = 'Finalizado';
                 alert("✅ Solicitud Finalizada Exitosamente.\nLos registros han sido cerrados.");
                 closeWorkbench();
-                // RenderDashboard recargará los datos y calculará la sumatoria gracias a este applyFilters
-                applyFilters(); 
             }
         }
 
-        function handleGHFileUpload(input) { if (input.files && input.files.length > 0) { alert(`✅ Documento general "${input.files[0].name}" adjuntado exitosamente.`); input.value = ""; } }
-        function closeWorkbench() { document.getElementById('viewWorkbench').classList.add('hidden'); document.getElementById('viewDashboard').classList.remove('hidden'); }
+        function handleGHFileUpload(input) { 
+            if (input.files && input.files.length > 0) { 
+                const fileName = input.files[0].name;
+                const fileId = 'file_' + Date.now();
+                const container = document.getElementById('uploadedFilesContainer');
+
+                // Pill de estado "Cargando..."
+                const loadingPill = document.createElement('div');
+                loadingPill.id = `loading_${fileId}`;
+                loadingPill.className = "flex items-center gap-2 bg-gray-100 border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full text-xs animate-pulse";
+                loadingPill.innerHTML = `
+                    <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i>
+                    <span class="truncate max-w-[150px]">Cargando documento...</span>
+                `;
+                container.appendChild(loadingPill);
+                lucide.createIcons({ root: loadingPill });
+
+                // Limpiamos el input para permitir subir el mismo archivo de nuevo si se desea
+                input.value = "";
+
+                // Simulamos 1.5 segundos de carga
+                setTimeout(() => {
+                    loadingPill.remove();
+
+                    // Pill final verde de éxito
+                    const successPill = document.createElement('div');
+                    successPill.id = fileId;
+                    successPill.className = "flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-[11px] shadow-sm transition-all group";
+                    successPill.innerHTML = `
+                        <button onclick="downloadFakeFile('${fileName}')" class="flex items-center gap-1.5 hover:text-emerald-900 truncate max-w-[150px]" title="Descargar ${fileName}">
+                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span class="font-bold truncate">${fileName}</span>
+                        </button>
+                        <button onclick="removeFakeFile('${fileId}')" class="ml-1 text-emerald-400 hover:text-red-500 hover:bg-red-100 rounded-full p-0.5 transition-colors" title="Eliminar documento">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
+                    `;
+                    container.appendChild(successPill);
+                    lucide.createIcons({ root: successPill });
+                }, 1500);
+            } 
+        }
+
+        function removeFakeFile(fileId) {
+            const element = document.getElementById(fileId);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        function downloadFakeFile(fileName) {
+            alert("📥 Simulando descarga del documento:\n" + fileName);
+        }
+        // -----------------------------------------------------------------
+        
+        function closeWorkbench() { 
+            document.getElementById('viewWorkbench').classList.add('hidden'); 
+            document.getElementById('viewDashboard').classList.remove('hidden'); 
+            applyFilters();
+        }
     </script>
 </body>
 </html>
