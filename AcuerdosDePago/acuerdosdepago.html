@@ -6,15 +6,16 @@
     <title>OVA - Oficina Virtual de Asesores</title>
     <style>
         :root {
-            --coomeva-blue: #0077c8;
-            --coomeva-dark: #004a80;
+            --coomeva-blue: #0033a0;
+            --coomeva-light-blue: #eef4f9;
+            --coomeva-teal: #009688;
             --bg-body: #ffffff;
-            --bg-gray-light: #f3f4f6;
-            --btn-orange: #f28b20;
-            --btn-green: #00ba4a;
+            --bg-gray-light: #f4f6f9;
             --text-dark: #333333;
-            --text-muted: #777777;
+            --text-muted: #666666;
             --border-color: #dddddd;
+            --danger: #dc2626;
+            --warning: #f59e0b;
         }
 
         body {
@@ -47,7 +48,7 @@
         }
 
         .sidebar-logo { padding: 30px 0; text-align: center; min-width: 300px; }
-        .sidebar-logo svg { width: 80px; fill: var(--coomeva-blue); }
+        .sidebar-logo svg, .sidebar-logo img { width: 80px; fill: var(--coomeva-blue); }
 
         .menu-item {
             display: flex; justify-content: space-between; align-items: center;
@@ -68,21 +69,23 @@
         /* --- CONTENIDO PRINCIPAL --- */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* HEADER AZUL */
+        /* HEADER AZUL NUEVO DISEÑO */
         .top-header {
-            background: linear-gradient(135deg, #005c9e 0%, #008be5 100%);
-            color: white; padding: 15px 25px; display: flex;
+            background-color: var(--coomeva-blue);
+            color: white; padding: 10px 25px; display: flex;
             justify-content: space-between; align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .header-left { display: flex; align-items: center; gap: 15px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
-        .hamburger-btn { cursor: pointer; font-size: 20px; padding: 0 10px; user-select: none; }
+        .header-left { display: flex; align-items: center; gap: 15px; font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
+        .hamburger-btn { cursor: pointer; font-size: 24px; padding: 0 10px; user-select: none; font-weight: normal; }
         .hamburger-btn:hover { opacity: 0.8; }
-        .header-right { text-align: right; font-size: 12px; line-height: 1.4; }
-        .header-right span { display: block; }
-        .header-title { text-transform: uppercase; }
-        .header-title em { font-family: 'Brush Script MT', cursive; font-size: 22px; text-transform: lowercase; }
+        .header-right { text-align: right; font-size: 11px; line-height: 1.4; display: flex; align-items: center; gap: 15px;}
+        .user-info { display: flex; flex-direction: column; align-items: flex-end; }
+        .header-right .icons { font-size: 20px; display: flex; gap: 15px; align-items: center; cursor: pointer; }
+        .header-title { text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .header-title em { font-family: 'Brush Script MT', cursive; font-size: 24px; text-transform: lowercase; color: #00e5ff;}
+        .home-icon { font-size: 20px; }
 
         /* VISTAS SCROLL */
         .content-scroll { flex: 1; overflow-y: auto; padding: 30px; }
@@ -90,46 +93,83 @@
         .view-panel.active { display: block; }
 
         /* --- PANEL DE BÚSQUEDA --- */
-        .search-section { margin-bottom: 40px; }
+        .search-section { margin-bottom: 30px; }
+        .search-section h1 { font-size: 16px; margin: 0 0 5px 0; color: var(--text-dark); }
         .search-section p { color: var(--text-muted); font-size: 12px; margin-bottom: 20px; }
-        .search-grid { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
-        .input-group { display: flex; flex-direction: column; width: 220px; }
-        .input-group label { font-size: 10px; color: var(--text-muted); margin-bottom: 5px; }
-        .input-group input, .input-group select { padding: 10px; border: 1px solid #ccc; border-radius: 2px; font-size: 13px; background-color: #f9f9f9; }
-        .input-group select { border-left: 3px solid var(--coomeva-blue); }
-
-        .btn-blue {
-            background-color: #0073b7; color: white; border: none; padding: 11px 20px;
-            font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;
-            display: flex; align-items: center; gap: 8px;
+        
+        .search-grid { display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 15px; }
+        .input-wrapper { display: flex; flex-direction: column; gap: 4px; }
+        
+        .input-group { 
+            display: flex; flex-direction: column; width: 280px; 
+            background-color: var(--bg-gray-light);
+            border: 1px solid #e0e0e0; border-radius: 6px;
+            padding: 6px 12px; position: relative; transition: border-color 0.2s;
         }
-        .btn-blue:hover { background-color: var(--coomeva-dark); }
+        .input-group.blue-border { border-left: 4px solid var(--coomeva-blue); }
+        .input-group.error-border { border-color: var(--danger); background-color: #fef2f2; }
+        
+        .input-group label { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; font-weight: 600;}
+        .input-group input, .input-group select { 
+            border: none; background: transparent; font-size: 13px; 
+            color: var(--text-dark); outline: none; padding: 2px 0; width: 100%;
+        }
+        
+        .error-text { font-size: 10px; color: var(--danger); display: none; font-weight: bold; }
+
+        /* Botones Estandarizados */
+        .btn {
+            border: none; padding: 10px 20px; font-size: 12px; font-weight: bold;
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            justify-content: center; transition: 0.2s; text-transform: uppercase; box-sizing: border-box;
+            height: 42px; /* Alineación con inputs */
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed !important; pointer-events: none; }
+        .btn-blue { background-color: var(--coomeva-blue); color: white; }
+        .btn-blue:hover:not(:disabled) { opacity: 0.9; }
+        .btn-outline { background-color: white; color: var(--coomeva-blue); border: 1px solid var(--coomeva-blue); }
+        .btn-outline:hover:not(:disabled) { background-color: #f0f4f8; }
+        .btn-teal { background-color: var(--coomeva-teal); color: white; }
+        .btn-teal:hover:not(:disabled) { opacity: 0.9; }
 
         /* --- TARJETA DE CONTRATO --- */
-        h2 { font-size: 18px; color: var(--text-dark); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .contract-card { background-color: var(--bg-gray-light); border-radius: 15px; padding: 25px; margin-bottom: 20px; }
-        .contract-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .contract-info h3 { margin: 0 0 5px 0; color: var(--coomeva-blue); font-size: 16px; }
-        .contract-info p { margin: 3px 0; font-size: 13px; color: var(--coomeva-blue); font-weight: bold; }
-        .contract-info .sub-text { font-weight: normal; color: var(--text-dark); }
-        .contract-actions { display: flex; gap: 10px; }
+        h2 { font-size: 16px; color: var(--text-dark); margin-bottom: 15px; padding-bottom: 10px; font-weight: bold; }
+        .contract-card { background-color: var(--coomeva-light-blue); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .contract-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+        .contract-info h3 { margin: 0 0 5px 0; color: var(--coomeva-blue); font-size: 14px; font-weight: bold; }
+        .contract-info p { margin: 3px 0; font-size: 12px; color: var(--coomeva-blue); font-weight: bold; }
+        .contract-info .sub-text { font-weight: 600; color: var(--text-dark); }
+        
+        .contract-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-        .btn-action {
-            border: none; padding: 10px 15px; font-size: 11px; font-weight: bold;
-            border-radius: 6px; cursor: pointer; color: white; text-transform: uppercase;
-            display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Tarjetas de Beneficiarios */
+        .beneficiaries-container { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+        .beneficiary-card { 
+            background-color: white; border-radius: 10px; padding: 15px; width: 340px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 11px; line-height: 1.6;
+            border: 1px solid #eaeaea; display: flex; flex-direction: column;
+            position: relative;
         }
-        .btn-orange { background-color: var(--btn-orange); }
-        .btn-green { background-color: var(--btn-green); }
-        .btn-coomeva { background-color: var(--coomeva-blue); }
-
-        .beneficiary-card { background-color: white; border-radius: 10px; padding: 15px; width: 280px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 11px; line-height: 1.6; }
+        .beneficiary-detail { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; color: #555;}
+        .beneficiary-detail strong { color: var(--text-dark); }
+        .btn-ver-detalle { 
+            position: absolute; top: 15px; right: 15px; background: white; border: 1px solid var(--coomeva-blue);
+            color: var(--coomeva-blue); border-radius: 15px; padding: 3px 10px; font-size: 9px; cursor: pointer; font-weight: bold;
+        }
+        
+        .beneficiary-actions { display: flex; gap: 5px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .btn-sm { font-size: 9px; padding: 8px 6px; flex: 1; min-width: 0;}
 
         /* --- MODALES Y TABLAS --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-box { background: white; padding: 30px; border-radius: 8px; width: 400px; text-align: center; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--coomeva-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        .modal-box { background: white; padding: 30px; border-radius: 8px; width: 400px; text-align: center; position: relative; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--coomeva-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; display: none; }
+        .loader.active { display: block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .form-control-modal { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 12px; }
+        .form-control-modal:focus { border-color: var(--coomeva-blue); outline: none; }
+        .form-control-modal:disabled { background-color: #f5f5f5; color: #888; }
 
         .table-container { overflow-x: auto; width: 100%; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; white-space: nowrap; }
@@ -146,18 +186,23 @@
         .page-size-selector select { padding: 4px; border: 1px solid #ccc; border-radius: 3px;}
         
         .sim-panel { position: fixed; bottom: 10px; right: 10px; background: #333; color: white; padding: 10px; font-size: 11px; border-radius: 5px; z-index: 9999; }
+        
+        #modalContentWrapper { display: block; }
+        #modalLoadingWrapper { display: none; }
     </style>
 </head>
 <body>
 
     <div class="sim-panel">
-        <label><input type="radio" name="simMode" value="pass" checked> Simular Éxito</label>
-        <label><input type="radio" name="simMode" value="fail"> Simular Falla (Mora)</label>
+        <label><input type="radio" name="simMode" value="pass" checked> Éxito</label>
+        <label><input type="radio" name="simMode" value="fail"> Reglas (Mora)</label>
+        <label><input type="radio" name="simMode" value="timeout"> Timeout API</label>
     </div>
 
-    <div class="sidebar" id="sidebar">
+    <!-- SIDEBAR -->
+    <div class="sidebar collapsed" id="sidebar">
         <div class="sidebar-logo">
-            <img style="width: 20%; height: auto;" src="/AcuerdosDePago/logo-no-text.webp" alt="">
+            <div style="width: 100px; height: 40px; background-color: #ccc; margin: 0 auto; line-height: 40px; font-size: 12px; color: #fff;">LOGO COOMEVA</div>
         </div>
 
         <div class="menu-item"><div class="menu-item-left">👤 CARNÉ DE USUARIOS</div> <span>▼</span></div>
@@ -182,42 +227,53 @@
     </div>
 
     <div class="main-wrapper">
+        <!-- HEADER -->
         <div class="top-header">
             <div class="header-left">
                 <span class="hamburger-btn" onclick="toggleSidebar()">☰</span> 
-                <span></span>
+                <span class="home-icon">🏠</span>
                 <span class="header-title">MI POBLACIÓN | OFICINA VIRTUAL DE <em>asesores</em></span>
             </div>
             <div class="header-right">
-                <span style="font-weight: bold; font-size: 14px;">¡HOLA ASESOR!</span>
-                <span>CC. 31928401 | ana_carmona@coomeva.com.co</span>
-                <span>ASESOR INTERNO</span>
+                <div class="user-info">
+                    <span style="font-weight: bold; font-size: 12px;">¡HOLA NOMBRE APELLIDO!</span>
+                    <span>CC. 12345</span>
+                    <span>ASESOR INTERNO</span>
+                </div>
+                <div class="icons">
+                    <span>🔔</span>
+                    <span>🚪</span>
+                </div>
             </div>
         </div>
 
         <div class="content-scroll">
             
+            <!-- VISTA: MI POBLACIÓN -->
             <div id="view-poblacion" class="view-panel active">
                 <div class="search-section">
-                    <p>Ingrese la información del usuario a consultar<br>Recuerde que puede hacer la búsqueda por tipo y número de documento, por número de contrato o por ambos.</p>
+                    <h1>Ingrese la información del usuario a consultar</h1>
+                    <p>Recuerde que puede hacer la búsqueda por tipo y número de documento, por número de contrato o por ambos.</p>
+                    
                     <div class="search-grid">
-                        <div class="input-group">
-                            <label>Tipo de Identificación</label>
+                        <div class="input-group blue-border">
+                            <label>Tipo de identificación</label>
                             <select><option>CC - CEDULA DE CIUDADANÍA</option></select>
                         </div>
-                        <div class="input-group">
-                            <label>Número de Identificación</label>
-                            <input type="text">
+                        <div class="input-group blue-border">
+                            <label>Número de identificación</label>
+                            <input type="text" placeholder="12345">
                         </div>
-                        <button class="btn-blue">🔍 CONSULTAR</button>
-                        <button class="btn-blue" style="background-color: #0073b7;">✖ LIMPIAR</button>
+                        <button class="btn btn-blue" style="min-width: 140px;">🔍 Consultar</button>
+                        <button class="btn btn-outline" style="min-width: 140px; background-color: #0073b7; color: white;">✖ Limpiar</button>
                     </div>
-                    <div class="search-grid" style="margin-top: 15px;">
-                        <div class="input-group">
-                            <label>Número Contrato</label>
-                            <input type="text">
+                    
+                    <div class="search-grid">
+                        <div class="input-group blue-border">
+                            <label>Número de Contrato</label>
+                            <input type="text" placeholder="Número Contrato">
                         </div>
-                        <button class="btn-blue">📄 GENERAR CERTIFICADOS</button>
+                        <button class="btn btn-blue" style="min-width: 200px;">📄 Generar certificados</button>
                     </div>
                 </div>
 
@@ -226,44 +282,80 @@
                 <div class="contract-card">
                     <div class="contract-header">
                         <div class="contract-info">
-                            <h3>Contrato # 1575</h3>
-                            <p><span class="sub-text">Contratante:</span> CC - 123456 ANDRES</p>
-                            <p>ORO GRUPO COOMEVA</p>
-                            <p>12 - FONDO DE EMPLEADOS DEL GRUPO EMPRESARIAL...</p>
+                            <h3>Contrato # 123456</h3>
+                            <p><span class="sub-text">Contratante:</span> CC - 88888 NOMBRE APELLIDO</p>
+                            <p><span class="sub-text">Programa:</span> DENTAL ELITE COLECTIVO RED CERRADA</p>
+                            <p><span class="sub-text">Plan:</span> 12 - FONDO DE EMPLEADOS DEL GRUPO EMPRESARIAL COOMEVA</p>
                         </div>
+                        
                         <div class="contract-actions">
-                            <button class="btn-action btn-orange">📄 GENERAR<br>FACTURA</button>
-                            <button class="btn-action btn-green">🔗 LINK<br>PAGO</button>
-                            <button class="btn-action btn-coomeva" onclick="ejecutarValidacion()">✅ VALIDAR<br>ACUERDO DE PAGO</button>
+                            <button class="btn btn-blue">📄 GENERAR FACTURA</button>
+                            <button class="btn btn-teal">🔗 LINK PAGO</button>
+                            <button class="btn btn-outline" onclick="abrirModalValidacion()">✅ VALIDAR ACUERDO</button>
                         </div>
                     </div>
                     
-                    <div class="beneficiary-card">
-                        <div>📄 CC - 10029384</div>
-                        <div>👤 VARGAS CARMONA LUIS</div>
-                        <div style="color: var(--coomeva-blue); font-weight: bold;">🏥 ACTIVO, CON SERVICIO</div>
-                        <div>👨‍👩‍👦 Progenitor(a)</div>
+                    <div class="beneficiaries-container">
+                        <div class="beneficiary-card">
+                            <button class="btn-ver-detalle">🔍</button>
+                            <div class="beneficiary-detail">📄 <strong>CC - 88888</strong></div>
+                            <div class="beneficiary-detail">👤 NOMBRE APELLIDO</div>
+                            <div class="beneficiary-detail" style="color: var(--text-dark);">🏥 ACTIVO, CON SERVICIO</div>
+                            <div class="beneficiary-detail">👨‍👩‍👦 Titular</div>
+                            <div class="beneficiary-detail">📞 12345</div>
+                            
+                            <div class="beneficiary-actions">
+                                <button class="btn btn-blue btn-sm">GENERAR CARNET</button>
+                                <button class="btn btn-teal btn-sm">CONSULTAR DIRECTORIO</button>
+                                <button class="btn btn-outline btn-sm">RADICAR SOLICITUD</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- VISTA: SEGUIMIENTO ACUERDOS DE PAGO -->
             <div id="view-seguimiento" class="view-panel">
                 <h2 style="color: var(--coomeva-blue); border:none; margin-bottom:0;">Seguimiento Acuerdos de Pago</h2>
                 <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Consulta los acuerdos de pago generados en tu población</p>
                 
                 <div class="search-grid" style="margin-bottom: 20px;">
-                    <div class="input-group"><label>Tipo doc.</label>
-                        <select id="filtroTipo">
-                            <option value="">Todos</option>
-                            <option value="CC">CC</option>
-                            <option value="CE">CE</option>
-                        </select>
+                    <div class="input-wrapper">
+                        <div class="input-group" id="containerTipo" style="width: 130px;">
+                            <label>Tipo doc. <span style="color:var(--danger)">*</span></label>
+                            <select id="filtroTipo">
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="CC">CC</option>
+                                <option value="CE">CE</option>
+                            </select>
+                        </div>
+                        <span id="err-filtro-tipo" class="error-text">Requerido</span>
                     </div>
-                    <div class="input-group"><label>Núm doc.</label><input type="text" id="filtroNum"></div>
-                    <div class="input-group"><label>Desde</label><input type="date" id="filtroDesde"></div>
-                    <div class="input-group"><label>Hasta</label><input type="date" id="filtroHasta"></div>
-                    <button class="btn-blue" onclick="consultarFiltros()">Consultar</button>
-                    <button class="btn-blue" style="background: #ccc; color: black;" onclick="limpiarFiltros()">Limpiar</button>
+
+                    <div class="input-wrapper">
+                        <div class="input-group" id="containerNum" style="width: 150px;">
+                            <label>Núm doc. <span style="color:var(--danger)">*</span></label>
+                            <input type="number" id="filtroNum" placeholder="Ej: 88888">
+                        </div>
+                        <span id="err-filtro-num" class="error-text">Requerido</span>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="input-group" style="width: 140px;">
+                            <label>Desde</label>
+                            <input type="date" id="filtroDesde">
+                        </div>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="input-group" style="width: 140px;">
+                            <label>Hasta</label>
+                            <input type="date" id="filtroHasta">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-blue" onclick="consultarFiltros()">Consultar</button>
+                    <button class="btn btn-outline" onclick="limpiarFiltros()">Limpiar</button>
                 </div>
 
                 <div class="table-container">
@@ -282,38 +374,28 @@
                             </tr>
                         </thead>
                         <tbody id="cuerpoTabla">
-                            <tr>
+                            <!-- Datos de ejemplo ocultos inicialmente simulando que no se ha consultado -->
+                            <tr style="display: none;" class="data-row">
                                 <td>2026-06-02</td>
                                 <td>104928</td>
-                                <td>Vargas Carmona Luis</td>
+                                <td>Nombre Apellido</td>
                                 <td>CC</td>
-                                <td>10029384</td>
-                                <td>3150000000</td>
-                                <td>luis.vargas@ficticio.com</td>
+                                <td>88888</td>
+                                <td>12345</td>
+                                <td>correo@dominio.com</td>
                                 <td>Aprobado</td>
                                 <td>Sin observaciones</td>
                             </tr>
-                            <tr>
-                                <td>2026-05-15</td>
-                                <td>104500</td>
-                                <td>Alvarez Juan</td>
+                            <tr style="display: none;" class="data-row">
+                                <td>2026-07-15</td>
+                                <td>105112</td>
+                                <td>Nombre Apellido</td>
                                 <td>CC</td>
-                                <td>98765432</td>
-                                <td>3101234567</td>
-                                <td>juan.alvarez@ficticio.com</td>
-                                <td>En Gestión</td>
-                                <td>Pendiente firma del afiliado</td>
-                            </tr>
-                            <tr>
-                                <td>2026-06-01</td>
-                                <td>104800</td>
-                                <td>Zapata Maria</td>
-                                <td>CE</td>
-                                <td>45678912</td>
-                                <td>3209876543</td>
-                                <td>maria.zapata@ficticio.com</td>
-                                <td>Rechazado</td>
-                                <td>Mora inferior a lo requerido</td>
+                                <td>88888</td>
+                                <td>12345</td>
+                                <td>correo@dominio.com</td>
+                                <td>Pendiente</td>
+                                <td>El usuario indicó que pagará el fin de semana.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -329,9 +411,9 @@
                         </select>
                     </div>
                     <div>
-                        <span id="textoPaginador">Mostrando 1-3 de un total de 3 registros</span>
-                        <button class="btn-blue" style="padding: 4px 8px; margin-left: 10px; background:#e2e8f0; color:#333;">&lt;</button>
-                        <button class="btn-blue" style="padding: 4px 8px; background:#e2e8f0; color:#333;">&gt;</button>
+                        <span id="textoPaginador">Mostrando 0-0 de un total de 0 registros</span>
+                        <button class="btn-outline" style="padding: 4px 8px; margin-left: 10px; min-width: auto;">&lt;</button>
+                        <button class="btn-outline" style="padding: 4px 8px; min-width: auto;">&gt;</button>
                     </div>
                 </div>
 
@@ -340,168 +422,283 @@
         </div>
     </div>
 
+    <!-- ESTRUCTURA DEL MODAL -->
     <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box" id="modalBox"></div>
+        <div class="modal-box" id="modalBox">
+            <!-- El contenido se inyecta dinámicamente mediante JS -->
+        </div>
     </div>
 
     <script>
-        // 1. Lógica Menú Hamburguesa
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
-        }
-
-        function toggleSubmenu(id) {
-            const menu = document.getElementById(id);
-            menu.classList.toggle('open');
-        }
-
+        // 1. Navegación e Interfaz Base
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+        function toggleSubmenu(id) { document.getElementById(id).classList.toggle('open'); }
         function navigateTo(viewId, element) {
             document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.submenu a').forEach(a => a.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            element.classList.add('active');
+            if (element) element.classList.add('active');
         }
 
-        // 2. Lógica Ordenamiento de Columnas
+        // 2. Lógica Ordenamiento de Tablas
         function ordenarTabla(n) {
             let table = document.getElementById("tablaSeguimiento");
             let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-            switching = true;
-            dir = "asc"; 
-            
+            switching = true; dir = "asc"; 
             while (switching) {
-                switching = false;
-                rows = table.rows;
+                switching = false; rows = table.rows;
                 for (i = 1; i < (rows.length - 1); i++) {
                     shouldSwitch = false;
                     x = rows[i].getElementsByTagName("TD")[n];
                     y = rows[i + 1].getElementsByTagName("TD")[n];
-                    
-                    let valX = x.innerHTML.toLowerCase();
-                    let valY = y.innerHTML.toLowerCase();
-
-                    if(!isNaN(valX) && !isNaN(valY)) {
-                        valX = parseFloat(valX);
-                        valY = parseFloat(valY);
-                    }
-
-                    if (dir == "asc") {
-                        if (valX > valY) { shouldSwitch = true; break; }
-                    } else if (dir == "desc") {
-                        if (valX < valY) { shouldSwitch = true; break; }
-                    }
+                    let valX = x.innerHTML.toLowerCase(); let valY = y.innerHTML.toLowerCase();
+                    if(!isNaN(valX) && !isNaN(valY)) { valX = parseFloat(valX); valY = parseFloat(valY); }
+                    if (dir == "asc") { if (valX > valY) { shouldSwitch = true; break; } } 
+                    else if (dir == "desc") { if (valX < valY) { shouldSwitch = true; break; } }
                 }
                 if (shouldSwitch) {
                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    switchcount++;
+                    switching = true; switchcount++;
                 } else {
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
+                    if (switchcount == 0 && dir == "asc") { dir = "desc"; switching = true; }
                 }
             }
         }
 
-        // 3. Lógica Botón Consultar (Búsqueda por filtros)
+        // 3. Lógica Consulta Vista Seguimiento (Validaciones Obligatorias)
         function consultarFiltros() {
-            const filtroTipo = document.getElementById('filtroTipo').value.toLowerCase();
-            const filtroNum = document.getElementById('filtroNum').value.toLowerCase();
+            const filtroTipo = document.getElementById('filtroTipo').value;
+            const filtroNum = document.getElementById('filtroNum').value;
+            
+            const contTipo = document.getElementById('containerTipo');
+            const errTipo = document.getElementById('err-filtro-tipo');
+            const contNum = document.getElementById('containerNum');
+            const errNum = document.getElementById('err-filtro-num');
+
+            let esValido = true;
+
+            // Validación Obligatoria Tipo Documento
+            if (!filtroTipo) {
+                contTipo.classList.add('error-border');
+                errTipo.style.display = 'block';
+                esValido = false;
+            } else {
+                contTipo.classList.remove('error-border');
+                errTipo.style.display = 'none';
+            }
+
+            // Validación Obligatoria Número Documento
+            if (!filtroNum.trim()) {
+                contNum.classList.add('error-border');
+                errNum.style.display = 'block';
+                esValido = false;
+            } else {
+                contNum.classList.remove('error-border');
+                errNum.style.display = 'none';
+            }
+
+            if (!esValido) return; // Detener flujo
+
+            // Búsqueda en tabla
+            const tipoLower = filtroTipo.toLowerCase();
+            const numLower = filtroNum.toLowerCase();
             const filtroDesde = document.getElementById('filtroDesde').value;
             const filtroHasta = document.getElementById('filtroHasta').value;
-
-            const tabla = document.getElementById('tablaSeguimiento');
-            const filas = tabla.getElementsByTagName('tr');
+            
+            const filas = document.querySelectorAll('.data-row');
             let registrosVisibles = 0;
 
-            for (let i = 1; i < filas.length; i++) {
-                const celdas = filas[i].getElementsByTagName('td');
+            filas.forEach(fila => {
+                const celdas = fila.getElementsByTagName('td');
                 const fecha = celdas[0].innerText;
-                const tipo = celdas[3].innerText.toLowerCase();
-                const num = celdas[4].innerText.toLowerCase();
-
+                const tipoCelda = celdas[3].innerText.toLowerCase();
+                const numCelda = celdas[4].innerText.toLowerCase();
+                
                 let mostrar = true;
+                if (tipoCelda.indexOf(tipoLower) === -1) mostrar = false;
+                if (numCelda.indexOf(numLower) === -1) mostrar = false;
+                if (filtroDesde !== "" && fecha < filtroDesde) mostrar = false;
+                if (filtroHasta !== "" && fecha > filtroHasta) mostrar = false;
 
-                // Validación acumulativa de filtros
-                if (filtroTipo !== "" && tipo.indexOf(filtroTipo) === -1) { mostrar = false; }
-                if (filtroNum !== "" && num.indexOf(filtroNum) === -1) { mostrar = false; }
-                if (filtroDesde !== "" && fecha < filtroDesde) { mostrar = false; }
-                if (filtroHasta !== "" && fecha > filtroHasta) { mostrar = false; }
-
-                if (mostrar) {
-                    filas[i].style.display = ""; // Vuelve a mostrar las filas si cumplen o si no hay filtros
-                    registrosVisibles++;
-                } else {
-                    filas[i].style.display = "none";
+                if (mostrar) { 
+                    fila.style.display = ""; 
+                    registrosVisibles++; 
+                } else { 
+                    fila.style.display = "none"; 
                 }
-            }
+            });
 
             document.getElementById('textoPaginador').innerText = `Mostrando 1-${registrosVisibles} de un total de ${registrosVisibles} registros`;
         }
 
-        // 4. Lógica Botón Limpiar CORREGIDA (Oculta las filas y resetea inputs)
         function limpiarFiltros() {
-            // Vaciar los campos de filtro
             document.getElementById('filtroTipo').value = '';
             document.getElementById('filtroNum').value = '';
             document.getElementById('filtroDesde').value = '';
             document.getElementById('filtroHasta').value = '';
             
-            const tabla = document.getElementById('tablaSeguimiento');
-            const filas = tabla.getElementsByTagName('tr');
+            document.getElementById('containerTipo').classList.remove('error-border');
+            document.getElementById('err-filtro-tipo').style.display = 'none';
+            document.getElementById('containerNum').classList.remove('error-border');
+            document.getElementById('err-filtro-num').style.display = 'none';
 
-            // Ocultar todas las filas de datos
-            for (let i = 1; i < filas.length; i++) {
-                filas[i].style.display = "none";
-            }
-            
-            // Restablecer el texto del paginador a cero
+            const filas = document.querySelectorAll('.data-row');
+            filas.forEach(fila => fila.style.display = "none");
             document.getElementById('textoPaginador').innerText = `Mostrando 0-0 de un total de 0 registros`;
         }
 
-        // Lógica Modal
+        // 4. Lógica de Modal (Acuerdos de Pago, Validaciones y Timeout)
         const overlay = document.getElementById('modalOverlay');
         const box = document.getElementById('modalBox');
+        const ID_USUARIO = "88888";
 
-        function ejecutarValidacion() {
+        function abrirModalValidacion() {
             overlay.style.display = 'flex';
-            box.innerHTML = `<div class="loader"></div><h3 style="color: var(--coomeva-blue);">Validando reglas de negocio...</h3>`;
+            box.innerHTML = `<div class="loader active"></div><h3 style="color: var(--coomeva-blue);">Validando reglas de negocio...</h3>`;
             
             setTimeout(() => {
                 const isFail = document.querySelector('input[name="simMode"]:checked').value === 'fail';
                 if (isFail) {
                     box.innerHTML = `
-                        <h3 style="color: red;">No aplica a acuerdo de pago</h3>
+                        <h3 style="color: var(--danger);">No aplica a acuerdo de pago</h3>
                         <p style="font-size: 13px;">Este usuario no aplica a acuerdo de pago por <strong>presentar una mora inferior a 2</strong>.</p>
-                        <button class="btn-blue" style="width:100%; justify-content:center; margin-top:15px;" onclick="overlay.style.display='none'">Cerrar</button>
+                        <button class="btn btn-blue" style="width:100%; margin-top:15px;" onclick="overlay.style.display='none'">Cerrar</button>
                     `;
                 } else {
-                    box.innerHTML = `
-                        <h3 style="color: var(--coomeva-blue);">Aplica para Acuerdo</h3>
-                        <div style="text-align:left; font-size:12px; background:#f9f9f9; padding:15px; margin: 15px 0;">
-                            <b>Nombre:</b> Luis Vargas Carmona<br>
-                            <b>Deuda:</b> $ 2.000.000<br>
-                            <b>Mora actual:</b> 3<br>
-                            <b>Antigüedad:</b> 18 Meses
-                        </div>
-                        <button class="btn-green" style="width:100%; justify-content:center; border:none; padding:10px; color:white; font-weight:bold; cursor:pointer;" onclick="enviarSolicitud()">Solicitar Acuerdo de Pago</button>
-                        <button class="btn-blue" style="width:100%; justify-content:center; margin-top:10px; background:#ccc; color:black;" onclick="overlay.style.display='none'">Cancelar</button>
-                    `;
+                    renderizarFormularioExito();
                 }
-            }, 1500);
+            }, 1000);
+        }
+
+        function renderizarFormularioExito(errorTimeout = false) {
+            let errorMsgHtml = errorTimeout 
+                ? `<div style="background-color: #fef2f2; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 15px;">
+                      ⚠️ El servicio está tardando más de lo esperado. Por favor, intente nuevamente.
+                   </div>`
+                : ``;
+
+            const contactoPrevio = document.getElementById('inp-contacto') ? document.getElementById('inp-contacto').value : "";
+            const telefonoPrevio = document.getElementById('inp-telefono') ? document.getElementById('inp-telefono').value : "12345";
+            const obsPrevia = document.getElementById('inp-observacion') ? document.getElementById('inp-observacion').value : "";
+
+            box.innerHTML = `
+                <div id="modalContentWrapper">
+                    <h3 style="color: var(--coomeva-blue); margin-top:0;">Acuerdo de Pago</h3>
+                    ${errorMsgHtml}
+                    <div style="text-align:left; font-size:12px; background:var(--bg-gray-light); padding:12px; border-radius: 6px; margin-bottom: 15px;">
+                        <b>Nombre:</b> Nombre Apellido<br>
+                        <b>Identificación:</b> CC - ${ID_USUARIO}<br>
+                        <b>Programa:</b> DENTAL ELITE COLECTIVO<br>
+                        <b>Deuda:</b> $ 2.000.000<br>
+                        <b>Mora actual:</b> 3<br>
+                        <b>Antigüedad:</b> 18 Meses
+                    </div>
+                    
+                    <div style="text-align:left; font-size: 12px; margin-bottom: 20px;">
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:4px;">Contacto <span style="color:var(--danger);">*</span></label>
+                            <select id="inp-contacto" class="form-control-modal">
+                                <option value="" disabled ${!contactoPrevio ? "selected" : ""}>Seleccione</option>
+                                <option value="Contratante" ${contactoPrevio === "Contratante" ? "selected" : ""}>Contratante</option>
+                                <option value="Otro" ${contactoPrevio === "Otro" ? "selected" : ""}>Otro</option>
+                            </select>
+                            <span id="err-contacto" style="color:var(--danger); display:none; font-size:10px;">Requerido.</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:4px;">Teléfono <span style="color:var(--danger);">*</span></label>
+                            <input type="number" id="inp-telefono" value="${telefonoPrevio}" class="form-control-modal">
+                            <span id="err-telefono" style="color:var(--danger); display:none; font-size:10px;">Requerido.</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:4px;">Observación <span style="color:var(--danger);">*</span></label>
+                            <textarea id="inp-observacion" class="form-control-modal" style="resize:vertical; min-height: 60px;" placeholder="Ingrese observaciones...">${obsPrevia}</textarea>
+                            <span id="err-observacion" style="color:var(--danger); display:none; font-size:10px;">Requerido.</span>
+                        </div>
+                    </div>
+                    
+                    <button id="btnSolicitar" class="btn btn-teal" style="width:100%; margin-bottom: 10px;" onclick="enviarSolicitud()">Solicitar</button>
+                    <button id="btnCancelar" class="btn btn-outline" style="width:100%;" onclick="overlay.style.display='none'">Cancelar</button>
+                </div>
+                <div id="modalLoadingWrapper">
+                    <div class="loader active"></div>
+                    <h3 style="color: var(--coomeva-blue);">Procesando Solicitud...</h3>
+                    <p style="font-size: 11px; color: var(--text-muted);">Enviando información al área de cobranza</p>
+                </div>
+            `;
         }
 
         function enviarSolicitud() {
-            box.innerHTML = `<div class="loader"></div><h3 style="color: var(--coomeva-blue);">Enviando...</h3>`;
-            setTimeout(() => {
-                box.innerHTML = `
-                    <h3 style="color: var(--btn-green);">¡Solicitud Enviada!</h3>
-                    <p style="font-size:13px;">El acuerdo fue notificado al área de cobranza y se envió el correo al usuario.</p>
-                    <button class="btn-blue" style="width:100%; justify-content:center; margin-top:15px;" onclick="overlay.style.display='none'">Aceptar</button>
-                `;
-            }, 1500);
+            let valid = true;
+            const contacto = document.getElementById('inp-contacto').value;
+            const telefono = document.getElementById('inp-telefono').value;
+            const obs = document.getElementById('inp-observacion').value;
+
+            // Validar visualmente
+            document.getElementById('err-contacto').style.display = contacto ? 'none' : 'block';
+            document.getElementById('err-telefono').style.display = telefono ? 'none' : 'block';
+            document.getElementById('err-observacion').style.display = obs.trim() ? 'none' : 'block';
+
+            if (!contacto || !telefono || !obs.trim()) valid = false;
+            if (!valid) return;
+
+            // BLOQUEO INMEDIATO DEL BOTÓN (Prevención Multi-clic - Punto 10)
+            const btnSolicitar = document.getElementById('btnSolicitar');
+            const btnCancelar = document.getElementById('btnCancelar');
+            btnSolicitar.disabled = true;
+            btnCancelar.disabled = true;
+            
+            // Intercambiar vistas en el modal
+            document.getElementById('modalContentWrapper').style.display = 'none';
+            document.getElementById('modalLoadingWrapper').style.display = 'block';
+
+            // Armado del Payload (Log)
+            const payload = {
+                Identificacion_deudor: ID_USUARIO,
+                Casa_Cobranza: "MEDICINA PREPAGADA",
+                Subcampana: "GESTION COMERCIAL",
+                Usuario: "COMERCIALMP",
+                Fecha_gestion: new Date().toISOString(),
+                Accion: "GESTION COMERCIAL MP",
+                Respuesta: "INTENCION_ACUERDO_DE _PAGO",
+                Contacto: contacto,
+                Telefono: telefono,
+                Observacion_comun: null,
+                Observacion: obs,
+                Motivo_de_no_pago: null,
+                Canal: "COMERCIAL"
+            };
+            console.log("---- ENVIANDO TRAMA AL SERVICIO GENÉRICO ----");
+            console.log(JSON.stringify(payload, null, 2));
+
+            // SIMULACIÓN DE LA PROMESA Y EL TIMEOUT (10 Segundos)
+            const simMode = document.querySelector('input[name="simMode"]:checked').value;
+            const delaySimulado = simMode === 'timeout' ? 12000 : 1500; // Simulamos 12s de demora en red si es Timeout
+            const TIMEOUT_MAXIMO = 10000; // 10 Segundos exactos (Requerimiento 10.1)
+
+            const fetchPromise = new Promise((resolve) => {
+                setTimeout(() => resolve("Exito"), delaySimulado);
+            });
+
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error("Timeout")), TIMEOUT_MAXIMO);
+            });
+
+            Promise.race([fetchPromise, timeoutPromise])
+                .then((respuesta) => {
+                    // Éxito: Respondió antes de los 10 segundos
+                    box.innerHTML = `
+                        <h3 style="color: var(--coomeva-teal);">¡Solicitud Enviada!</h3>
+                        <p style="font-size:13px;">El acuerdo fue notificado correctamente al área de cobranza.</p>
+                        <button class="btn btn-blue" style="width:100%; margin-top:15px;" onclick="overlay.style.display='none'">Aceptar</button>
+                    `;
+                })
+                .catch((error) => {
+                    // Fallo: Superó el tiempo límite
+                    console.error("Transacción abortada:", error.message);
+                    renderizarFormularioExito(true);
+                });
         }
     </script>
 </body>
